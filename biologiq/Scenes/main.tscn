@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://cbepbiod6kuqb"]
+
+[ext_resource type="Script" uid="uid://5nux8iroat8b" path="res://Scenes/main.gd" id="1_bo1nx"]
+[ext_resource type="Texture2D" uid="uid://00ghi3qn4ns4" path="res://Art Assets/BIOLOGIQ Logo.png" id="1_jjgbg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jjgbg"]
+atlas = ExtResource("1_jjgbg")
+region = Rect2(0, 0, 100, 100)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bo1nx"]
+atlas = ExtResource("1_jjgbg")
+region = Rect2(100, 0, 100, 100)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1u27b"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jjgbg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bo1nx")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Main" type="Node" unique_id=1397643079]
+script = ExtResource("1_bo1nx")
+
+[node name="Background" type="ColorRect" parent="." unique_id=31674432]
+offset_left = -21.0
+offset_top = -24.0
+offset_right = 1165.0
+offset_bottom = 654.0
+color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1228445074]
+position = Vector2(572, 236.99998)
+scale = Vector2(4.15, 4.15)
+sprite_frames = SubResource("SpriteFrames_1u27b")
+frame_progress = 0.04034957
