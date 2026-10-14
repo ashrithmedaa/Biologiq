@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cbepbiod6kuqb"]
 
-[ext_resource type="Script" uid="uid://5nux8iroat8b" path="res://Scenes/main.gd" id="1_bo1nx"]
+[ext_resource type="Script" uid="uid://5nux8iroat8b" path="res://Scripts/main.gd" id="1_bo1nx"]
 [ext_resource type="Texture2D" uid="uid://00ghi3qn4ns4" path="res://Art Assets/BIOLOGIQ Logo.png" id="1_jjgbg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jjgbg"]
@@ -22,7 +22,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"default",
-"speed": 5.0
+"speed": 2.0
 }]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bo1nx"]
@@ -80,14 +80,14 @@ color = Color(0.06666667, 0.32156864, 0.5764706, 1)
 position = Vector2(0, -50)
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_1u27b")
-frame_progress = 0.04034957
+frame_progress = 0.81654245
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1543562136]
 
 [node name="Button" type="Button" parent="." unique_id=728146240]
-offset_left = -100.0
+offset_left = -105.0
 offset_top = 75.0
-offset_right = 100.0
+offset_right = 95.0
 offset_bottom = 125.0
 pivot_offset = Vector2(100, 25)
 theme_override_font_sizes/font_size = 30

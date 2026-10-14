@@ -13,7 +13,6 @@ config_version=5
 config/name="Biologiq"
 run/main_scene="uid://cbepbiod6kuqb"
 config/features=PackedStringArray("4.6", "Mobile")
-config/icon="res://icon.svg"
 
 [display]
 
