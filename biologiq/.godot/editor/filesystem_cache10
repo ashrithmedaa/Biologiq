@@ -1,0 +1,9 @@
+63f7b34db8d8cdea90c76aacccf841ec
+::res://::1791922216
+icon.svg::CompressedTexture2D::8526566864562052593::1791922038::1791922107::1::::<><><>0<>0<>9cc45efc6a947e81361d1dd58327d1eb<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
+main.tscn::PackedScene::4852200704718087825::1791922038::0::1::::<><><>0<>0<><>::
+::res://Art Assets/::1791922107
+BIOLOGIQ Logo.png::CompressedTexture2D::1806707801503056493::1791922038::1791922107::1::::<><><>0<>0<>6e39d1e7a1147bf0177334cefd1a04c5<>res://.godot/imported/BIOLOGIQ Logo.png-3b8bff394c6c0d8a92e999f707479713.ctex::
+::res://Scenes/::1791922038
+main.gd::GDScript::2133759379479014575::1791922038::0::1::::<>Node<><>0<>0<><>::
+main.tscn::PackedScene::4852200704718087825::1791922038::0::1::::<><><>0<>0<><>::uid://5nux8iroat8b::::res://Scenes/main.gd<>uid://00ghi3qn4ns4::::res://Art Assets/BIOLOGIQ Logo.png
