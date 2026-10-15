@@ -20,7 +20,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_bo1nx")
 }],
-"loop": true,
+"loop": 1,
 "name": &"default",
 "speed": 2.0
 }]
@@ -85,10 +85,10 @@ frame_progress = 0.81654245
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1543562136]
 
 [node name="Button" type="Button" parent="." unique_id=728146240]
-offset_left = -105.0
-offset_top = 75.0
-offset_right = 95.0
-offset_bottom = 125.0
+offset_left = -163.0
+offset_top = 71.0
+offset_right = 153.0
+offset_bottom = 141.0
 pivot_offset = Vector2(100, 25)
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_bo1nx")

@@ -61,10 +61,10 @@ pivot_offset = Vector2(526, 262)
 color = Color(0.06666667, 0.32156864, 0.5764706, 1)
 
 [node name="StoryModeHeader" type="Label" parent="." unique_id=1394014229]
-offset_left = -392.2818
-offset_top = -128.43573
-offset_right = -171.2818
-offset_bottom = -73.43573
+offset_left = -363.0
+offset_top = -125.0
+offset_right = -142.0
+offset_bottom = -70.0
 theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
 theme_override_font_sizes/font_size = 40
 text = "Story Mode"
@@ -72,23 +72,23 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StoryModeDescription" type="Label" parent="." unique_id=1846525719]
-offset_left = -520.2818
-offset_top = -40.43573
-offset_right = -16.2818
-offset_bottom = 49.56427
+offset_left = -509.0
+offset_top = -54.0
+offset_right = -5.0
+offset_bottom = 36.0
 theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
 theme_override_font_sizes/font_size = 20
 text = "Take a tour through the biologiq lab
  and learn what it's like to work in 
-the biotechnology field"
+the biotech field!"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SandboxModeDescription" type="Label" parent="." unique_id=1740095915]
-offset_left = -0.28179932
-offset_top = -40.43573
-offset_right = 503.7182
-offset_bottom = 49.56427
+offset_left = 9.0
+offset_top = -56.0
+offset_right = 513.0
+offset_bottom = 34.0
 theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
 theme_override_font_sizes/font_size = 20
 text = "Expierement freely within of the lab.
@@ -98,10 +98,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SandboxModeDisabled" type="Label" parent="." unique_id=1582217892]
-offset_left = -0.28179932
-offset_top = 95.56427
-offset_right = 503.7182
-offset_bottom = 185.56427
+offset_left = 12.0
+offset_top = 83.0
+offset_right = 516.0
+offset_bottom = 173.0
 theme_override_colors/font_color = Color(0.97411495, 0.3871956, 0.4678343, 1)
 theme_override_font_sizes/font_size = 20
 text = "Not available in demo"
@@ -109,10 +109,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="SandboxModeHeader" type="Label" parent="." unique_id=1502328315]
-offset_left = 106.7182
-offset_top = -128.43573
-offset_right = 393.7182
-offset_bottom = -73.43573
+offset_left = 118.0
+offset_top = -127.0
+offset_right = 405.0
+offset_bottom = -72.0
 theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
 theme_override_font_sizes/font_size = 40
 text = "Sandbox Mode"
@@ -120,10 +120,10 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StoryModeButton" type="Button" parent="." unique_id=1286870646]
-offset_left = -364.0
-offset_top = 67.0
-offset_right = -164.0
-offset_bottom = 117.0
+offset_left = -356.0
+offset_top = 55.0
+offset_right = -156.0
+offset_bottom = 105.0
 pivot_offset = Vector2(100, 25)
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_lyo6h")
@@ -135,10 +135,10 @@ theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_k5wox")
 text = "Start"
 
 [node name="SandboxModeButton" type="Button" parent="." unique_id=1577919353]
-offset_left = 150.0
-offset_top = 67.0
-offset_right = 350.0
-offset_bottom = 117.0
+offset_left = 170.0
+offset_top = 53.0
+offset_right = 370.0
+offset_bottom = 103.0
 pivot_offset = Vector2(100, 25)
 theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleBoxFlat_kr1nt")
