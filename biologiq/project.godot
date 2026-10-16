@@ -14,10 +14,19 @@ config/name="Biologiq"
 run/main_scene="uid://cbepbiod6kuqb"
 config/features=PackedStringArray("4.7", "Mobile")
 
+[autoload]
+
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+SaveManager="*res://Scripts/save_manager.gd"
+
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 [physics]
 

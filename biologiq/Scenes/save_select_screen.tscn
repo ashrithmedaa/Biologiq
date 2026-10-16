@@ -1,3 +1,204 @@
 [gd_scene format=3 uid="uid://mlmt3gnheypp"]
 
-[node name="Node2D" type="Node2D" unique_id=6322955]
+[ext_resource type="Script" path="res://Scripts/save_select_screen.gd" id="1_save_ui"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.06666667, 0.32156864, 0.5764706, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+content_margin_left = 32.0
+content_margin_top = 28.0
+content_margin_right = 32.0
+content_margin_bottom = 28.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(0.09411765, 0.3764706, 0.6313726, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.5254902, 0.6862745, 0.45882353, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_pressed"]
+bg_color = Color(0.85490197, 0.4745098, 0.27058825, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_disabled"]
+bg_color = Color(0.34901962, 0.37254903, 0.3764706, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="SaveSelectScreen" type="Node2D" unique_id=6322955]
+script = ExtResource("1_save_ui")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=100501]
+
+[node name="ScreenRoot" type="Control" parent="CanvasLayer" unique_id=100502]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="CanvasLayer/ScreenRoot" unique_id=100503]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/ScreenRoot" unique_id=100504]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SavePanel" type="PanelContainer" parent="CanvasLayer/ScreenRoot/CenterContainer" unique_id=100505]
+custom_minimum_size = Vector2(760, 500)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PanelContent" type="VBoxContainer" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel" unique_id=100506]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100507]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 36
+text = "Save Data"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100508]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85490197, 0.89411765, 0.82745098, 1)
+theme_override_font_sizes/font_size = 18
+text = "Start a new game or restore a save file, then continue to the map."
+horizontal_alignment = 1
+
+[node name="SlotPanel" type="PanelContainer" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100509]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_slot")
+
+[node name="SlotLabel" type="Label" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/SlotPanel" unique_id=100510]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 19
+text = "SLOT 1  ·  CHECKING"
+horizontal_alignment = 1
+
+[node name="ActionGrid" type="GridContainer" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100511]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 1
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 10
+
+[node name="NewSaveButton" type="Button" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/ActionGrid" unique_id=100512]
+custom_minimum_size = Vector2(620, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_button_disabled")
+text = "New Save"
+
+[node name="UploadRow" type="Control" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/ActionGrid" unique_id=100519]
+custom_minimum_size = Vector2(620, 58)
+layout_mode = 2
+
+[node name="UploadSaveButton" type="Button" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/ActionGrid/UploadRow" unique_id=100520]
+custom_minimum_size = Vector2(620, 58)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_button_disabled")
+text = "Upload Save"
+
+[node name="RemoveUploadButton" type="Button" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/ActionGrid/UploadRow" unique_id=100521]
+custom_minimum_size = Vector2(48, 58)
+layout_mode = 0
+offset_left = 630.0
+offset_right = 678.0
+offset_bottom = 58.0
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+tooltip_text = "Remove this uploaded save and choose another"
+text = "×"
+visible = false
+
+[node name="NextButton" type="Button" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent/ActionGrid" unique_id=100518]
+custom_minimum_size = Vector2(620, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.98039216, 0.9607843, 0.9019608, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_button_disabled")
+text = "Next"
+
+[node name="StatusLabel" type="Label" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100516]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8352941, 0.9098039, 0.78431374, 1)
+theme_override_font_sizes/font_size = 16
+text = "Checking local save..."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="BackButton" type="Button" parent="CanvasLayer/ScreenRoot/CenterContainer/SavePanel/PanelContent" unique_id=100517]
+custom_minimum_size = Vector2(140, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(0.06666667, 0.32156864, 0.5764706, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_background")
+text = "← Back"
