@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://Scripts/room_scene.gd" id="1"]
+[node name="Reception" type="Node2D"]
+script = ExtResource("1")
+room_title = "Reception"
+room_owner = "Sharon O'Riley"
+room_status = "Internship"
+room_description = "The entrance desk and orientation area. Interaction content is a test placeholder."

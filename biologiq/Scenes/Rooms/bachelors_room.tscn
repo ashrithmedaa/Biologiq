@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://Scripts/room_scene.gd" id="1"]
+[node name="BachelorsLab" type="Node2D"]
+script = ExtResource("1")
+room_title = "Bachelor's Lab"
+room_owner = "Dr. Jun Park"
+room_status = "Bachelor's"
