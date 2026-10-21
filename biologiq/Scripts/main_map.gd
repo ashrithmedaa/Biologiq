@@ -188,10 +188,19 @@ func _add_object(object_name: String, at: Vector2, description: String, kind: St
 
 
 func _build_characters() -> void:
-	# One receptionist, scaled to the desk and standing in the open space behind it.
-	var sharon := _make_npc("Sharon", Vector2(345, 274), _sharon_frames(), 0.42)
-	sharon.get_node("Sprite").play("typing")
+	# Use only the seated figure from each sprite-sheet frame; the standing pose is a separate figure in the same cell.
+	var sharon := _make_npc("Sharon", Vector2(344, 276), _sharon_frames(), 3.4)
+	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
+	sharon_sprite.position = Vector2(0, -72)
+	sharon_sprite.play("typing")
 	_add_character_interaction("Sharon O'Riley", sharon.position, ["SHARON: Welcome to BIOLOGIQ. Please check in before exploring.", "SHARON: Your orientation packet is ready. The room plaques show the training level for each lab."])
+	# The navy front panel hides Sharon's lower half, so she reads clearly as seated behind the counter.
+	var counter_front := Polygon2D.new()
+	counter_front.name = "ReceptionCounterFront"
+	counter_front.z_index = 1
+	counter_front.color = Color("#115293")
+	counter_front.polygon = PackedVector2Array([Vector2(260, 258), Vector2(428, 258), Vector2(428, 282), Vector2(260, 282)])
+	add_child(counter_front)
 
 	sam_character = _make_npc("Sam", Vector2(792, 312), _sam_frames(), 0.14)
 	sam_sprite = sam_character.get_node("Sprite") as AnimatedSprite2D
@@ -295,7 +304,8 @@ func _sharon_frames() -> SpriteFrames:
 	for index in 6:
 		var atlas := AtlasTexture.new()
 		atlas.atlas = texture
-		atlas.region = Rect2(Vector2(index * 200, 0), Vector2(100, 100))
+		# The 200 px cell shows both standing and seated poses. Crop only the seated figure's head and torso.
+		atlas.region = Rect2(Vector2(index * 200 + 65, 0), Vector2(35, 36))
 		frames.add_frame("typing", atlas)
 	return frames
 
