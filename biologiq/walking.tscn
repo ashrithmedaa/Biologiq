@@ -1,7 +1,10 @@
-[gd_scene format=3 uid="uid://dhcfyxkve3yv"]
+[gd_scene load_steps=2 format=3 uid="uid://dhcfyxkve3yv"]
+
+[ext_resource type="Script" path="res://walking_screen.gd" id="1_walking"]
 
 [node name="Walking" type="Node2D" unique_id=1176995948]
 position = Vector2(0, 4)
+script = ExtResource("1_walking")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1566292633]
 offset_right = 907.0

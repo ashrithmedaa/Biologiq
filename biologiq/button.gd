@@ -12,7 +12,7 @@ func _process(delta: float) -> void:
 
 
 func _on_pressed() -> void:
-	pass
+	get_tree().change_scene_to_file("res://walking.tscn")
 	
 func _on_button_pressed():
 	get_tree().change_scene_to_file("res://walking.tscn")

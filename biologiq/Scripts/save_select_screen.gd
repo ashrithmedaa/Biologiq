@@ -67,7 +67,7 @@ func _on_new_save_pressed() -> void:
 		return
 	var error := get_tree().change_scene_to_file("res://Scenes/employee_orientation.tscn")
 	if error != OK:
-		_on_save_status_changed("Could not open the character selection scene.", true)
+		_on_save_status_changed("Could not open employee orientation.", true)
 
 
 func _on_upload_save_pressed() -> void:

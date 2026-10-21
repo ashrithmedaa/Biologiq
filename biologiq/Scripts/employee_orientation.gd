@@ -188,7 +188,7 @@ func _advance_article() -> void:
 		article_index += 1
 		_update_screen()
 	else:
-		get_tree().change_scene_to_file("res://Scenes/main_map.tscn")
+		get_tree().change_scene_to_file("res://chararter_selection_fr.tscn")
 
 
 func _draw() -> void:

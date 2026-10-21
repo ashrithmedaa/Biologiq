@@ -69,8 +69,9 @@ func _physics_process(_delta: float) -> void:
 			player_facing = "down" if direction.y > 0.0 else "up"
 	var previous_position := player.global_position
 	player.move_and_slide()
-	player.global_position.x = clampf(player.global_position.x, 44.0, WORLD_WIDTH - 44.0)
-	player.global_position.y = clampf(player.global_position.y, 72.0, WORLD_HEIGHT - 60.0)
+	if not _is_walkable_position(player.global_position):
+		player.global_position = previous_position
+		player.velocity = Vector2.ZERO
 	_enforce_room_access(previous_position)
 	_update_player_animation(direction.length_squared() > 0.0)
 	_update_interaction_hint()
@@ -572,6 +573,21 @@ func _enforce_room_access(previous_position: Vector2) -> void:
 		if room.room_rect.has_point(player.global_position):
 			player.global_position = previous_position
 			return
+
+
+func _is_walkable_position(at: Vector2) -> bool:
+	# Keep movement on the two interior floorplates and their connecting stairwell.
+	# The only outside area left walkable is the small, marked entrance walkway.
+	var walkable_zones: Array[Rect2] = [
+		Rect2(84, 120, 1604, 420),
+		Rect2(1664, 402, 156, 240),
+		Rect2(1808, 474, 1702, 456),
+		Rect2(14, 344, 82, 54),
+	]
+	for zone in walkable_zones:
+		if zone.has_point(at):
+			return true
+	return false
 
 
 func _find_hovered_object() -> int:
