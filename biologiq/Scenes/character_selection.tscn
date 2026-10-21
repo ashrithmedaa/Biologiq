@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://g8g1mottsrob"]
 
 [ext_resource type="Script" path="res://Scripts/character_selection.gd" id="1"]
 
-[node name="CharacterSelection" type="Node2D"]
+[node name="CharacterSelection" type="Node2D" unique_id=931633770]
 script = ExtResource("1")

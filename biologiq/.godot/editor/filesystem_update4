@@ -1,2 +1,5 @@
 res://Scripts/main_map.gd
-res://Scenes/main.tscn
+res://Scripts/room_scene.gd
+res://Scripts/save_select_screen.gd
+res://Scenes/save_select_screen.tscn
+res://Scenes/character_selection.tscn

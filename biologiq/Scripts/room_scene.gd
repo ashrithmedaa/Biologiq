@@ -23,19 +23,19 @@ func _build_room() -> void:
 	hud = CanvasLayer.new()
 	add_child(hud)
 	var root := VBoxContainer.new()
-	root.position = Vector2(64, 54)
-	root.size = Vector2(1152, 600)
-	root.add_theme_constant_override("separation", 18)
+	root.position = Vector2(72, 52)
+	root.size = Vector2(1136, 610)
+	root.add_theme_constant_override("separation", 14)
 	hud.add_child(root)
 	var title := Label.new()
 	title.text = room_title.to_upper()
-	title.add_theme_font_size_override("font_size", 32)
-	title.add_theme_color_override("font_color", Color("#143d47"))
+	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_color_override("font_color", Color("#192787"))
 	root.add_child(title)
 	var owner := Label.new()
 	owner.text = "%s  ·  %s ACCESS" % [room_owner, room_status.to_upper()]
 	owner.add_theme_font_size_override("font_size", 17)
-	owner.add_theme_color_override("font_color", Color("#52756e"))
+	owner.add_theme_color_override("font_color", Color("#5D9374"))
 	root.add_child(owner)
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -44,23 +44,44 @@ func _build_room() -> void:
 	note.text = room_description + "\n\nPress E or ESC to return to the hallway."
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	note.custom_minimum_size = Vector2(900, 100)
-	note.add_theme_font_size_override("font_size", 20)
-	note.add_theme_color_override("font_color", Color("#315960"))
+	note.add_theme_font_size_override("font_size", 18)
+	note.add_theme_color_override("font_color", Color("#115293"))
 	root.add_child(note)
 
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, 1280, 720), Color("#dce6df"))
-	draw_rect(Rect2(38, 30, 1204, 660), Color("#b8d2c6"))
-	draw_rect(Rect2(52, 44, 1176, 632), Color("#fff9e9"))
-	# Room floor and window panels establish a shared visual style without repeating map sprites.
-	draw_rect(Rect2(52, 430, 1176, 246), Color("#e7e0cd"))
-	draw_rect(Rect2(890, 140, 230, 170), Color("#b7d6d2"))
-	draw_rect(Rect2(900, 150, 210, 150), Color("#dce9df"))
-	draw_line(Vector2(1005, 150), Vector2(1005, 300), Color("#8caea4"), 4)
-	draw_line(Vector2(900, 225), Vector2(1110, 225), Color("#8caea4"), 4)
-	draw_rect(Rect2(155, 360, 340, 28), Color("#26616a"))
-	draw_rect(Rect2(170, 388, 14, 70), Color("#42636a"))
-	draw_rect(Rect2(465, 388, 14, 70), Color("#42636a"))
-	draw_rect(Rect2(670, 365, 130, 66), Color("#75938b"))
-	draw_rect(Rect2(686, 375, 108, 46), Color("#dce9df"))
+	draw_rect(Rect2(0, 0, 1280, 720), Color("#8BAF75"))
+	# Dark navy pixel frame, warm cream walls, and a gridded tiled floor carry through every room.
+	draw_rect(Rect2(32, 24, 1216, 672), Color("#192787"))
+	draw_rect(Rect2(44, 36, 1192, 648), Color("#FAF5E6"))
+	draw_rect(Rect2(52, 44, 1176, 8), Color("#5D9374"))
+	draw_rect(Rect2(52, 422, 1176, 262), Color("#F3EEDC"))
+	for x in range(52, 1228, 32):
+		for y in range(422, 684, 32):
+			draw_rect(Rect2(x, y, 32, 32), Color("#EDE5D2"), false, 1.0)
+	# Pixel window with a deep blue sill.
+	draw_rect(Rect2(900, 136, 224, 172), Color("#192787"))
+	draw_rect(Rect2(908, 144, 208, 156), Color("#8BC8D8"))
+	draw_rect(Rect2(916, 152, 192, 140), Color("#B9DCE3"))
+	draw_rect(Rect2(1004, 152, 8, 140), Color("#115293"))
+	draw_rect(Rect2(916, 216, 192, 8), Color("#115293"))
+	draw_rect(Rect2(888, 308, 248, 12), Color("#192787"))
+	# Work table, legs, and a compact instrument cabinet.
+	draw_rect(Rect2(144, 356, 360, 16), Color("#192787"))
+	draw_rect(Rect2(152, 348, 344, 12), Color("#D77A45"))
+	draw_rect(Rect2(160, 372, 16, 82), Color("#115293"))
+	draw_rect(Rect2(472, 372, 16, 82), Color("#115293"))
+	draw_rect(Rect2(676, 352, 144, 78), Color("#5D9374"))
+	draw_rect(Rect2(688, 364, 120, 54), Color("#8BC8D8"))
+	# Wall-mounted BIOLOGIQ mark and small blocky foliage add room identity.
+	draw_rect(Rect2(120, 142, 176, 92), Color("#E6E0D2"))
+	draw_rect(Rect2(128, 150, 160, 76), Color("#192787"))
+	draw_string(ThemeDB.fallback_font, Vector2(144, 192), "BIOLOGIQ", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#FAF5E6"))
+	draw_rect(Rect2(1120, 360, 24, 44), Color("#D77A45"))
+	draw_rect(Rect2(1112, 336, 16, 28), Color("#5D9374"))
+	draw_rect(Rect2(1136, 328, 16, 36), Color("#5D9374"))
+	draw_rect(Rect2(1144, 352, 16, 12), Color("#5D9374"))
+	# Small orange pixels act as restrained accents in the otherwise cool pastel palette.
+	draw_rect(Rect2(824, 112, 12, 12), Color("#D77A45"))
+	draw_rect(Rect2(840, 112, 12, 12), Color("#D77A45"))
+	draw_rect(Rect2(840, 96, 12, 12), Color("#D77A45"))

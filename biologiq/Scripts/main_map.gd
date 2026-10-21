@@ -40,8 +40,8 @@ var player_program := "Molecular Biology (Master's)"
 var player_status := "Master's"
 var hovered_object := -1
 var sam_patrol_speed := 48.0
-var sam_patrol_top := 310.0
-var sam_patrol_bottom := 426.0
+var sam_patrol_left := 700.0
+var sam_patrol_right := 940.0
 
 
 func _ready() -> void:
@@ -188,16 +188,10 @@ func _add_object(object_name: String, at: Vector2, description: String, kind: St
 
 
 func _build_characters() -> void:
-	var sharon := _make_npc("Sharon", Vector2(318, 276), _sharon_frames(), 2.0)
+	# One receptionist, scaled to the desk and standing in the open space behind it.
+	var sharon := _make_npc("Sharon", Vector2(345, 274), _sharon_frames(), 0.42)
 	sharon.get_node("Sprite").play("typing")
-	_add_character_interaction("Sharon O'Riley", sharon.position, ["SHARON: Reception test dialogue. Please check in before exploring.", "SHARON: Your orientation packet is ready. This is placeholder dialogue for the demo."])
-	# Seat behind the reception counter; the foreground panel covers her lower half.
-	var counter_front := Polygon2D.new()
-	counter_front.name = "ReceptionCounterFront"
-	counter_front.z_index = 1
-	counter_front.color = Color("#26616a")
-	counter_front.polygon = PackedVector2Array([Vector2(260, 251), Vector2(430, 251), Vector2(430, 273), Vector2(260, 273)])
-	add_child(counter_front)
+	_add_character_interaction("Sharon O'Riley", sharon.position, ["SHARON: Welcome to BIOLOGIQ. Please check in before exploring.", "SHARON: Your orientation packet is ready. The room plaques show the training level for each lab."])
 
 	sam_character = _make_npc("Sam", Vector2(792, 312), _sam_frames(), 0.14)
 	sam_sprite = sam_character.get_node("Sprite") as AnimatedSprite2D
@@ -217,10 +211,6 @@ void fragment() {
 	sam_material.shader = sam_key_shader
 	sam_sprite.material = sam_material
 	sam_interactable_index = _add_character_interaction("Sam", sam_character.position, ["SAM: Hey, welcome in. This is test dialogue. The labs are split by training level.", "SAM: I'm doing an extremely important hallway lap. Ask me again later for more test dialogue."])
-
-	# No Maria art sheet is included, so she has a fixed black-haired placeholder.
-	var maria := _make_maria_placeholder(Vector2(1005, 438))
-	_add_character_interaction("Dr. Maria-Rose Valdez", maria.position, ["MARIA: Welcome. I'm Maria-Rose Valdez.", "MARIA: The plaques outside each room explain who works there and what training is required."])
 
 	player = CharacterBody2D.new()
 	player.name = "Player"
@@ -274,27 +264,6 @@ func _make_npc(character_name: String, at: Vector2, frames: SpriteFrames, sprite
 	return body
 
 
-func _make_maria_placeholder(at: Vector2) -> Node2D:
-	var body := Node2D.new()
-	body.name = "Maria"
-	body.position = at
-	body.scale = Vector2(2.0, 2.0)
-	add_child(body)
-	var torso := Polygon2D.new()
-	torso.color = Color("#577f8f")
-	torso.polygon = PackedVector2Array([Vector2(-13, -24), Vector2(13, -24), Vector2(18, 0), Vector2(-18, 0)])
-	body.add_child(torso)
-	var hair := Polygon2D.new()
-	hair.color = Color("#171b20")
-	hair.polygon = PackedVector2Array([Vector2(-13, -29), Vector2(-11, -44), Vector2(0, -49), Vector2(12, -43), Vector2(14, -28), Vector2(10, -22), Vector2(8, -37), Vector2(-8, -37), Vector2(-10, -22)])
-	body.add_child(hair)
-	var face := Polygon2D.new()
-	face.color = Color("#edc39a")
-	face.polygon = PackedVector2Array([Vector2(-8, -39), Vector2(8, -39), Vector2(9, -29), Vector2(4, -23), Vector2(-4, -23), Vector2(-9, -29)])
-	body.add_child(face)
-	return body
-
-
 func _sam_frames() -> SpriteFrames:
 	var frames := SpriteFrames.new()
 	_add_strip(frames, "front", SAM_FRONT, 0, 4, Vector2(1600, 1600), true, 5.0)
@@ -308,8 +277,9 @@ func _player_frames() -> SpriteFrames:
 	if frames.has_animation("default"):
 		frames.remove_animation("default")
 	_add_strip(frames, "front", PLAYER_SHEET, 0, 4, Vector2(306, 646), true, 8.0)
-	_add_strip(frames, "side_left", PLAYER_SHEET, 4, 4, Vector2(306, 646), true, 8.0)
-	_add_strip(frames, "side_right", PLAYER_SHEET, 8, 4, Vector2(306, 646), true, 8.0)
+	# The sheet's first side-facing strip looks right; the second looks left.
+	_add_strip(frames, "side_right", PLAYER_SHEET, 4, 4, Vector2(306, 646), true, 8.0)
+	_add_strip(frames, "side_left", PLAYER_SHEET, 8, 4, Vector2(306, 646), true, 8.0)
 	_add_strip(frames, "back", PLAYER_SHEET, 12, 4, Vector2(306, 646), true, 8.0)
 	return frames
 
@@ -639,21 +609,16 @@ func _update_player_animation(is_moving: bool) -> void:
 func _update_sam_patrol(delta: float) -> void:
 	if sam_character == null or dialogue_open or menu_open:
 		return
-	sam_character.position.y += sam_patrol_direction * sam_patrol_speed * delta
-	if sam_character.position.y >= sam_patrol_bottom:
-		sam_character.position.y = sam_patrol_bottom
+	sam_character.position.x += sam_patrol_direction * sam_patrol_speed * delta
+	if sam_character.position.x >= sam_patrol_right:
+		sam_character.position.x = sam_patrol_right
 		sam_patrol_direction = -1.0
-	elif sam_character.position.y <= sam_patrol_top:
-		sam_character.position.y = sam_patrol_top
+	elif sam_character.position.x <= sam_patrol_left:
+		sam_character.position.x = sam_patrol_left
 		sam_patrol_direction = 1.0
-	if sam_patrol_direction > 0.0:
-		sam_sprite.scale = Vector2(0.14, 0.14)
-		if sam_sprite.animation != "front" or not sam_sprite.is_playing():
-			sam_sprite.play("front")
-	else:
-		sam_sprite.scale = Vector2(2.0, 2.0)
-		if sam_sprite.animation != "back" or not sam_sprite.is_playing():
-			sam_sprite.play("back")
+	sam_sprite.flip_h = sam_patrol_direction < 0.0
+	if sam_sprite.animation != "side" or not sam_sprite.is_playing():
+		sam_sprite.play("side")
 	if sam_interactable_index >= 0:
 		interactables[sam_interactable_index]["position"] = sam_character.position
 
@@ -694,7 +659,12 @@ func _save_inventory() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#dce6df"))
+	# Pixel-art campus palette: cream tile, sage walls, navy outlines and terracotta details.
+	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#8BAF75"))
+	for x in range(0, int(WORLD_WIDTH), 32):
+		for y in range(0, int(WORLD_HEIGHT), 32):
+			if (x / 32 + y / 32) % 2 == 0:
+				draw_rect(Rect2(x, y, 32, 32), Color("#86A873"))
 	_draw_hallway()
 	_draw_room_zones()
 	_draw_stairwell_and_walkway()
@@ -707,20 +677,39 @@ func _draw() -> void:
 
 
 func _draw_hallway() -> void:
-	# A single broad corridor snakes between both floors; room doors open off its edge.
-	draw_rect(Rect2(54, 92, 1660, 475), Color("#b8d2c6"))
-	draw_rect(Rect2(70, 108, 1628, 443), Color("#fff9e9"))
-	draw_rect(Rect2(84, 306, 1600, 132), Color("#e7e0cd"))
-	draw_rect(Rect2(1780, 444, 1760, 520), Color("#b8d2c6"))
-	draw_rect(Rect2(1796, 460, 1728, 488), Color("#fff9e9"))
-	draw_rect(Rect2(1810, 650, 1700, 134), Color("#e7e0cd"))
-	# Floor trim and subtle corridor guide lines.
-	for x in range(100, 1685, 80):
-		draw_line(Vector2(x, 371), Vector2(x + 32, 371), Color("#d3cbb9"), 2.0)
-	for x in range(1830, 3520, 80):
-		draw_line(Vector2(x, 717), Vector2(x + 32, 717), Color("#d3cbb9"), 2.0)
-	draw_string(ThemeDB.fallback_font, Vector2(92, 132), "FLOOR 1  /  ORIENTATION & TRAINING", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("#42636a"))
-	draw_string(ThemeDB.fallback_font, Vector2(1818, 484), "FLOOR 2  /  RESEARCH WING", HORIZONTAL_ALIGNMENT_LEFT, -1, 15, Color("#42636a"))
+	# Two connected, clearly separated wings with consistent 16 px wall and tile rhythm.
+	_draw_pixel_panel(Rect2(54, 92, 1660, 475), Color("#192787"), Color("#FAF5E6"))
+	_draw_pixel_panel(Rect2(1780, 444, 1760, 520), Color("#192787"), Color("#FAF5E6"))
+	_draw_tile_floor(Rect2(72, 290, 1624, 248))
+	_draw_tile_floor(Rect2(1798, 638, 1724, 146))
+	for x in range(88, 1680, 32):
+		for y in range(306, 536, 32):
+			if (x / 32 + y / 32) % 2 == 0:
+				draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"))
+	for x in range(1814, 3500, 32):
+		for y in range(654, 782, 32):
+			if (x / 32 + y / 32) % 2 == 0:
+				draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"))
+	draw_string(ThemeDB.fallback_font, Vector2(92, 132), "01  /  FIRST FLOOR", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("#192787"))
+	draw_string(ThemeDB.fallback_font, Vector2(1818, 484), "02  /  SECOND FLOOR", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("#192787"))
+	draw_string(ThemeDB.fallback_font, Vector2(92, 156), "WELCOME • TRAINING • STUDENT LABS", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#5D9374"))
+	draw_string(ThemeDB.fallback_font, Vector2(1818, 508), "RESEARCH • GRADUATE STUDIES", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#5D9374"))
+
+
+func _draw_pixel_panel(rect: Rect2, outline: Color, fill: Color) -> void:
+	draw_rect(rect, outline)
+	draw_rect(Rect2(rect.position + Vector2(12, 12), rect.size - Vector2(24, 24)), fill)
+	# Repeating inset blocks give the walls a crisp pixel-art trim.
+	for x in range(int(rect.position.x + 16), int(rect.end.x - 16), 32):
+		draw_rect(Rect2(x, rect.position.y + 4, 16, 8), Color("#8BC8D8"))
+		draw_rect(Rect2(x, rect.end.y - 12, 16, 8), Color("#8BC8D8"))
+
+
+func _draw_tile_floor(rect: Rect2) -> void:
+	draw_rect(rect, Color("#FAF5E6"))
+	for x in range(int(rect.position.x), int(rect.end.x), 32):
+		for y in range(int(rect.position.y), int(rect.end.y), 32):
+			draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"), false, 1.0)
 
 
 func _draw_room_zones() -> void:
@@ -729,54 +718,54 @@ func _draw_room_zones() -> void:
 			continue
 		var rect: Rect2 = target.room_rect
 		var locked := int(target.rank) > int(DEGREE_RANK.get(player_status, 0))
-		draw_rect(rect, Color("#eef1e8") if not locked else Color("#e2e4df"))
-		draw_rect(rect, Color("#75938b") if not locked else Color("#a7aaa5"), false, 3.0)
-		draw_rect(Rect2(rect.position.x, rect.position.y, rect.size.x, 12), Color("#b8d2c6") if not locked else Color("#c3c7c2"))
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 48), str(target.name).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 14, Color("#254d53"))
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 72), str(target.status) + " access", HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 11, Color("#69817c"))
+		draw_rect(rect, Color("#8BC8D8") if not locked else Color("#E6E0D2"))
+		draw_rect(rect.grow(5), Color("#192787") if not locked else Color("#D77A45"), false, 5.0)
+		draw_rect(Rect2(rect.position.x, rect.position.y, rect.size.x, 12), Color("#5D9374") if not locked else Color("#D77A45"))
+		draw_rect(Rect2(rect.position.x + 12, rect.position.y + 24, rect.size.x - 24, 4), Color("#FAF5E6"))
+		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 54), str(target.name).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 14, Color("#192787"))
+		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 78), str(target.status) + "  /  ACCESS", HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 11, Color("#5D9374"))
 		if locked:
 			draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 96), "LOCKED  ·  " + _required_status_text(str(target.status)), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 24, 10, Color("#a14f46"))
 		# Doorway, threshold, and marker on corridor-facing wall.
 		var door: Vector2 = target["position"]
-		draw_rect(Rect2(door - Vector2(27, 7), Vector2(54, 16)), Color("#fff9e9"))
-		draw_line(door + Vector2(-25, 7), door + Vector2(-25, -9), Color("#75938b"), 2.0)
-		draw_line(door + Vector2(25, 7), door + Vector2(25, -9), Color("#75938b"), 2.0)
+		draw_rect(Rect2(door - Vector2(27, 7), Vector2(54, 18)), Color("#FAF5E6"))
+		draw_rect(Rect2(door + Vector2(-27, -8), Vector2(6, 16)), Color("#192787"))
+		draw_rect(Rect2(door + Vector2(21, -8), Vector2(6, 16)), Color("#192787"))
 	_draw_room_plaques()
 
 
 func _draw_stairwell_and_walkway() -> void:
-	draw_rect(Rect2(1650, 390, 160, 260), Color("#b8d2c6"))
-	draw_rect(Rect2(1670, 400, 120, 240), Color("#e7e0cd"))
+	_draw_pixel_panel(Rect2(1650, 390, 160, 260), Color("#192787"), Color("#FAF5E6"))
 	for tread in 10:
 		var y := 410 + tread * 22
-		draw_line(Vector2(1680, y), Vector2(1780, y), Color("#75938b"), 3.0)
-	draw_string(ThemeDB.fallback_font, Vector2(1686, 525), "STAIRS", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#42636a"))
-	draw_rect(Rect2(0, 330, 88, 82), Color("#b8d2c6"))
-	draw_rect(Rect2(0, 342, 82, 58), Color("#fff9e9"))
-	draw_string(ThemeDB.fallback_font, Vector2(13, 375), "WALKWAY", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
-	draw_rect(Rect2(74, 320, 28, 102), Color("#75938b"))
-	draw_rect(Rect2(80, 329, 16, 84), Color("#dce9df"))
-	draw_string(ThemeDB.fallback_font, Vector2(109, 324), "ENTRANCE / EXIT", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#42636a"))
+		draw_rect(Rect2(1680, y, 100, 6), Color("#8BC8D8"))
+	draw_string(ThemeDB.fallback_font, Vector2(1690, 535), "STAIRS", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#192787"))
+	_draw_pixel_panel(Rect2(0, 330, 104, 82), Color("#192787"), Color("#FAF5E6"))
+	draw_string(ThemeDB.fallback_font, Vector2(12, 375), "EXIT", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#192787"))
+	draw_string(ThemeDB.fallback_font, Vector2(112, 324), "ENTRANCE / EXIT", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
 
 
 func _draw_furniture_and_objects() -> void:
-	# Reception counter, chair, equipment bench, notebook, and plant landmarks.
-	draw_rect(Rect2(260, 235, 170, 38), Color("#26616a"))
-	draw_rect(Rect2(266, 235, 158, 7), Color("#8bb2a4"))
-	draw_rect(Rect2(384, 218, 20, 15), Color("#fff9e9"))
-	draw_line(Vector2(389, 216), Vector2(399, 216), Color("#d7b96e"), 2)
-	draw_rect(Rect2(164, 432, 28, 26), Color("#c77a52"))
-	draw_circle(Vector2(178, 424), 23, Color("#6e9b68"))
-	draw_rect(Rect2(296, 270, 42, 29), Color("#75938b"))
-	draw_rect(Rect2(301, 266, 32, 8), Color("#8bb2a4"))
-	draw_rect(Rect2(2398, 742, 144, 28), Color("#52827b"))
-	draw_rect(Rect2(2410, 770, 8, 24), Color("#42636a"))
-	draw_rect(Rect2(2520, 770, 8, 24), Color("#42636a"))
-	draw_rect(Rect2(3328, 734, 48, 32), Color("#c77a52"))
-	draw_rect(Rect2(3338, 722, 26, 14), Color("#fff9e9"))
-	draw_string(ThemeDB.fallback_font, Vector2(3315, 717), "NOTEBOOK", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#42636a"))
-	draw_string(ThemeDB.fallback_font, Vector2(277, 228), "SHARON'S DESK", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
-	draw_string(ThemeDB.fallback_font, Vector2(2400, 734), "ELECTROPHORESIS", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#42636a"))
+	# Single, broad pixel counter in front of Sharon: the only receptionist sprite on the map.
+	draw_rect(Rect2(252, 238, 184, 48), Color("#192787"))
+	draw_rect(Rect2(260, 238, 168, 10), Color("#D77A45"))
+	draw_rect(Rect2(268, 248, 152, 30), Color("#115293"))
+	draw_rect(Rect2(256, 278, 176, 8), Color("#192787"))
+	draw_rect(Rect2(385, 218, 24, 12), Color("#FAF5E6"))
+	draw_rect(Rect2(390, 214, 8, 4), Color("#D77A45"))
+	# A few square planters and research props, kept outside the walking lane.
+	draw_rect(Rect2(164, 432, 32, 28), Color("#D77A45"))
+	draw_rect(Rect2(168, 416, 8, 16), Color("#5D9374"))
+	draw_rect(Rect2(180, 408, 8, 24), Color("#5D9374"))
+	draw_rect(Rect2(188, 420, 8, 12), Color("#5D9374"))
+	draw_rect(Rect2(2398, 742, 144, 28), Color("#115293"))
+	draw_rect(Rect2(2410, 770, 8, 24), Color("#192787"))
+	draw_rect(Rect2(2520, 770, 8, 24), Color("#192787"))
+	draw_rect(Rect2(3328, 734, 48, 32), Color("#D77A45"))
+	draw_rect(Rect2(3338, 722, 26, 14), Color("#FAF5E6"))
+	draw_string(ThemeDB.fallback_font, Vector2(3315, 717), "NOTEBOOK", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
+	draw_string(ThemeDB.fallback_font, Vector2(277, 232), "RECEPTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#FAF5E6"))
+	draw_string(ThemeDB.fallback_font, Vector2(2400, 734), "ELECTROPHORESIS", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
 
 
 func _draw_room_plaques() -> void:
@@ -785,9 +774,9 @@ func _draw_room_plaques() -> void:
 			continue
 		var at: Vector2 = target.plaque_position
 		var locked := int(target.rank) > int(DEGREE_RANK.get(player_status, 0))
-		draw_rect(Rect2(at - Vector2(52, 9), Vector2(104, 18)), Color("#a14f46") if locked else Color("#75938b"))
+		draw_rect(Rect2(at - Vector2(52, 9), Vector2(104, 18)), Color("#D77A45") if locked else Color("#192787"))
 		var plaque_text := "UNAUTH. " + str(target.status).to_upper() if locked else str(target.owner).replace("Dr. ", "")
-		draw_string(ThemeDB.fallback_font, at + Vector2(-48, 3), plaque_text, HORIZONTAL_ALIGNMENT_LEFT, 96, 8, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, at + Vector2(-48, 3), plaque_text, HORIZONTAL_ALIGNMENT_LEFT, 96, 8, Color("#FAF5E6"))
 
 
 func _draw_string_small(text: String, at: Vector2) -> void:

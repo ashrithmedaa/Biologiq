@@ -4,7 +4,7 @@ The save system is already wired into this project:
 
 - `Scripts/save_manager.gd` is registered as the `SaveManager` Autoload in `project.godot`.
 - `Scenes/save_select_screen.tscn` contains the centered selector UI and binds **New Save**, **Upload Save**, and **Next**, plus the status label and uploaded-save remove button.
-- **New Save** creates slot 1 and opens the blank `Scenes/character_selection.tscn` scene. **Next** loads a valid slot and opens the blank `Scenes/main_map.tscn` scene.
+- **New Save** creates slot 1 and opens `Scenes/employee_orientation.tscn` for onboarding and study program selection. **Next** loads a valid slot and opens `Scenes/main_map.tscn`.
 - After upload, **Upload Save** is disabled and the adjacent × removes that uploaded slot so another file can be chosen. **Next** continues to the map.
 - The selector is reached from the existing Story Mode button in `Scenes/select_screen.tscn`.
 
