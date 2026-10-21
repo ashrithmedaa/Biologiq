@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dhcfyxkve3yv"]
+
+[node name="Walking" type="Node2D" unique_id=1176995948]
+position = Vector2(0, 4)
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1566292633]
+offset_right = 907.0
+offset_bottom = 167.0
+color = Color(0.2702139, 0.42711145, 0.2772413, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="." unique_id=1695602436]
+offset_left = 2.0
+offset_top = 518.0
+offset_right = 909.0
+offset_bottom = 715.0
+color = Color(0.27058825, 0.42745098, 0.2784314, 1)
+
+[node name="ColorRect3" type="ColorRect" parent="." unique_id=1041073462]
+offset_left = 2.0
+offset_top = 169.0
+offset_right = 905.0
+offset_bottom = 519.0
+color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=2089001483]
+position = Vector2(1, -4)
+color = Color(0.58791053, 0.45322025, 0.2244204, 1)
+polygon = PackedVector2Array(906, 169, 1215, 162, 1215, 527, 908, 520)
+
+[node name="Polygon2D2" type="Polygon2D" parent="." unique_id=1487583362]
+color = Color(0.09803922, 0.15294118, 0.40392157, 1)
+polygon = PackedVector2Array(906, 4, 1281, 1, 1283, 711, 913, 711, 901, 516, 1210, 530, 1212, 164, 910, 167)
+
+[node name="Label" type="Label" parent="." unique_id=2142487366]
+offset_left = 1084.0
+offset_top = 298.0
+offset_right = 1206.0
+offset_bottom = 333.0
+theme_override_font_sizes/font_size = 25
+text = "BIOLOGIQ"

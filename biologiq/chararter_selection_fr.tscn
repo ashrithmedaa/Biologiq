@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://blblvhmoltlq5"]
+
+[ext_resource type="Texture2D" uid="uid://c5se28mu7du2r" path="res://Art Assets/Player - Walking Animations (Front, Side, Back).png" id="1_jnl6v"]
+[ext_resource type="Script" uid="uid://bm87abeas5u0m" path="res://button.gd" id="2_okssl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_okssl"]
+atlas = ExtResource("1_jnl6v")
+region = Rect2(40.225525, 42.06257, 235.79486, 596.5609)
+
+[node name="chararter_selection_fr" type="Node2D" unique_id=380211870]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=940321398]
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 1268.0
+offset_bottom = 730.0
+color = Color(2.5990605e-06, 0.51697284, 0.521432, 1)
+
+[node name="Button" type="Button" parent="." unique_id=890451436]
+offset_left = 472.0
+offset_top = 124.0
+offset_right = 715.0
+offset_bottom = 728.0
+icon = SubResource("AtlasTexture_okssl")
+flat = true
+script = ExtResource("2_okssl")
+
+[node name="Label" type="Label" parent="." unique_id=31483592]
+offset_left = 313.0
+offset_top = 20.0
+offset_right = 899.0
+offset_bottom = 101.0
+theme_override_font_sizes/font_size = 57
+text = "SELECT YOUR PLAYER"
+
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
