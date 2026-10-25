@@ -78,6 +78,10 @@ func _gui_input(event: InputEvent) -> void:
 						feedback = "%s pairs with %s. Nice work!" % [base_sequence[slot], dragging_base]
 						if not placed_bases.has(""):
 							round_complete = true
+							if segment_index + 1 >= SEGMENTS.size():
+								var save_manager := get_node_or_null("/root/SaveManager")
+								if save_manager != null:
+									save_manager.complete_student_lab_dna()
 					else:
 						feedback = "That pair does not match. %s pairs with %s." % [base_sequence[slot], expected]
 				else:
@@ -199,6 +203,8 @@ func _draw_round_complete() -> void:
 	for index in SEGMENTS.size():
 		_draw_star(Vector2(544 + index * 48, 372), 22.0, Color("#D77A45") if index <= segment_index else Color("#D8D2C3"))
 	draw_string(ThemeDB.fallback_font, Vector2(0, 427), "%d of 4 segment stars earned" % [segment_index + 1], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#5D9374"))
+	if final_segment:
+		draw_string(ThemeDB.fallback_font, Vector2(0, 464), "Return to the Student Lab to begin data verification.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
 	_draw_action_button(ADVANCE_BUTTON, "CONTINUE" if final_segment else "NEXT SEGMENT")
 
 

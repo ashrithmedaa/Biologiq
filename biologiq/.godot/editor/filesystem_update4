@@ -8,3 +8,4 @@ res://Scenes/save_select_screen.tscn
 res://Scenes/select_screen.tscn
 res://Scenes/main.tscn
 res://Scripts/student_lab_dna_minigame.gd
+res://Scripts/student_lab_data_minigame.gd
