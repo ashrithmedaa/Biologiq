@@ -9,3 +9,5 @@ res://Scenes/select_screen.tscn
 res://Scenes/main.tscn
 res://Scripts/student_lab_dna_minigame.gd
 res://Scripts/student_lab_data_minigame.gd
+res://Scripts/main.gd
+res://Scripts/select_screen.gd

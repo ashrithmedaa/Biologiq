@@ -1,102 +1,12 @@
-[gd_scene format=3 uid="uid://cbepbiod6kuqb"]
+[gd_scene load_steps=2 format=3 uid="uid://cbepbiod6kuqb"]
 
-[ext_resource type="Script" uid="uid://5nux8iroat8b" path="res://Scripts/main.gd" id="1_bo1nx"]
-[ext_resource type="Texture2D" uid="uid://00ghi3qn4ns4" path="res://Art Assets/BIOLOGIQ Logo.png" id="1_jjgbg"]
+[ext_resource type="Script" uid="uid://5nux8iroat8b" path="res://Scripts/main.gd" id="1"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_jjgbg"]
-atlas = ExtResource("1_jjgbg")
-region = Rect2(0, 0, 100, 100)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_bo1nx"]
-atlas = ExtResource("1_jjgbg")
-region = Rect2(100, 0, 100, 100)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_1u27b"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jjgbg")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bo1nx")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 2.0
-}]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bo1nx"]
-bg_color = Color(0.3647059, 0.5764706, 0.45490196, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6bp64"]
-bg_color = Color(0.85490197, 0.4745098, 0.27058825, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8gbba"]
-bg_color = Color(0.5254902, 0.6862745, 0.45882353, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjvhh"]
-bg_color = Color(0.5254902, 0.6862745, 0.45882353, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kry3j"]
-bg_color = Color(0.5254902, 0.6862745, 0.45882353, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_21xkr"]
-bg_color = Color(0.5254902, 0.6862745, 0.45882353, 1)
-
-[node name="StartScreen" type="Node" unique_id=1397643079]
-script = ExtResource("1_bo1nx")
-
-[node name="Background" type="ColorRect" parent="." unique_id=31674432]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1281.0
-offset_top = -719.0
-offset_right = -1.0
-offset_bottom = -1.0
+[node name="StartScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(593, 339)
-color = Color(0.98039216, 0.9607843, 0.9019608, 1)
-
-[node name="screen" type="ColorRect" parent="." unique_id=2003142917]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -1167.0
-offset_top = -623.0
-offset_right = -80.0
-offset_bottom = -80.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(526, 262)
-color = Color(0.06666667, 0.32156864, 0.5764706, 1)
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1228445074]
-position = Vector2(0, -50)
-scale = Vector2(3, 3)
-sprite_frames = SubResource("SpriteFrames_1u27b")
-frame_progress = 0.81654245
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1543562136]
-
-[node name="Button" type="Button" parent="." unique_id=728146240]
-offset_left = -163.0
-offset_top = 71.0
-offset_right = 153.0
-offset_bottom = 141.0
-pivot_offset = Vector2(100, 25)
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleBoxFlat_bo1nx")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_6bp64")
-theme_override_styles/hover = SubResource("StyleBoxFlat_8gbba")
-theme_override_styles/hover_mirrored = SubResource("StyleBoxFlat_jjvhh")
-theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_kry3j")
-theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxFlat_21xkr")
-text = "Start"
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+script = ExtResource("1")
