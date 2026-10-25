@@ -426,7 +426,10 @@ func _interact() -> void:
 			var save_manager := get_node_or_null("/root/SaveManager")
 			if save_manager != null:
 				save_manager.remember_room_entry_position(player.global_position)
-			var error := get_tree().change_scene_to_file(str(target.scene_path))
+			var destination := str(target.scene_path)
+			if str(target.name) == "Student Lab" and save_manager != null and save_manager.is_student_lab_pipette_complete():
+				destination = "res://Scenes/Rooms/student_lab_dna_room.tscn"
+			var error := get_tree().change_scene_to_file(destination)
 			if error != OK:
 				if save_manager != null:
 					save_manager.take_room_return_position(player.global_position)

@@ -37,6 +37,9 @@ func _gui_input(event: InputEvent) -> void:
 			current_volume = mini(TARGET_VOLUME, current_volume + TRANSFER_VOLUME)
 			if current_volume >= TARGET_VOLUME:
 				completed = true
+				var save_manager := get_node_or_null("/root/SaveManager")
+				if save_manager != null:
+					save_manager.complete_student_lab_pipette()
 			queue_redraw()
 			accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -148,7 +151,7 @@ func _draw_completion() -> void:
 			draw_line(points[edge], points[(edge + 1) % 10], Color("#192787"), 2.0)
 	_draw_button(CONTINUE_BUTTON, "CONTINUE", Color("#5D9374"), Color("#FAF5E6"))
 	_draw_button(REPLAY_BUTTON, "PLAY AGAIN", Color("#D8D2C3"), Color("#898d86"))
-	draw_string(ThemeDB.fallback_font, Vector2(0, 630), "Five stars — excellent pipetting!", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#FAF5E6"))
+	draw_string(ThemeDB.fallback_font, Vector2(0, 630), "Five stars! Return to the Student Lab for DNA matching.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#FAF5E6"))
 
 
 func _draw_button(area: Rect2, label: String, fill: Color, text_color: Color) -> void:

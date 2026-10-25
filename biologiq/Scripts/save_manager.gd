@@ -81,6 +81,17 @@ func take_room_return_position(fallback: Vector2) -> Vector2:
 	return _room_return_position
 
 
+func is_student_lab_pipette_complete() -> bool:
+	var world_flags: Dictionary = _current_state.get("world_flags", {})
+	return bool(world_flags.get("student_lab_pipette_complete", false))
+
+
+func complete_student_lab_pipette() -> void:
+	var world_flags: Dictionary = _current_state.get("world_flags", {}).duplicate(true)
+	world_flags["student_lab_pipette_complete"] = true
+	_current_state["world_flags"] = world_flags
+
+
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
