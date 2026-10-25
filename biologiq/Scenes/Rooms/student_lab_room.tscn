@@ -1,7 +1,4 @@
 [gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://Scripts/room_scene.gd" id="1"]
-[node name="StudentLab" type="Node2D"]
+[ext_resource type="Script" path="res://Scripts/student_lab_minigame.gd" id="1"]
+[node name="StudentLab" type="Control"]
 script = ExtResource("1")
-room_title = "Student Lab"
-room_owner = "Dr. Eli Warren"
-room_status = "High School"

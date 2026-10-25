@@ -1,8 +1,5 @@
 extends Node2D
 
-const SAM_SIDE := "res://Art Assets/Sam - Side walking spritesheet.png"
-const SAM_FRONT := "res://Art Assets/Sam - Front walking spritesheet.png"
-const SAM_BACK := "res://Art Assets/Sam walking - Back spritesheet.png"
 const SHARON_SHEET := "res://Art Assets/Sharon O_Riley - Typing.png"
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
 const WALK_SPEED := 230.0
@@ -13,10 +10,6 @@ const DEGREE_RANK := {"Internship": 0, "High School": 1, "College": 2, "Bachelor
 
 var player: CharacterBody2D
 var player_sprite: AnimatedSprite2D
-var sam_character: Node2D
-var sam_sprite: AnimatedSprite2D
-var sam_interactable_index := -1
-var sam_patrol_direction := 1.0
 var camera: Camera2D
 var dialogue_panel: PanelContainer
 var dialogue_label: Label
@@ -39,9 +32,6 @@ var inventory: Array[String] = []
 var player_program := "Molecular Biology (Master's)"
 var player_status := "Master's"
 var hovered_object := -1
-var sam_patrol_speed := 48.0
-var sam_patrol_left := 700.0
-var sam_patrol_right := 940.0
 
 
 func _ready() -> void:
@@ -49,13 +39,15 @@ func _ready() -> void:
 	_load_player_status()
 	_build_map()
 	_build_characters()
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager != null:
+		player.position = save_manager.take_room_return_position(player.position)
 	_build_hud()
 	_build_menu()
 	_update_player_animation(false)
 
 
 func _physics_process(_delta: float) -> void:
-	_update_sam_patrol(_delta)
 	if dialogue_open or menu_open:
 		player.velocity = Vector2.ZERO
 		_update_player_animation(false)
@@ -162,8 +154,8 @@ func _build_map() -> void:
 	_add_room("Doctorate", "Advanced Research", "Dr. Ravi Shah", 5, Rect2(2880, 510, 220, 145), Vector2(2990, 665), Vector2(2990, 675), "advanced_research_room.tscn")
 	_add_room("Doctorate", "Graduate Suite", "Dr. Ravi Shah", 5, Rect2(3140, 810, 220, 145), Vector2(3250, 796), Vector2(3250, 790), "graduate_suite_room.tscn")
 
-	_add_object("Reception desk", Vector2(335, 250), "A tidy reception desk. Sharon is sorting today's visitor badges.", "inspect")
-	_add_object("Visitor badge", Vector2(390, 250), "A visitor badge with a clip and a blank name strip.", "pickup", "Pick up", "Leave")
+	_add_object("Reception desk", Vector2(185, 250), "A tidy reception desk. Sharon is sorting today's visitor badges.", "inspect")
+	_add_object("Visitor badge", Vector2(245, 250), "A visitor badge with a clip and a blank name strip.", "pickup", "Pick up", "Leave")
 	_add_object("Large succulent", Vector2(180, 445), "It's quite a large succulent. The leaves look healthy and glossy.", "inspect")
 	_add_object("Gel electrophoresis box", Vector2(2470, 745), "A gel electrophoresis box. Begin a sample-preparation minigame?", "minigame", "Start minigame", "Not now")
 	_add_object("Lab notebook", Vector2(3370, 745), "A lab notebook with several pages of careful observations.", "pickup", "Pick up", "Leave")
@@ -190,7 +182,7 @@ func _add_object(object_name: String, at: Vector2, description: String, kind: St
 
 func _build_characters() -> void:
 	# Use only the seated figure from each sprite-sheet frame; the standing pose is a separate figure in the same cell.
-	var sharon := _make_npc("Sharon", Vector2(344, 276), _sharon_frames(), 3.4)
+	var sharon := _make_npc("Sharon", Vector2(194, 276), _sharon_frames(), 3.4)
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
 	sharon_sprite.position = Vector2(0, -72)
 	sharon_sprite.play("typing")
@@ -200,27 +192,8 @@ func _build_characters() -> void:
 	counter_front.name = "ReceptionCounterFront"
 	counter_front.z_index = 1
 	counter_front.color = Color("#115293")
-	counter_front.polygon = PackedVector2Array([Vector2(260, 258), Vector2(428, 258), Vector2(428, 282), Vector2(260, 282)])
+	counter_front.polygon = PackedVector2Array([Vector2(112, 258), Vector2(280, 258), Vector2(280, 282), Vector2(112, 282)])
 	add_child(counter_front)
-
-	sam_character = _make_npc("Sam", Vector2(792, 312), _sam_frames(), 0.14)
-	sam_sprite = sam_character.get_node("Sprite") as AnimatedSprite2D
-	sam_sprite.play("front")
-	var sam_key_shader := Shader.new()
-	sam_key_shader.code = """
-shader_type canvas_item;
-void fragment() {
-	vec4 color = texture(TEXTURE, UV) * COLOR;
-	if (color.r > 0.96 && color.g > 0.96 && color.b > 0.96) {
-		color.a = 0.0;
-	}
-	COLOR = color;
-}
-"""
-	var sam_material := ShaderMaterial.new()
-	sam_material.shader = sam_key_shader
-	sam_sprite.material = sam_material
-	sam_interactable_index = _add_character_interaction("Sam", sam_character.position, ["SAM: Hey, welcome in. This is test dialogue. The labs are split by training level.", "SAM: I'm doing an extremely important hallway lap. Ask me again later for more test dialogue."])
 
 	player = CharacterBody2D.new()
 	player.name = "Player"
@@ -272,14 +245,6 @@ func _make_npc(character_name: String, at: Vector2, frames: SpriteFrames, sprite
 	sprite.position = Vector2(0, -24)
 	body.add_child(sprite)
 	return body
-
-
-func _sam_frames() -> SpriteFrames:
-	var frames := SpriteFrames.new()
-	_add_strip(frames, "front", SAM_FRONT, 0, 4, Vector2(1600, 1600), true, 5.0)
-	_add_strip(frames, "side", SAM_SIDE, 0, 6, Vector2(1600, 1600), true, 5.0)
-	_add_strip(frames, "back", SAM_BACK, 0, 4, Vector2(100, 100), true, 5.0)
-	return frames
 
 
 func _player_frames() -> SpriteFrames:
@@ -458,8 +423,13 @@ func _interact() -> void:
 		if int(target.rank) > int(DEGREE_RANK.get(player_status, 0)):
 			_start_dialogue(["UNAUTHORIZED ACCESS: %s required." % _required_status_text(str(target.status))])
 		else:
+			var save_manager := get_node_or_null("/root/SaveManager")
+			if save_manager != null:
+				save_manager.remember_room_entry_position(player.global_position)
 			var error := get_tree().change_scene_to_file(str(target.scene_path))
 			if error != OK:
+				if save_manager != null:
+					save_manager.take_room_return_position(player.global_position)
 				_start_dialogue(["The %s room could not be opened." % str(target.name)])
 		return
 	if kind == "person":
@@ -532,9 +502,6 @@ func _choose_dialogue_option(index: int) -> void:
 			queue_redraw()
 			_close_dialogue()
 			_start_dialogue(["%s added to your inventory." % object_name])
-		"minigame":
-			_close_dialogue()
-			_start_dialogue(["The gel electrophoresis minigame is a test placeholder and is not available yet."])
 		_:
 			_close_dialogue()
 
@@ -630,23 +597,6 @@ func _update_player_animation(is_moving: bool) -> void:
 			player_sprite.play(animation)
 		player_sprite.stop()
 		player_sprite.frame = 0
-
-
-func _update_sam_patrol(delta: float) -> void:
-	if sam_character == null or dialogue_open or menu_open:
-		return
-	sam_character.position.x += sam_patrol_direction * sam_patrol_speed * delta
-	if sam_character.position.x >= sam_patrol_right:
-		sam_character.position.x = sam_patrol_right
-		sam_patrol_direction = -1.0
-	elif sam_character.position.x <= sam_patrol_left:
-		sam_character.position.x = sam_patrol_left
-		sam_patrol_direction = 1.0
-	sam_sprite.flip_h = sam_patrol_direction < 0.0
-	if sam_sprite.animation != "side" or not sam_sprite.is_playing():
-		sam_sprite.play("side")
-	if sam_interactable_index >= 0:
-		interactables[sam_interactable_index]["position"] = sam_character.position
 
 
 func _toggle_menu() -> void:
@@ -772,13 +722,13 @@ func _draw_stairwell_and_walkway() -> void:
 
 
 func _draw_furniture_and_objects() -> void:
-	# Single, broad pixel counter in front of Sharon: the only receptionist sprite on the map.
-	draw_rect(Rect2(252, 238, 184, 48), Color("#192787"))
-	draw_rect(Rect2(260, 238, 168, 10), Color("#D77A45"))
-	draw_rect(Rect2(268, 248, 152, 30), Color("#115293"))
-	draw_rect(Rect2(256, 278, 176, 8), Color("#192787"))
-	draw_rect(Rect2(385, 218, 24, 12), Color("#FAF5E6"))
-	draw_rect(Rect2(390, 214, 8, 4), Color("#D77A45"))
+	# Reception desk sits to the left of the room entrance to leave the doorway clear.
+	draw_rect(Rect2(104, 238, 184, 48), Color("#192787"))
+	draw_rect(Rect2(112, 238, 168, 10), Color("#D77A45"))
+	draw_rect(Rect2(120, 248, 152, 30), Color("#115293"))
+	draw_rect(Rect2(108, 278, 176, 8), Color("#192787"))
+	draw_rect(Rect2(237, 218, 24, 12), Color("#FAF5E6"))
+	draw_rect(Rect2(242, 214, 8, 4), Color("#D77A45"))
 	# A few square planters and research props, kept outside the walking lane.
 	draw_rect(Rect2(164, 432, 32, 28), Color("#D77A45"))
 	draw_rect(Rect2(168, 416, 8, 16), Color("#5D9374"))
@@ -790,7 +740,7 @@ func _draw_furniture_and_objects() -> void:
 	draw_rect(Rect2(3328, 734, 48, 32), Color("#D77A45"))
 	draw_rect(Rect2(3338, 722, 26, 14), Color("#FAF5E6"))
 	draw_string(ThemeDB.fallback_font, Vector2(3315, 717), "NOTEBOOK", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(277, 232), "RECEPTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#FAF5E6"))
+	draw_string(ThemeDB.fallback_font, Vector2(129, 232), "RECEPTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#FAF5E6"))
 	draw_string(ThemeDB.fallback_font, Vector2(2400, 734), "ELECTROPHORESIS", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
 
 

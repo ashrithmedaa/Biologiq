@@ -23,6 +23,8 @@ var _current_state: Dictionary = {}
 var _state_provider: Object
 var _autosave_timer: Timer
 var _playtime_remainder := 0.0
+var _room_return_position := Vector2.ZERO
+var _has_room_return_position := false
 
 # Keep every JS callback and object alive for as long as browser JS can call it.
 var _active_file_input: JavaScriptObject
@@ -65,6 +67,18 @@ func set_save_state(data: Dictionary) -> void:
 
 func get_save_state() -> Dictionary:
 	return _deep_copy_dictionary(_current_state)
+
+
+func remember_room_entry_position(position: Vector2) -> void:
+	_room_return_position = position
+	_has_room_return_position = true
+
+
+func take_room_return_position(fallback: Vector2) -> Vector2:
+	if not _has_room_return_position:
+		return fallback
+	_has_room_return_position = false
+	return _room_return_position
 
 
 func has_save() -> bool:

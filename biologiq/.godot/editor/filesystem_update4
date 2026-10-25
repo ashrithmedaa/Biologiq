@@ -1,0 +1,9 @@
+res://Scripts/main_map.gd
+res://Scenes/character_selection.tscn
+res://Scripts/save_manager.gd
+res://Scripts/student_lab_minigame.gd
+res://Scenes/employee_orientation.tscn
+res://Scenes/main_map.tscn
+res://Scenes/save_select_screen.tscn
+res://Scenes/select_screen.tscn
+res://Scenes/main.tscn
