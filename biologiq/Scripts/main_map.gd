@@ -18,6 +18,7 @@ var interaction_hint: Label
 var inventory_label: Label
 var floor_title: Label
 var menu_layer: CanvasLayer
+var menu_status_label: Label
 var dialogue_lines: Array[String] = []
 var dialogue_choices: Array[String] = []
 var choice_actions: Array[String] = []
@@ -41,9 +42,13 @@ func _ready() -> void:
 	_build_characters()
 	var save_manager := get_node_or_null("/root/SaveManager")
 	if save_manager != null:
+		save_manager.register_state_provider(self)
+		restore_save_state(save_manager.get_save_state())
 		player.position = save_manager.take_room_return_position(player.position)
 	_build_hud()
 	_build_menu()
+	if save_manager != null:
+		save_manager.status_changed.connect(_on_save_status_changed)
 	_update_player_animation(false)
 
 
@@ -135,6 +140,28 @@ func _load_player_status() -> void:
 	player_program = str(saved.get("degree_program", player_program))
 	player_status = str(saved.get("degree_status", player_status))
 	inventory.assign(saved.get("inventory", []))
+
+
+func capture_save_state() -> Dictionary:
+	var manager := get_node_or_null("/root/SaveManager")
+	var state: Dictionary = manager.get_save_state() if manager != null else {}
+	var player_data: Dictionary = state.get("player", {}) if state.get("player", {}) is Dictionary else {}
+	player_data["position"] = player.global_position if is_instance_valid(player) else Vector2.ZERO
+	state["player"] = player_data
+	state["degree_program"] = player_program
+	state["degree_status"] = player_status
+	state["inventory"] = inventory.duplicate()
+	return state
+
+
+func restore_save_state(data: Dictionary) -> void:
+	player_program = str(data.get("degree_program", player_program))
+	player_status = str(data.get("degree_status", player_status))
+	inventory.assign(data.get("inventory", []))
+	var player_data: Dictionary = data.get("player", {}) if data.get("player", {}) is Dictionary else {}
+	var saved_position: Variant = player_data.get("position", Vector2.ZERO)
+	if is_instance_valid(player) and saved_position is Vector2 and saved_position != Vector2.ZERO:
+		player.global_position = saved_position
 
 
 func _build_map() -> void:
@@ -368,8 +395,8 @@ func _build_menu() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	menu_layer.add_child(shade)
 	var card := PanelContainer.new()
-	card.position = Vector2(440, 170)
-	card.size = Vector2(400, 360)
+	card.position = Vector2(440, 155)
+	card.size = Vector2(400, 410)
 	var card_style := StyleBoxFlat.new()
 	card_style.bg_color = Color("#fff9e9")
 	card_style.set_corner_radius_all(18)
@@ -392,8 +419,17 @@ func _build_menu() -> void:
 	resume.pressed.connect(_close_menu)
 	var home := _menu_button("Home", "Return to home", column)
 	home.pressed.connect(func(): get_tree().change_scene_to_file("res://Scenes/main.tscn"))
-	var save := _menu_button("Save", "Save game  ·  coming soon", column)
-	save.disabled = true
+	var save := _menu_button("Save", "Save game", column)
+	save.pressed.connect(_on_save_pressed)
+	menu_status_label = Label.new()
+	menu_status_label.name = "SaveStatus"
+	menu_status_label.text = "Saves locally and downloads an uploadable .sav backup in Web builds."
+	menu_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	menu_status_label.custom_minimum_size = Vector2(320, 34)
+	menu_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	menu_status_label.add_theme_color_override("font_color", Color("#42636a"))
+	menu_status_label.add_theme_font_size_override("font_size", 12)
+	column.add_child(menu_status_label)
 	var quit := _menu_button("Quit", "Close application", column)
 	quit.pressed.connect(func(): get_tree().quit())
 	var esc_hint := Label.new()
@@ -412,6 +448,24 @@ func _menu_button(node_name: String, text: String, parent: Node) -> Button:
 	button.add_theme_font_size_override("font_size", 18)
 	parent.add_child(button)
 	return button
+
+
+func _on_save_pressed() -> void:
+	var manager := get_node_or_null("/root/SaveManager")
+	if manager == null:
+		_on_save_status_changed("Save failed: save storage is unavailable.", true)
+		return
+	if OS.has_feature("web"):
+		manager.export_save_to_file()
+	else:
+		manager.save_slot()
+
+
+func _on_save_status_changed(message: String, is_error: bool) -> void:
+	if menu_status_label == null:
+		return
+	menu_status_label.text = message
+	menu_status_label.add_theme_color_override("font_color", Color("#a14f46") if is_error else Color("#42636a"))
 
 
 func _interact() -> void:
