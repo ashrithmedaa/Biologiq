@@ -30,7 +30,7 @@ var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
 var inventory: Array[String] = []
-var player_program := "Molecular Biology (Master's)"
+var player_program := "Research Shadowing"
 var player_status := "Master's"
 var hovered_object := -1
 
@@ -323,7 +323,7 @@ func _build_hud() -> void:
 	add_child(hud)
 	floor_title = _label(hud, "LabTitle", "BIOLOGIQ  /  FLOOR 1", Vector2(24, 18), Vector2(430, 34), 21, Color("#143d47"))
 	floor_title.add_theme_font_size_override("font_size", 21)
-	var status := _label(hud, "PlayerStatus", "%s  ·  %s" % [player_program, player_status], Vector2(24, 51), Vector2(760, 30), 14, Color("#42636a"))
+	var status := _label(hud, "PlayerStatus", "SHADOWING  ·  BIOLOGIQ RESEARCH TEAM", Vector2(24, 51), Vector2(760, 30), 14, Color("#42636a"))
 	status.add_theme_font_size_override("font_size", 14)
 	interaction_hint = _label(hud, "InteractionHint", "", Vector2(270, 645), Vector2(740, 32), 17, Color("#143d47"))
 	interaction_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -695,12 +695,20 @@ func _save_inventory() -> void:
 
 
 func _draw() -> void:
-	# Pixel-art campus palette: cream tile, sage walls, navy outlines and terracotta details.
-	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#8BAF75"))
-	for x in range(0, int(WORLD_WIDTH), 32):
-		for y in range(0, int(WORLD_HEIGHT), 32):
-			if (x / 32 + y / 32) % 2 == 0:
-				draw_rect(Rect2(x, y, 32, 32), Color("#86A873"))
+	# Campus lawn uses broad color patches and pixel tufts instead of a hard checker pattern.
+	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#789b61"))
+	for x in range(0, int(WORLD_WIDTH), 96):
+		for y in range(0, int(WORLD_HEIGHT), 96):
+			var seed := (x * 17 + y * 31) % 17
+			if seed < 6:
+				draw_rect(Rect2(x + 12 + seed * 3, y + 14, 34 + seed, 14), Color("#6d9159"))
+				draw_rect(Rect2(x + 22 + seed * 2, y + 22, 18, 10), Color("#73975d"))
+			elif seed < 11:
+				draw_rect(Rect2(x + 42, y + 50, 28, 12), Color("#88a96c"))
+			if (x / 96 + y / 96) % 3 == 0:
+				draw_line(Vector2(x + 74, y + 38), Vector2(x + 78, y + 28), Color("#597f50"), 3.0)
+				draw_line(Vector2(x + 78, y + 38), Vector2(x + 84, y + 30), Color("#628a52"), 3.0)
+				draw_line(Vector2(x + 82, y + 38), Vector2(x + 86, y + 32), Color("#597f50"), 3.0)
 	_draw_hallway()
 	_draw_room_zones()
 	_draw_stairwell_and_walkway()

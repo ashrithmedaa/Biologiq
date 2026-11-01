@@ -93,12 +93,8 @@ func _profile_card() -> PanelContainer:
 	divider.color = SAGE
 	divider.custom_minimum_size = Vector2(0, 3)
 	column.add_child(divider)
-	var program_name := "Molecular Biology (Master's)"
-	var save_manager := get_node_or_null("/root/SaveManager")
-	if save_manager != null:
-		program_name = str(save_manager.get_save_state().get("degree_program", program_name))
-	column.add_child(_label("AREA OF STUDY", 13, SAGE))
-	column.add_child(_label(program_name, 18, NAVY))
+	column.add_child(_label("SHADOWING ROLE", 13, SAGE))
+	column.add_child(_label("Research Shadowing", 18, NAVY))
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	column.add_child(spacer)

@@ -1,10 +1,5 @@
 extends Node2D
 
-const PROGRAMS := [
-	"Molecular Biology (Master's)",
-	"Biomedical Engineering (Master's)",
-	"Biochemistry (Master's)",
-]
 const ARTICLE_PAGES := [
 	{"title": "Inside BIOLOGIQ", "body": "BIOLOGIQ is a biotechnology company where research teams turn careful experiments into tools that help people. Your first day begins at the reception desk."},
 	{"title": "How the lab works", "body": "Every room has a training level. Read the plaques outside each door. Some spaces are open to new interns; advanced research rooms need additional credentials."},
@@ -12,15 +7,12 @@ const ARTICLE_PAGES := [
 ]
 
 var step := 0
-var selected_program := -1
 var article_index := 0
 var typewriter_progress := 0.0
-var full_intro := "Welcome to BIOLOGIQ. You are joining a biotechnology team for your first day. Before you enter the lab, choose your area of graduate study."
+var full_intro := "Welcome to BIOLOGIQ. You are here to shadow a researcher, follow their work, and get a feel for life in a biotechnology lab."
 var screen_text: Label
 var title_label: Label
 var continue_button: Button
-var program_buttons: Array[Button] = []
-var program_note: Label
 
 
 func _ready() -> void:
@@ -45,17 +37,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			screen_text.text = full_intro
 			continue_button.show()
 		else:
-			_show_programs()
-	elif step == 1:
-		if event.keycode >= KEY_1 and event.keycode <= KEY_3:
-			_select_program(int(event.keycode - KEY_1))
-		elif event.keycode == KEY_UP or event.keycode == KEY_LEFT:
-			_select_program(maxi(0, selected_program - 1))
-		elif event.keycode == KEY_DOWN or event.keycode == KEY_RIGHT:
-			_select_program(mini(2, selected_program + 1))
-		elif (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER) and selected_program >= 0:
-			_begin_article()
-	elif step == 2 and (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
+			_show_articles()
+	elif step == 1 and (event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
 		_advance_article()
 
 
@@ -76,22 +59,6 @@ func _build_ui() -> void:
 	screen_text.add_theme_font_size_override("font_size", 22)
 	screen_text.add_theme_color_override("font_color", Color("#f4f4e8"))
 	hud.add_child(screen_text)
-	program_note = Label.new()
-	program_note.position = Vector2(335, 383)
-	program_note.size = Vector2(610, 52)
-	program_note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	program_note.add_theme_font_size_override("font_size", 14)
-	program_note.add_theme_color_override("font_color", Color("#bed7ca"))
-	hud.add_child(program_note)
-	for index in 3:
-		var button := Button.new()
-		button.position = Vector2(332, 280 + index * 52)
-		button.size = Vector2(616, 48)
-		button.toggle_mode = true
-		button.add_theme_font_size_override("font_size", 17)
-		button.pressed.connect(_select_program.bind(index))
-		hud.add_child(button)
-		program_buttons.append(button)
 	continue_button = Button.new()
 	continue_button.position = Vector2(538, 445)
 	continue_button.size = Vector2(204, 48)
@@ -101,85 +68,43 @@ func _build_ui() -> void:
 
 
 func _update_screen() -> void:
-	for button in program_buttons:
-		button.hide()
-	program_note.hide()
 	continue_button.hide()
 	match step:
 		0:
 			title_label.text = "BIOLOGIQ  /  NEW EMPLOYEE ORIENTATION"
 			screen_text.text = ""
-			program_note.text = ""
-			continue_button.text = "Choose a program"
+			continue_button.text = "Continue"
 			if int(typewriter_progress) >= full_intro.length():
 				screen_text.text = full_intro
 				continue_button.show()
 		1:
-			title_label.text = "SELECT YOUR MASTER'S PROGRAM"
-			screen_text.position = Vector2(335, 210)
-			screen_text.size = Vector2(610, 68)
-			screen_text.text = "For this demo, your starting education is set at a master's degree level. Choose one of three primary study programs."
-			program_note.text = "A full version would let players start in high school and choose from a wider range of degrees."
-			program_note.position = Vector2(335, 438)
-			program_note.size = Vector2(610, 42)
-			program_note.show()
-			for index in 3:
-				program_buttons[index].text = PROGRAMS[index]
-				program_buttons[index].show()
-			continue_button.position = Vector2(538, 485)
-			continue_button.text = "Continue to article"
-			if selected_program >= 0:
-				continue_button.show()
-		2:
 			screen_text.position = Vector2(335, 217)
 			screen_text.size = Vector2(610, 180)
-			program_note.position = Vector2(335, 383)
-			program_note.size = Vector2(610, 52)
 			continue_button.position = Vector2(538, 445)
 			var page: Dictionary = ARTICLE_PAGES[article_index]
 			title_label.text = str(page.title).to_upper()
 			screen_text.text = str(page.body)
-			program_note.text = "ARTICLE  %d / %d     ·     Press ENTER to continue" % [article_index + 1, ARTICLE_PAGES.size()]
-			program_note.show()
 			continue_button.text = "Enter the lab" if article_index == ARTICLE_PAGES.size() - 1 else "Continue"
 			continue_button.show()
 
 
-func _select_program(index: int) -> void:
-	selected_program = clampi(index, 0, PROGRAMS.size() - 1)
-	for button_index in program_buttons.size():
-		program_buttons[button_index].button_pressed = button_index == selected_program
-	program_note.text = "Selected: %s. This demo begins at master's level; the full version would offer more degrees." % PROGRAMS[selected_program]
-	continue_button.show()
-
-
 func _on_continue_pressed() -> void:
 	if step == 0:
-		_show_programs()
-	elif step == 1:
-		if selected_program >= 0:
-			_begin_article()
+		_show_articles()
 	else:
 		_advance_article()
 
 
-func _show_programs() -> void:
-	step = 1
-	_update_screen()
-
-
-func _begin_article() -> void:
-	if selected_program < 0:
-		return
+func _show_articles() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
 	if save_manager != null:
 		var data: Dictionary = save_manager.get_save_state()
-		data["degree_program"] = PROGRAMS[selected_program]
+		data["degree_program"] = "Research Shadowing"
 		data["degree_status"] = "Master's"
 		data["inventory"] = []
 		save_manager.set_save_state(data)
 	article_index = 0
-	step = 2
+	step = 1
 	_update_screen()
 
 

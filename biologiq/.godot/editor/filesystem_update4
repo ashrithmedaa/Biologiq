@@ -1,1 +1,7 @@
+res://Scripts/character_selection.gd
+res://Scripts/employee_orientation.gd
+res://Scripts/main.gd
 res://Scripts/main_map.gd
+res://Scripts/save_select_screen.gd
+res://Scripts/select_screen.gd
+res://walking_screen.gd
