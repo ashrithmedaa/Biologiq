@@ -2,6 +2,7 @@ extends Node2D
 
 const SHARON_SHEET := "res://Art Assets/Sharon O_Riley - Typing.png"
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const MARIA_SHEET := "res://Art Assets/mariaNOTSHADEDspritesheet.png"
 const SAM_FRONT_SHEET := "res://Art Assets/Sam - Front walking spritesheet transparent.png"
 const SAM_SIDE_SHEET := "res://Art Assets/Sam - Side walking spritesheet.png"
 const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
@@ -27,6 +28,8 @@ var sam: Node2D
 var sam_sprite: AnimatedSprite2D
 var sam_interaction_index := -1
 var sam_last_stop_position := Vector2.ZERO
+var maria: Node2D
+var maria_sprite: AnimatedSprite2D
 var floor_title: Label
 var menu_layer: CanvasLayer
 var menu_status_label: Label
@@ -37,12 +40,16 @@ var dialogue_typing := false
 var dialogue_type_progress := 0.0
 var dialogue_completes_checkin := false
 var dialogue_completes_sam_intro := false
+var dialogue_completes_maria_lines := false
+var dialogue_completes_sam_final_lines := false
 var sharon_checked_in := false
 var sam_intro_done := false
 var sam_entrance_active := false
 var tour_phase := 0
 var tour_moving := false
 var dialogue_completes_tour_stop := false
+var maria_scene_active := false
+var maria_meeting_done := false
 var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
@@ -72,22 +79,27 @@ func _ready() -> void:
 	if sharon_checked_in and not sam_intro_done:
 		_begin_sam_entrance()
 	elif sam_intro_done:
-		sam.show()
-		if tour_phase in [1, 3, 5]:
+		if maria_meeting_done:
+			sam.hide()
+			guide_label.text = "Get to do list from Sharon"
+			guide_label.show()
+		elif tour_phase in [1, 3, 5]:
+			sam.show()
 			_begin_tour_walk()
 		elif tour_phase in [2, 4, 6]:
+			sam.show()
 			guide_label.text = "Talk to Sam"
 			guide_label.show()
 		elif tour_phase >= 7:
-			guide_label.text = "Tour complete"
-			guide_label.show()
+			sam.show()
+			_begin_maria_scene()
 	if save_manager != null:
 		save_manager.status_changed.connect(_on_save_status_changed)
 	_update_player_animation(false)
 
 
 func _physics_process(_delta: float) -> void:
-	if dialogue_open or menu_open or sam_entrance_active:
+	if dialogue_open or menu_open or sam_entrance_active or maria_scene_active:
 		player.velocity = Vector2.ZERO
 		_update_player_animation(false)
 		return
@@ -127,12 +139,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE:
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-		elif dialogue_open:
+		elif dialogue_open and not maria_scene_active:
 			_close_dialogue()
 		elif menu_open:
 			_close_menu()
 		return
-	if event.keycode == KEY_F and not dialogue_open:
+	if event.keycode == KEY_F and not dialogue_open and not maria_scene_active:
 		_toggle_menu()
 		return
 	if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
@@ -140,7 +152,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_advance_dialogue()
 		return
 	if event.keycode == KEY_E and not dialogue_open and not menu_open:
-		if sam_entrance_active:
+		if sam_entrance_active or maria_scene_active:
 			return
 		_interact()
 		return
@@ -183,6 +195,7 @@ func capture_save_state() -> Dictionary:
 	state["degree_status"] = player_status
 	state["sharon_checked_in"] = sharon_checked_in
 	state["sam_intro_done"] = sam_intro_done
+	state["maria_meeting_done"] = maria_meeting_done
 	state["tour_phase"] = tour_phase
 	if is_instance_valid(sam):
 		state["sam_position"] = sam.global_position
@@ -196,6 +209,7 @@ func restore_save_state(data: Dictionary) -> void:
 	player_status = str(data.get("degree_status", player_status))
 	sharon_checked_in = bool(data.get("sharon_checked_in", false))
 	sam_intro_done = bool(data.get("sam_intro_done", false))
+	maria_meeting_done = bool(data.get("maria_meeting_done", false))
 	tour_phase = int(data.get("tour_phase", tour_phase))
 	var saved_sam_position: Variant = data.get("sam_position", Vector2.ZERO)
 	if is_instance_valid(sam) and saved_sam_position is Vector2 and saved_sam_position != Vector2.ZERO:
@@ -289,6 +303,11 @@ func _build_characters() -> void:
 	sam_sprite.stop()
 	sam.hide()
 	sam_interaction_index = _add_character_interaction("Sam", sam.position, [])
+	maria = _make_npc("Maria", Vector2.ZERO, _maria_frames(), 0.15)
+	maria_sprite = maria.get_node("Sprite") as AnimatedSprite2D
+	maria_sprite.position = Vector2(0, -65)
+	maria_sprite.stop()
+	maria.hide()
 	var desk_collider := StaticBody2D.new()
 	desk_collider.name = "ReceptionDeskCollider"
 	desk_collider.position = Vector2(2075, 594)
@@ -409,6 +428,29 @@ func _sam_back_sheet_upscaled() -> Texture2D:
 		frame.resize(1600, 1600, Image.INTERPOLATE_NEAREST)
 		enlarged.blit_rect(frame, Rect2i(0, 0, 1600, 1600), Vector2i(index * 1600, 0))
 	return ImageTexture.create_from_image(enlarged)
+
+
+func _maria_frames() -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	if frames.has_animation("default"):
+		frames.remove_animation("default")
+	_add_vertical_strip(frames, "walk_front", 0, 4)
+	_add_vertical_strip(frames, "walk_left", 4, 4)
+	_add_vertical_strip(frames, "walk_right", 8, 4)
+	_add_vertical_strip(frames, "walk_back", 12, 4)
+	return frames
+
+
+func _add_vertical_strip(frames: SpriteFrames, animation_name: String, start_frame: int, count: int) -> void:
+	frames.add_animation(animation_name)
+	frames.set_animation_loop(animation_name, true)
+	frames.set_animation_speed(animation_name, 8.0)
+	var texture := load(MARIA_SHEET) as Texture2D
+	for index in count:
+		var atlas := AtlasTexture.new()
+		atlas.atlas = texture
+		atlas.region = Rect2(Vector2(0, (start_frame + index) * 950), Vector2(350, 950))
+		frames.add_frame(animation_name, atlas)
 
 
 func _add_strip(frames: SpriteFrames, animation_name: String, path: String, start_x: int, count: int, frame_size: Vector2, looping: bool, speed: float) -> void:
@@ -638,6 +680,12 @@ func _advance_dialogue() -> void:
 		if dialogue_completes_tour_stop:
 			dialogue_completes_tour_stop = false
 			_begin_next_tour_leg()
+		if dialogue_completes_maria_lines:
+			dialogue_completes_maria_lines = false
+			_begin_maria_exit()
+		if dialogue_completes_sam_final_lines:
+			dialogue_completes_sam_final_lines = false
+			_begin_sam_exit()
 		_close_dialogue()
 
 
@@ -751,6 +799,9 @@ func _on_tour_stop_arrived() -> void:
 	sam_sprite.stop()
 	sam_last_stop_position = sam.global_position
 	tour_phase += 1
+	if tour_phase == 6:
+		_set_sam_walk_animation("walk_right")
+		sam_sprite.stop()
 	guide_label.text = "Talk to Sam"
 	guide_label.show()
 	_update_sam_interactable()
@@ -765,10 +816,75 @@ func _begin_next_tour_leg() -> void:
 		tour_phase = 5
 	elif tour_phase == 6:
 		tour_phase = 7
-		guide_label.text = "Tour complete"
-		guide_label.show()
+		_begin_maria_scene()
 		return
 	_begin_tour_walk()
+
+
+func _begin_maria_scene() -> void:
+	if maria_meeting_done or maria_scene_active:
+		return
+	maria_scene_active = true
+	guide_label.text = "Meet Maria"
+	guide_label.show()
+	interaction_hint.text = ""
+	maria.position = Vector2(player.global_position.x + 520.0, player.global_position.y)
+	maria.show()
+	_set_maria_walk_animation("walk_left")
+	var target_position := Vector2(player.global_position.x + 80.0, player.global_position.y)
+	var arrival := create_tween()
+	arrival.tween_property(maria, "position", target_position, maxf(0.8, maria.position.distance_to(target_position) / SAM_WALK_SPEED))
+	arrival.finished.connect(_on_maria_arrived)
+
+
+func _set_maria_walk_animation(animation_name: String) -> void:
+	maria_sprite.play(animation_name)
+
+
+func _on_maria_arrived() -> void:
+	maria_sprite.stop()
+	dialogue_completes_maria_lines = true
+	_start_dialogue([
+		"Maria: Morning, Sam. Is this our new intern?",
+		"Sam: Sure is! Fresh off onboarding.",
+		"Maria: Welcome to BIOLOGIQ. I’m Dr. Valadez. I lead the doctoral department’s target-discovery team. We work on high-throughput screening and gene therapies. Demanding work, but it’s incredibly rewarding.",
+		"Maria: I’ll let Sam get you settled at your station, but good luck on your first lab run today. I’m sure you’ll do great."
+	])
+
+
+func _begin_maria_exit() -> void:
+	_set_maria_walk_animation("walk_right")
+	var offscreen_position := Vector2(player.global_position.x + 1000.0, maria.position.y)
+	var departure := create_tween()
+	departure.tween_property(maria, "position", offscreen_position, maxf(0.8, maria.position.distance_to(offscreen_position) / SAM_WALK_SPEED))
+	departure.finished.connect(_on_maria_exit_finished)
+
+
+func _on_maria_exit_finished() -> void:
+	maria.hide()
+	dialogue_completes_sam_final_lines = true
+	_start_dialogue([
+		"Sam: Man…she's awesome. Anyway! You should go to Sharon to pick up your task list.",
+		"Sam: I've got to go do some very important work or something.",
+		"Sam: See ya around!"
+	])
+
+
+func _begin_sam_exit() -> void:
+	_set_sam_walk_animation("walk_right")
+	var offscreen_position := Vector2(player.global_position.x + 1100.0, sam.position.y)
+	var departure := create_tween()
+	departure.tween_property(sam, "position", offscreen_position, maxf(0.8, sam.position.distance_to(offscreen_position) / SAM_WALK_SPEED))
+	departure.finished.connect(_on_sam_exit_finished)
+
+
+func _on_sam_exit_finished() -> void:
+	sam.hide()
+	maria_meeting_done = true
+	maria_scene_active = false
+	guide_label.text = "Get to do list from Sharon"
+	guide_label.show()
+	_update_interaction_hint()
 
 
 func _update_sam_interactable() -> void:
@@ -784,6 +900,8 @@ func _close_dialogue() -> void:
 	dialogue_completes_checkin = false
 	dialogue_completes_sam_intro = false
 	dialogue_completes_tour_stop = false
+	dialogue_completes_maria_lines = false
+	dialogue_completes_sam_final_lines = false
 	dialogue_panel.hide()
 	_update_interaction_hint()
 
@@ -814,7 +932,7 @@ func _is_walkable_position(at: Vector2) -> bool:
 
 
 func _update_interaction_hint() -> void:
-	if dialogue_open or menu_open or sam_entrance_active or tour_moving:
+	if dialogue_open or menu_open or sam_entrance_active or tour_moving or maria_scene_active:
 		interaction_hint.text = ""
 		return
 	var target := _nearest_interactable()
