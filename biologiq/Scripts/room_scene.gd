@@ -76,7 +76,7 @@ func _draw() -> void:
 	# Wall-mounted BIOLOGIQ mark and small blocky foliage add room identity.
 	draw_rect(Rect2(120, 142, 176, 92), Color("#E6E0D2"))
 	draw_rect(Rect2(128, 150, 160, 76), Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(144, 192), "BIOLOGIQ", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#FAF5E6"))
+	draw_string(GameFont.FONT, Vector2(144, 192), "BIOLOGIQ", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#FAF5E6"))
 	draw_rect(Rect2(1120, 360, 24, 44), Color("#D77A45"))
 	draw_rect(Rect2(1112, 336, 16, 28), Color("#5D9374"))
 	draw_rect(Rect2(1136, 328, 16, 36), Color("#5D9374"))

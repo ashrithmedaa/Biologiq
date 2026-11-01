@@ -17,7 +17,12 @@ config/features=PackedStringArray("4.7", "Mobile")
 [autoload]
 
 SaveManager="*res://Scripts/save_manager.gd"
+GameFont="*res://Scripts/game_font.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+
+[gui]
+
+theme/custom="res://Themes/pixel_theme.tres"
 
 [display]
 

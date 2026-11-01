@@ -42,6 +42,7 @@ var dialogue_completes_checkin := false
 var dialogue_completes_sam_intro := false
 var dialogue_completes_maria_lines := false
 var dialogue_completes_sam_final_lines := false
+var dialogue_completes_student_lab_task := false
 var sharon_checked_in := false
 var sam_intro_done := false
 var sam_entrance_active := false
@@ -50,6 +51,7 @@ var tour_moving := false
 var dialogue_completes_tour_stop := false
 var maria_scene_active := false
 var maria_meeting_done := false
+var student_lab_task_received := false
 var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
@@ -65,11 +67,12 @@ func _ready() -> void:
 	_build_map()
 	_build_characters()
 	var save_manager := get_node_or_null("/root/SaveManager")
+	var spawn_position := MAIN_ENTRANCE_POSITION
 	if save_manager != null:
 		save_manager.register_state_provider(self)
 		restore_save_state(save_manager.get_save_state())
-		save_manager.take_room_return_position(MAIN_ENTRANCE_POSITION)
-	player.global_position = MAIN_ENTRANCE_POSITION
+		spawn_position = save_manager.take_room_return_position(MAIN_ENTRANCE_POSITION)
+	player.global_position = spawn_position
 	if sam_intro_done and tour_phase == 0:
 		tour_phase = 1
 		if sam_last_stop_position == Vector2.ZERO:
@@ -93,6 +96,9 @@ func _ready() -> void:
 		elif tour_phase >= 7:
 			sam.show()
 			_begin_maria_scene()
+	if student_lab_task_received:
+		guide_label.text = "Go to the intern quarters"
+		guide_label.show()
 	if save_manager != null:
 		save_manager.status_changed.connect(_on_save_status_changed)
 	_update_player_animation(false)
@@ -196,6 +202,7 @@ func capture_save_state() -> Dictionary:
 	state["sharon_checked_in"] = sharon_checked_in
 	state["sam_intro_done"] = sam_intro_done
 	state["maria_meeting_done"] = maria_meeting_done
+	state["student_lab_task_received"] = student_lab_task_received
 	state["tour_phase"] = tour_phase
 	if is_instance_valid(sam):
 		state["sam_position"] = sam.global_position
@@ -210,6 +217,7 @@ func restore_save_state(data: Dictionary) -> void:
 	sharon_checked_in = bool(data.get("sharon_checked_in", false))
 	sam_intro_done = bool(data.get("sam_intro_done", false))
 	maria_meeting_done = bool(data.get("maria_meeting_done", false))
+	student_lab_task_received = bool(data.get("student_lab_task_received", false))
 	tour_phase = int(data.get("tour_phase", tour_phase))
 	var saved_sam_position: Variant = data.get("sam_position", Vector2.ZERO)
 	if is_instance_valid(sam) and saved_sam_position is Vector2 and saved_sam_position != Vector2.ZERO:
@@ -225,8 +233,8 @@ func restore_save_state(data: Dictionary) -> void:
 
 func _build_map() -> void:
 	# First-floor rooms form the broad crossbar, with the entrance centered below the sign.
-	_add_room("Intern Quarters", Rect2(320, 210, 300, 240), Vector2(470, 450))
-	_add_room("Student Lab", Rect2(660, 210, 300, 240), Vector2(810, 450))
+	_add_room("Student Lab", Rect2(320, 210, 300, 240), Vector2(470, 450))
+	_add_room("Intern Quarters", Rect2(660, 210, 300, 240), Vector2(810, 450))
 	_add_room("Reception", Rect2(1000, 210, 300, 240), Vector2(1150, 450))
 	_add_room("College Lab", Rect2(2300, 210, 300, 240), Vector2(2450, 450))
 	_add_room("Low College Lab", Rect2(2640, 210, 300, 240), Vector2(2790, 450))
@@ -485,7 +493,13 @@ func _build_hud() -> void:
 	guide_label.visible = not sam_intro_done
 	if sam_intro_done:
 		guide_label.text = "Follow Sam"
-	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
+	if maria_meeting_done and not student_lab_task_received:
+		guide_label.text = "Get to do list from Sharon"
+		guide_label.show()
+	if student_lab_task_received:
+		guide_label.text = "Go to the intern quarters"
+		guide_label.show()
+	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect / Enter Room   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
 	controls.add_theme_font_size_override("font_size", 13)
 
 	dialogue_panel = PanelContainer.new()
@@ -619,13 +633,34 @@ func _on_save_status_changed(message: String, is_error: bool) -> void:
 
 
 func _interact() -> void:
+	var enterable_door := _nearest_enterable_door()
+	if not enterable_door.is_empty():
+		var save_manager := get_node_or_null("/root/SaveManager")
+		if save_manager != null:
+			save_manager.remember_room_entry_position(enterable_door.position + Vector2(0, 80))
+		get_tree().change_scene_to_file("res://Scenes/Rooms/internship_room.tscn")
+		return
+	var nearby_door := _nearest_door()
+	if not nearby_door.is_empty():
+		_start_dialogue(["This room is not available in the demo"])
+		return
 	var target := _nearest_interactable()
 	if target.is_empty():
 		return
 	var kind := str(target.kind)
 	if kind == "person":
-		if str(target.name) == "Sharon O'Riley" and not sharon_checked_in:
-			_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
+		if str(target.name) == "Sharon O'Riley":
+			if not sharon_checked_in:
+				_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
+			elif maria_meeting_done and not student_lab_task_received:
+				dialogue_completes_student_lab_task = true
+				_start_dialogue([
+					"Sharon: I see Sam is finally done showing you around",
+					"Sharon: Here's your task list for the day.",
+					"Sharon: Go to the intern quarters to begin working"
+				])
+			else:
+				_start_dialogue(["Sharon is busy right now"])
 		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
 			dialogue_completes_tour_stop = true
 			_start_dialogue(_tour_lines_for_phase(tour_phase))
@@ -686,6 +721,14 @@ func _advance_dialogue() -> void:
 		if dialogue_completes_sam_final_lines:
 			dialogue_completes_sam_final_lines = false
 			_begin_sam_exit()
+		if dialogue_completes_student_lab_task:
+			dialogue_completes_student_lab_task = false
+			student_lab_task_received = true
+			guide_label.text = "Go to the intern quarters"
+			guide_label.show()
+			var save_manager := get_node_or_null("/root/SaveManager")
+			if save_manager != null:
+				save_manager.set_save_state(capture_save_state())
 		_close_dialogue()
 
 
@@ -720,7 +763,8 @@ func _on_sam_arrived() -> void:
 	_start_dialogue([
 		"Sam: I’ve got it from here, Sharon! Hey there, new hire!",
 		"Sharon: She’s not here for a job, Sam. She’s here for the internship. And don’t you have work to be ignoring somewhere else?",
-		"Sam: Oh I’m just joking around. Come on, follow me. I’m your official tour guide today!"
+		"Sam: Oh I’m just joking around. Come on, follow me. I’m your official tour guide today!",
+		"Sam: For today you'll only be using the intern quarters"
 	])
 
 
@@ -740,7 +784,7 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 			]
 		6:
 			return [
-				"This hallway has the Intern Quarters, Student Lab, and Reception.",
+				"This hallway has the Student Lab, Intern Quarters, and Reception.",
 				"Reception is where you checked in.",
 				"The Student Lab and Intern Quarters are down this wing."
 			]
@@ -902,8 +946,29 @@ func _close_dialogue() -> void:
 	dialogue_completes_tour_stop = false
 	dialogue_completes_maria_lines = false
 	dialogue_completes_sam_final_lines = false
+	dialogue_completes_student_lab_task = false
 	dialogue_panel.hide()
 	_update_interaction_hint()
+
+
+func _nearest_enterable_door() -> Dictionary:
+	if not student_lab_task_received:
+		return {}
+	var door := _nearest_door()
+	if not door.is_empty() and str(door.name) == "Intern Quarters":
+		return door
+	return {}
+
+
+func _nearest_door() -> Dictionary:
+	var closest: Dictionary = {}
+	var closest_distance := INTERACT_DISTANCE
+	for room in room_doors:
+		var distance: float = player.global_position.distance_to(room.position)
+		if distance < closest_distance:
+			closest = room
+			closest_distance = distance
+	return closest
 
 
 func _nearest_interactable() -> Dictionary:
@@ -934,6 +999,13 @@ func _is_walkable_position(at: Vector2) -> bool:
 func _update_interaction_hint() -> void:
 	if dialogue_open or menu_open or sam_entrance_active or tour_moving or maria_scene_active:
 		interaction_hint.text = ""
+		return
+	var enterable_door := _nearest_enterable_door()
+	if not enterable_door.is_empty():
+		interaction_hint.text = "E  Enter Intern Quarters"
+		return
+	if not _nearest_door().is_empty():
+		interaction_hint.text = "E  Check room availability"
 		return
 	var target := _nearest_interactable()
 	if target.is_empty():
@@ -1058,15 +1130,20 @@ func _draw_closed_door(room: Dictionary) -> void:
 	var room_name := str(room.name).to_upper()
 	var side := str(room.get("side", "bottom"))
 	if side == "left" or side == "right":
-		# Side doors are independent sprites; this pass only draws their labels.
-		var label_y := door.y - SIDE_DOOR_HEIGHT * 0.5 - 10.0
-		draw_string(ThemeDB.fallback_font, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
+		# Rotate and center each label inside its own room rectangle, away from the wall edge.
+		var room_rect: Rect2 = room.room_rect
+		var label_x := room_rect.end.x - 18.0 if side == "right" else room_rect.position.x + 18.0
+		var label_angle := PI * 0.5 if side == "right" else -PI * 0.5
+		var label_width := room_rect.size.y - 24.0
+		draw_set_transform(Vector2(label_x, room_rect.get_center().y), label_angle)
+		draw_string(GameFont.FONT, Vector2(-label_width * 0.5, 4), room_name, HORIZONTAL_ALIGNMENT_CENTER, label_width, 12, Color("#192787"))
+		draw_set_transform(Vector2.ZERO, 0.0)
 	else:
 		# The lower edge of each tall door meets the bottom wall of its room.
 		var door_rect := Rect2(door.x - 34, door.y - DOOR_HEIGHT, 68.0, DOOR_HEIGHT)
 		_draw_door_leaf(door_rect, false)
 		var label_y := door_rect.position.y - 10.0
-		draw_string(ThemeDB.fallback_font, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
+		draw_string(GameFont.FONT, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
 
 
 func _draw_door_leaf(door: Rect2, hinges_on_right: bool) -> void:
@@ -1130,7 +1207,7 @@ func _draw_main_glass_entry() -> void:
 	for x in [left, 1690.0, 1904.0, left + width - 6]:
 		draw_rect(Rect2(x, top, 6, height), Color("#5D9374"))
 	draw_rect(Rect2(left, top + height - 4, width, 4), Color("#d77a45"))
-	draw_string(ThemeDB.fallback_font, Vector2(1600, top - 10), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
+	draw_string(GameFont.FONT, Vector2(1600, top - 10), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
 
 
 func _draw_furniture_and_objects() -> void:

@@ -57,7 +57,7 @@ func _gui_input(event: InputEvent) -> void:
 					if segment_index + 1 < SEGMENTS.size():
 						_load_segment(segment_index + 1)
 					else:
-						get_tree().change_scene_to_file("res://Scenes/main_map.tscn")
+						get_tree().change_scene_to_file("res://Scenes/Rooms/internship_room.tscn")
 				accept_event()
 				return
 			for base_index in BASE_ART.size():
@@ -97,7 +97,7 @@ func _gui_input(event: InputEvent) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		get_tree().change_scene_to_file("res://Scenes/main_map.tscn")
+		get_tree().change_scene_to_file("res://Scenes/Rooms/internship_room.tscn")
 
 
 func _load_segment(index: int) -> void:
@@ -137,15 +137,15 @@ func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, size), Color("#192787"))
 	draw_rect(Rect2(20, 20, size.x - 40, size.y - 40), Color("#FAF5E6"))
 	draw_rect(Rect2(20, 20, size.x - 40, 10), Color("#5D9374"))
-	draw_string(ThemeDB.fallback_font, Vector2(64, 72), "STUDENT LAB  /  DNA MATCHING", HORIZONTAL_ALIGNMENT_LEFT, -1, 25, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(64, 100), "SEGMENT %d OF %d" % [segment_index + 1, SEGMENTS.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#5D9374"))
-	draw_string(ThemeDB.fallback_font, Vector2(0, 106), "Drag the complementary base from its box onto each open rung.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(64, 72), "INTERN QUARTERS  /  DNA MATCHING", HORIZONTAL_ALIGNMENT_LEFT, -1, 25, Color("#192787"))
+	draw_string(GameFont.FONT, Vector2(64, 100), "SEGMENT %d OF %d" % [segment_index + 1, SEGMENTS.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#5D9374"))
+	draw_string(GameFont.FONT, Vector2(0, 106), "Drag the complementary base from its box onto each open rung.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#42636a"))
 	_draw_star_progress()
 
 	var strand: Texture2D = segment_textures[segment_index]
 	draw_texture_rect(strand, DNA_RECT, false)
-	draw_string(ThemeDB.fallback_font, Vector2(478, 152), "TEMPLATE BASE", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
-	draw_string(ThemeDB.fallback_font, Vector2(642, 152), "ADD COMPLEMENT", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(478, 152), "TEMPLATE BASE", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(642, 152), "ADD COMPLEMENT", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#42636a"))
 	var hovered_slot: int = _slot_at(drag_position) if dragging_base != "" else -1
 	for index in base_sequence.size():
 		var center := _target_center(index)
@@ -158,15 +158,15 @@ func _draw() -> void:
 			draw_rect(_slot_rect(index), slot_fill)
 			draw_rect(_slot_rect(index), slot_outline, false, 3.0 if index == hovered_slot else 2.0)
 		else:
-			_draw_base_icon(placed_bases[index], center, Vector2(96, 15))
+			_draw_joined_pair(placed_bases[index], center)
 
 	for card_index in BASE_ART.size():
 		_draw_base_card(card_index)
-	draw_string(ThemeDB.fallback_font, Vector2(0, 650), feedback, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
-	draw_string(ThemeDB.fallback_font, Vector2(0, 684), "ESC  Leave lab", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 12, Color("#7b8980"))
+	draw_string(GameFont.FONT, Vector2(0, 650), feedback, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(0, 684), "ESC  Return to workstation", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 12, Color("#7b8980"))
 	if dragging_base != "":
 		_draw_base_icon(dragging_base, drag_position, Vector2(120, 18))
-		draw_string(ThemeDB.fallback_font, drag_position + Vector2(14, -14), dragging_base, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("#192787"))
+		draw_string(GameFont.FONT, drag_position + Vector2(14, -14), dragging_base, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("#192787"))
 	if round_complete:
 		_draw_round_complete()
 
@@ -178,12 +178,18 @@ func _draw_base_card(index: int) -> void:
 	draw_rect(rect, _base_color(base), false, 3.0)
 	var icon_center := Vector2(rect.position.x + rect.size.x * 0.5, rect.position.y + 22)
 	_draw_base_icon(base, icon_center, Vector2(94, 14))
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x, rect.position.y + 67), "%s  /  %s" % [base, _base_name(base)], HORIZONTAL_ALIGNMENT_CENTER, int(rect.size.x), 16, Color("#192787"))
+	draw_string(GameFont.FONT, Vector2(rect.position.x, rect.position.y + 67), "%s  /  %s" % [base, _base_name(base)], HORIZONTAL_ALIGNMENT_CENTER, int(rect.size.x), 16, Color("#192787"))
 
 
 func _draw_base_icon(base: String, center: Vector2, dimensions: Vector2) -> void:
 	var icon: Texture2D = base_icons[base]
 	draw_texture_rect(icon, Rect2(center - dimensions / 2.0, dimensions), false)
+
+
+func _draw_joined_pair(added_base: String, center: Vector2) -> void:
+	# Keep the existing template base art and connect the newly placed complement to it.
+	draw_line(center - Vector2(44, 0), center + Vector2(28, 0), Color("#596174"), 4.0)
+	_draw_base_icon(added_base, center, Vector2(96, 15))
 
 
 func _draw_star_progress() -> void:
@@ -198,20 +204,20 @@ func _draw_round_complete() -> void:
 	draw_rect(Rect2(300, 180, 680, 12), Color("#5D9374"))
 	var final_segment := segment_index + 1 >= SEGMENTS.size()
 	var heading := "ALL DNA SEGMENTS MATCHED!" if final_segment else "DNA SEGMENT %d COMPLETE!" % [segment_index + 1]
-	draw_string(ThemeDB.fallback_font, Vector2(0, 254), heading, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 30, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(0, 295), "Eight complementary pairs placed correctly.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 17, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(0, 254), heading, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 30, Color("#192787"))
+	draw_string(GameFont.FONT, Vector2(0, 295), "Eight complementary pairs placed correctly.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 17, Color("#42636a"))
 	for index in SEGMENTS.size():
 		_draw_star(Vector2(544 + index * 48, 372), 22.0, Color("#D77A45") if index <= segment_index else Color("#D8D2C3"))
-	draw_string(ThemeDB.fallback_font, Vector2(0, 427), "%d of 4 segment stars earned" % [segment_index + 1], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#5D9374"))
+	draw_string(GameFont.FONT, Vector2(0, 427), "%d of 4 segment stars earned" % [segment_index + 1], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#5D9374"))
 	if final_segment:
-		draw_string(ThemeDB.fallback_font, Vector2(0, 464), "Return to the Student Lab to begin data verification.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
+		draw_string(GameFont.FONT, Vector2(0, 464), "Return to the workstation to begin data verification.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
 	_draw_action_button(ADVANCE_BUTTON, "CONTINUE" if final_segment else "NEXT SEGMENT")
 
 
 func _draw_action_button(rect: Rect2, label: String) -> void:
 	draw_rect(rect, Color("#5D9374"))
 	draw_rect(rect, Color("#192787"), false, 3.0)
-	draw_string(ThemeDB.fallback_font, Vector2(rect.position.x, rect.position.y + 36), label, HORIZONTAL_ALIGNMENT_CENTER, int(rect.size.x), 17, Color("#FAF5E6"))
+	draw_string(GameFont.FONT, Vector2(rect.position.x, rect.position.y + 36), label, HORIZONTAL_ALIGNMENT_CENTER, int(rect.size.x), 17, Color("#FAF5E6"))
 
 
 func _draw_star(center: Vector2, radius: float, color: Color) -> void:
