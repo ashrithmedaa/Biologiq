@@ -2,7 +2,12 @@ extends Node2D
 
 const SHARON_SHEET := "res://Art Assets/Sharon O_Riley - Typing.png"
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const SAM_FRONT_SHEET := "res://Art Assets/Sam - Front walking spritesheet transparent.png"
+const SAM_SIDE_SHEET := "res://Art Assets/Sam - Side walking spritesheet.png"
+const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
+const MAIN_ENTRANCE_POSITION := Vector2(1800, 390)
 const WALK_SPEED := 230.0
+const SAM_WALK_SPEED := 250.0
 const INTERACT_DISTANCE := 78.0
 const WORLD_WIDTH := 3600.0
 const WORLD_HEIGHT := 2400.0
@@ -16,12 +21,25 @@ var dialogue_panel: PanelContainer
 var dialogue_label: Label
 var dialogue_hint: Label
 var interaction_hint: Label
+var guide_label: Label
+var sam: Node2D
+var sam_sprite: AnimatedSprite2D
+var sam_interaction_index := -1
+var sam_last_stop_position := Vector2.ZERO
 var floor_title: Label
 var menu_layer: CanvasLayer
 var menu_status_label: Label
 var dialogue_lines: Array[String] = []
 var dialogue_index := 0
 var dialogue_open := false
+var dialogue_completes_checkin := false
+var dialogue_completes_sam_intro := false
+var sharon_checked_in := false
+var sam_intro_done := false
+var sam_entrance_active := false
+var tour_phase := 0
+var tour_moving := false
+var dialogue_completes_tour_stop := false
 var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
@@ -40,18 +58,33 @@ func _ready() -> void:
 	if save_manager != null:
 		save_manager.register_state_provider(self)
 		restore_save_state(save_manager.get_save_state())
-		player.position = save_manager.take_room_return_position(player.position)
-	if not _is_walkable_position(player.global_position):
-		player.position = Vector2(1800, 650)
+		save_manager.take_room_return_position(MAIN_ENTRANCE_POSITION)
+	player.global_position = MAIN_ENTRANCE_POSITION
+	if sam_intro_done and tour_phase == 0:
+		tour_phase = 1
+		if sam_last_stop_position == Vector2.ZERO:
+			sam.global_position = player.global_position + Vector2(58, 10)
 	_build_hud()
 	_build_menu()
+	if sharon_checked_in and not sam_intro_done:
+		_begin_sam_entrance()
+	elif sam_intro_done:
+		sam.show()
+		if tour_phase in [1, 3, 5]:
+			_begin_tour_walk()
+		elif tour_phase in [2, 4, 6]:
+			guide_label.text = "Talk to Sam"
+			guide_label.show()
+		elif tour_phase >= 7:
+			guide_label.text = "Tour complete"
+			guide_label.show()
 	if save_manager != null:
 		save_manager.status_changed.connect(_on_save_status_changed)
 	_update_player_animation(false)
 
 
 func _physics_process(_delta: float) -> void:
-	if dialogue_open or menu_open:
+	if dialogue_open or menu_open or sam_entrance_active:
 		player.velocity = Vector2.ZERO
 		_update_player_animation(false)
 		return
@@ -71,6 +104,7 @@ func _physics_process(_delta: float) -> void:
 	_update_interaction_hint()
 	if floor_title != null:
 		floor_title.text = "BIOLOGIQ  /  FLOOR 2" if player.global_position.y > 1000.0 else "BIOLOGIQ  /  FLOOR 1"
+	_update_sam_interactable()
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -92,6 +126,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_advance_dialogue()
 		return
 	if event.keycode == KEY_E and not dialogue_open and not menu_open:
+		if sam_entrance_active:
+			return
 		_interact()
 		return
 
@@ -131,6 +167,12 @@ func capture_save_state() -> Dictionary:
 	state["player"] = player_data
 	state["degree_program"] = player_program
 	state["degree_status"] = player_status
+	state["sharon_checked_in"] = sharon_checked_in
+	state["sam_intro_done"] = sam_intro_done
+	state["tour_phase"] = tour_phase
+	if is_instance_valid(sam):
+		state["sam_position"] = sam.global_position
+		state["sam_last_stop_position"] = sam_last_stop_position
 	state.erase("inventory")
 	return state
 
@@ -138,6 +180,15 @@ func capture_save_state() -> Dictionary:
 func restore_save_state(data: Dictionary) -> void:
 	player_program = str(data.get("degree_program", player_program))
 	player_status = str(data.get("degree_status", player_status))
+	sharon_checked_in = bool(data.get("sharon_checked_in", false))
+	sam_intro_done = bool(data.get("sam_intro_done", false))
+	tour_phase = int(data.get("tour_phase", tour_phase))
+	var saved_sam_position: Variant = data.get("sam_position", Vector2.ZERO)
+	if is_instance_valid(sam) and saved_sam_position is Vector2 and saved_sam_position != Vector2.ZERO:
+		sam.global_position = saved_sam_position
+	var saved_sam_stop: Variant = data.get("sam_last_stop_position", Vector2.ZERO)
+	if saved_sam_stop is Vector2:
+		sam_last_stop_position = saved_sam_stop
 	var player_data: Dictionary = data.get("player", {}) if data.get("player", {}) is Dictionary else {}
 	var saved_position: Variant = player_data.get("position", Vector2.ZERO)
 	if is_instance_valid(player) and saved_position is Vector2 and saved_position != Vector2.ZERO:
@@ -217,7 +268,13 @@ func _build_characters() -> void:
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
 	sharon_sprite.position = Vector2(0, -72)
 	sharon_sprite.play("typing")
-	_add_character_interaction("Sharon O'Riley", sharon.position, ["SHARON: Welcome to BIOLOGIQ. Please check in before exploring.", "SHARON: Your orientation packet is ready. The room plaques show the training level for each lab."])
+	_add_character_interaction("Sharon O'Riley", sharon.position, [])
+	sam = _make_npc("Sam", Vector2(2320, 690), _sam_frames(), 0.19)
+	sam_sprite = sam.get_node("Sprite") as AnimatedSprite2D
+	_set_sam_walk_animation("walk_left")
+	sam_sprite.stop()
+	sam.hide()
+	sam_interaction_index = _add_character_interaction("Sam", sam.position, [])
 	var desk_collider := StaticBody2D.new()
 	desk_collider.name = "ReceptionDeskCollider"
 	desk_collider.position = Vector2(2075, 594)
@@ -309,6 +366,37 @@ func _sharon_frames() -> SpriteFrames:
 	return frames
 
 
+func _sam_frames() -> SpriteFrames:
+	var frames := SpriteFrames.new()
+	if frames.has_animation("default"):
+		frames.remove_animation("default")
+	_add_strip(frames, "walk_front", SAM_FRONT_SHEET, 0, 4, Vector2(1600, 1600), true, 10.0)
+	_add_strip(frames, "walk_right", SAM_SIDE_SHEET, 0, 3, Vector2(1600, 1600), true, 10.0)
+	# The side sheet changes facing direction halfway through; use its left-facing frames only.
+	_add_strip(frames, "walk_left", SAM_SIDE_SHEET, 3, 3, Vector2(1600, 1600), true, 10.0)
+	var back_sheet := _sam_back_sheet_upscaled()
+	frames.add_animation("walk_back")
+	frames.set_animation_loop("walk_back", true)
+	frames.set_animation_speed("walk_back", 8.0)
+	for index in 4:
+		var atlas := AtlasTexture.new()
+		atlas.atlas = back_sheet
+		atlas.region = Rect2(Vector2(index * 1600, 0), Vector2(1600, 1600))
+		frames.add_frame("walk_back", atlas)
+	return frames
+
+
+func _sam_back_sheet_upscaled() -> Texture2D:
+	var source := Image.load_from_file(SAM_BACK_SHEET)
+	var enlarged := Image.create(6400, 1600, false, Image.FORMAT_RGBA8)
+	enlarged.fill(Color(0, 0, 0, 0))
+	for index in 4:
+		var frame := source.get_region(Rect2i(index * 100, 0, 100, 100))
+		frame.resize(1600, 1600, Image.INTERPOLATE_NEAREST)
+		enlarged.blit_rect(frame, Rect2i(0, 0, 1600, 1600), Vector2i(index * 1600, 0))
+	return ImageTexture.create_from_image(enlarged)
+
+
 func _add_strip(frames: SpriteFrames, animation_name: String, path: String, start_x: int, count: int, frame_size: Vector2, looping: bool, speed: float) -> void:
 	if frames.has_animation("default"):
 		frames.remove_animation("default")
@@ -333,6 +421,14 @@ func _build_hud() -> void:
 	status.add_theme_font_size_override("font_size", 14)
 	interaction_hint = _label(hud, "InteractionHint", "", Vector2(270, 645), Vector2(740, 32), 17, Color("#143d47"))
 	interaction_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	guide_label = _label(hud, "GuidePrompt", "Speak to Sharon at the front desk", Vector2(0, 18), Vector2(1280, 38), 22, Color("#fff9e9"))
+	guide_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	guide_label.add_theme_color_override("font_shadow_color", Color("#143d47"))
+	guide_label.add_theme_constant_override("shadow_offset_x", 2)
+	guide_label.add_theme_constant_override("shadow_offset_y", 2)
+	guide_label.visible = not sam_intro_done
+	if sam_intro_done:
+		guide_label.text = "Follow Sam"
 	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
 	controls.add_theme_font_size_override("font_size", 13)
 
@@ -348,8 +444,11 @@ func _build_hud() -> void:
 	style.content_margin_top = 12
 	style.content_margin_bottom = 10
 	dialogue_panel.add_theme_stylebox_override("panel", style)
+	dialogue_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	dialogue_panel.gui_input.connect(_on_dialogue_gui_input)
 	hud.add_child(dialogue_panel)
 	var box := VBoxContainer.new()
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_theme_constant_override("separation", 7)
 	dialogue_panel.add_child(box)
 	dialogue_label = Label.new()
@@ -357,9 +456,11 @@ func _build_hud() -> void:
 	dialogue_label.add_theme_color_override("font_color", Color("#fff9e9"))
 	dialogue_label.add_theme_font_size_override("font_size", 18)
 	dialogue_label.custom_minimum_size = Vector2(810, 50)
+	dialogue_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(dialogue_label)
 	var hint := Label.new()
 	hint.name = "DialogueHint"
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hint.add_theme_color_override("font_color", Color("#b8d2c6"))
 	hint.add_theme_font_size_override("font_size", 12)
 	box.add_child(hint)
@@ -467,18 +568,31 @@ func _interact() -> void:
 		return
 	var kind := str(target.kind)
 	if kind == "person":
-		_start_dialogue(target.lines)
+		if str(target.name) == "Sharon O'Riley" and not sharon_checked_in:
+			_start_dialogue([
+				"Welcome to Biologiq.",
+				"You must be the new intern.",
+				"Let me get you checked in",
+				"*Sharon types a bunch of information on her computer*",
+				"Alright you should be good to..."
+			], true)
+		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
+			dialogue_completes_tour_stop = true
+			_start_dialogue(_tour_lines_for_phase(tour_phase))
+		else:
+			_start_dialogue(target.lines)
 		return
 	_start_dialogue([str(target.description)])
 
 
-func _start_dialogue(lines: Array) -> void:
+func _start_dialogue(lines: Array, completes_checkin: bool = false) -> void:
 	dialogue_lines.clear()
 	for line in lines:
 		dialogue_lines.append(str(line))
 	if dialogue_lines.is_empty():
 		return
 	dialogue_index = 0
+	dialogue_completes_checkin = completes_checkin
 	dialogue_open = true
 	dialogue_panel.show()
 	_show_dialogue_line()
@@ -486,7 +600,7 @@ func _start_dialogue(lines: Array) -> void:
 
 func _show_dialogue_line() -> void:
 	dialogue_label.text = dialogue_lines[dialogue_index]
-	dialogue_hint.text = "ENTER continue"
+	dialogue_hint.text = "Click or press Enter to continue"
 
 
 func _advance_dialogue() -> void:
@@ -494,11 +608,166 @@ func _advance_dialogue() -> void:
 		dialogue_index += 1
 		_show_dialogue_line()
 	else:
+		if dialogue_completes_checkin:
+			sharon_checked_in = true
+			dialogue_completes_checkin = false
+			_begin_sam_entrance()
+		if dialogue_completes_sam_intro:
+			sam_intro_done = true
+			dialogue_completes_sam_intro = false
+			tour_phase = 1
+			guide_label.text = "Follow Sam"
+			guide_label.show()
+			_begin_tour_walk()
+		if dialogue_completes_tour_stop:
+			dialogue_completes_tour_stop = false
+			_begin_next_tour_leg()
 		_close_dialogue()
+
+
+func _on_dialogue_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed and dialogue_open:
+		_advance_dialogue()
+		dialogue_panel.accept_event()
+
+
+func _begin_sam_entrance() -> void:
+	if sam_entrance_active or sam_intro_done:
+		return
+	sam_entrance_active = true
+	guide_label.text = "Sam is coming to meet you..."
+	guide_label.show()
+	interaction_hint.text = ""
+	sam.position = Vector2(maxf(player.global_position.x + 360.0, 2320.0), player.global_position.y + 10.0)
+	sam.show()
+	_set_sam_walk_animation("walk_left")
+	var target_position := Vector2(player.global_position.x + 58.0, player.global_position.y + 10.0)
+	var walk_duration := maxf(0.8, sam.position.distance_to(target_position) / SAM_WALK_SPEED)
+	var entrance := create_tween()
+	entrance.tween_property(sam, "position", target_position, walk_duration)
+	entrance.finished.connect(_on_sam_arrived)
+
+
+func _on_sam_arrived() -> void:
+	_set_sam_walk_animation("walk_left")
+	sam_sprite.stop()
+	sam_entrance_active = false
+	dialogue_completes_sam_intro = true
+	_start_dialogue([
+		"Hey, you must be the new kid that's shadowing me",
+		"Don't worry I'll make sure you know everything about what we do here at biologiq",
+		"Let me give you a tour"
+	])
+
+
+func _tour_lines_for_phase(phase: int) -> Array[String]:
+	match phase:
+		2:
+			return [
+				"This is the college and Job Quarters wing.",
+				"The College Lab and Low College Lab are along this hallway.",
+				"The Job Quarters are at this end of the hall."
+			]
+		4:
+			return [
+				"This is our research and graduate wing.",
+				"On this side are the Bachelor's Lab, Molecular Biology, and Biochemistry.",
+				"Across the hall are the Master's Suite, Advanced Research, and Graduate Suite."
+			]
+		6:
+			return [
+				"This hallway has the Intern Quarters, Student Lab, and Reception.",
+				"Reception is where you checked in.",
+				"The Student Lab and Intern Quarters are down this wing."
+			]
+	return []
+
+
+func _begin_tour_walk() -> void:
+	if tour_moving:
+		return
+	tour_moving = true
+	guide_label.text = "Follow Sam"
+	guide_label.show()
+	interaction_hint.text = ""
+	var route: Array[Vector2] = []
+	match tour_phase:
+		1:
+			route.append(Vector2(3300, 650))
+		3:
+			route.append(Vector2(1800, 650))
+			route.append(Vector2(1800, 900))
+			route.append(Vector2(1800, 2180))
+		5:
+			route.append(Vector2(1800, 900))
+			route.append(Vector2(400, 900))
+			route.append(Vector2(400, 650))
+	if route.is_empty():
+		tour_moving = false
+		return
+	var tour_tween := create_tween()
+	var segment_start := sam.global_position
+	for waypoint in route:
+		var segment_delta := waypoint - segment_start
+		var walk_animation := "walk_front"
+		if absf(segment_delta.x) > absf(segment_delta.y):
+			walk_animation = "walk_right" if segment_delta.x > 0.0 else "walk_left"
+		else:
+			walk_animation = "walk_front" if segment_delta.y > 0.0 else "walk_back"
+		tour_tween.tween_callback(_set_sam_walk_animation.bind(walk_animation))
+		tour_tween.tween_property(sam, "position", waypoint, maxf(0.4, segment_delta.length() / SAM_WALK_SPEED))
+		segment_start = waypoint
+	tour_tween.finished.connect(_on_tour_stop_arrived)
+
+
+func _set_sam_walk_animation(animation_name: String) -> void:
+	# Align each sheet's character bounds to the same feet point and center so turns don't snap.
+	match animation_name:
+		"walk_front": sam_sprite.position = Vector2(37, -32)
+		"walk_right": sam_sprite.position = Vector2(79, -18)
+		"walk_left": sam_sprite.position = Vector2(-79, -18)
+		"walk_back": sam_sprite.position = Vector2(82, -9)
+	sam_sprite.play(animation_name)
+
+
+func _on_tour_stop_arrived() -> void:
+	tour_moving = false
+	sam_sprite.stop()
+	sam_last_stop_position = sam.global_position
+	tour_phase += 1
+	guide_label.text = "Talk to Sam"
+	guide_label.show()
+	_update_sam_interactable()
+
+
+func _begin_next_tour_leg() -> void:
+	if sam_last_stop_position != Vector2.ZERO:
+		sam.global_position = sam_last_stop_position
+	if tour_phase == 2:
+		tour_phase = 3
+	elif tour_phase == 4:
+		tour_phase = 5
+	elif tour_phase == 6:
+		tour_phase = 7
+		guide_label.text = "Tour complete"
+		guide_label.show()
+		return
+	_begin_tour_walk()
+
+
+func _update_sam_interactable() -> void:
+	if sam_interaction_index < 0 or not is_instance_valid(sam):
+		return
+	var sam_interaction: Dictionary = interactables[sam_interaction_index]
+	sam_interaction["position"] = sam.global_position
+	interactables[sam_interaction_index] = sam_interaction
 
 
 func _close_dialogue() -> void:
 	dialogue_open = false
+	dialogue_completes_checkin = false
+	dialogue_completes_sam_intro = false
+	dialogue_completes_tour_stop = false
 	dialogue_panel.hide()
 	_update_interaction_hint()
 
@@ -529,7 +798,7 @@ func _is_walkable_position(at: Vector2) -> bool:
 
 
 func _update_interaction_hint() -> void:
-	if dialogue_open or menu_open:
+	if dialogue_open or menu_open or sam_entrance_active or tour_moving:
 		interaction_hint.text = ""
 		return
 	var target := _nearest_interactable()
