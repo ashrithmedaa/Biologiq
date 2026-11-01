@@ -8,6 +8,7 @@ const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
 const MAIN_ENTRANCE_POSITION := Vector2(1800, 390)
 const WALK_SPEED := 230.0
 const SAM_WALK_SPEED := 250.0
+const DIALOGUE_CHARACTERS_PER_SECOND := 38.0
 const INTERACT_DISTANCE := 78.0
 const WORLD_WIDTH := 3600.0
 const WORLD_HEIGHT := 2400.0
@@ -32,6 +33,8 @@ var menu_status_label: Label
 var dialogue_lines: Array[String] = []
 var dialogue_index := 0
 var dialogue_open := false
+var dialogue_typing := false
+var dialogue_type_progress := 0.0
 var dialogue_completes_checkin := false
 var dialogue_completes_sam_intro := false
 var sharon_checked_in := false
@@ -105,6 +108,17 @@ func _physics_process(_delta: float) -> void:
 	if floor_title != null:
 		floor_title.text = "BIOLOGIQ  /  FLOOR 2" if player.global_position.y > 1000.0 else "BIOLOGIQ  /  FLOOR 1"
 	_update_sam_interactable()
+
+
+func _process(delta: float) -> void:
+	if not dialogue_open or not dialogue_typing:
+		return
+	dialogue_type_progress += DIALOGUE_CHARACTERS_PER_SECOND * delta
+	var visible_count := mini(int(dialogue_type_progress), dialogue_label.text.length())
+	dialogue_label.visible_characters = visible_count
+	if visible_count >= dialogue_label.text.length():
+		dialogue_typing = false
+		dialogue_hint.text = "Click or press Enter to continue"
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -569,13 +583,7 @@ func _interact() -> void:
 	var kind := str(target.kind)
 	if kind == "person":
 		if str(target.name) == "Sharon O'Riley" and not sharon_checked_in:
-			_start_dialogue([
-				"Welcome to Biologiq.",
-				"You must be the new intern.",
-				"Let me get you checked in",
-				"*Sharon types a bunch of information on her computer*",
-				"Alright you should be good to..."
-			], true)
+			_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
 		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
 			dialogue_completes_tour_stop = true
 			_start_dialogue(_tour_lines_for_phase(tour_phase))
@@ -600,10 +608,18 @@ func _start_dialogue(lines: Array, completes_checkin: bool = false) -> void:
 
 func _show_dialogue_line() -> void:
 	dialogue_label.text = dialogue_lines[dialogue_index]
-	dialogue_hint.text = "Click or press Enter to continue"
+	dialogue_label.visible_characters = 0
+	dialogue_type_progress = 0.0
+	dialogue_typing = not dialogue_label.text.is_empty()
+	dialogue_hint.text = "Click or press Enter to reveal" if dialogue_typing else "Click or press Enter to continue"
 
 
 func _advance_dialogue() -> void:
+	if dialogue_typing:
+		dialogue_label.visible_characters = -1
+		dialogue_typing = false
+		dialogue_hint.text = "Click or press Enter to continue"
+		return
 	if dialogue_index + 1 < dialogue_lines.size():
 		dialogue_index += 1
 		_show_dialogue_line()
@@ -654,9 +670,9 @@ func _on_sam_arrived() -> void:
 	sam_entrance_active = false
 	dialogue_completes_sam_intro = true
 	_start_dialogue([
-		"Hey, you must be the new kid that's shadowing me",
-		"Don't worry I'll make sure you know everything about what we do here at biologiq",
-		"Let me give you a tour"
+		"Sam: I’ve got it from here, Sharon! Hey there, new hire!",
+		"Sharon: She’s not here for a job, Sam. She’s here for the internship. And don’t you have work to be ignoring somewhere else?",
+		"Sam: Oh I’m just joking around. Come on, follow me. I’m your official tour guide today!"
 	])
 
 
