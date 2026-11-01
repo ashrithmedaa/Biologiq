@@ -5,8 +5,9 @@ const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side
 const WALK_SPEED := 230.0
 const INTERACT_DISTANCE := 78.0
 const WORLD_WIDTH := 3600.0
-const WORLD_HEIGHT := 1080.0
-const DEGREE_RANK := {"Internship": 0, "High School": 1, "College": 2, "Bachelor's": 3, "Master's": 4, "Doctorate": 5}
+const WORLD_HEIGHT := 2400.0
+const DOOR_HEIGHT := 148.0
+const SIDE_DOOR_HEIGHT := 80.0
 
 var player: CharacterBody2D
 var player_sprite: AnimatedSprite2D
@@ -15,24 +16,19 @@ var dialogue_panel: PanelContainer
 var dialogue_label: Label
 var dialogue_hint: Label
 var interaction_hint: Label
-var inventory_label: Label
 var floor_title: Label
 var menu_layer: CanvasLayer
 var menu_status_label: Label
 var dialogue_lines: Array[String] = []
-var dialogue_choices: Array[String] = []
-var choice_actions: Array[String] = []
-var choice_buttons: Array[Button] = []
-var selected_choice := 0
 var dialogue_index := 0
 var dialogue_open := false
 var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
-var inventory: Array[String] = []
+var room_doors: Array[Dictionary] = []
 var player_program := "Research Shadowing"
 var player_status := "Master's"
-var hovered_object := -1
+var side_door_texture: Texture2D
 
 
 func _ready() -> void:
@@ -45,6 +41,8 @@ func _ready() -> void:
 		save_manager.register_state_provider(self)
 		restore_save_state(save_manager.get_save_state())
 		player.position = save_manager.take_room_return_position(player.position)
+	if not _is_walkable_position(player.global_position):
+		player.position = Vector2(1800, 650)
 	_build_hud()
 	_build_menu()
 	if save_manager != null:
@@ -69,18 +67,10 @@ func _physics_process(_delta: float) -> void:
 	if not _is_walkable_position(player.global_position):
 		player.global_position = previous_position
 		player.velocity = Vector2.ZERO
-	_enforce_room_access(previous_position)
 	_update_player_animation(direction.length_squared() > 0.0)
 	_update_interaction_hint()
 	if floor_title != null:
-		floor_title.text = "BIOLOGIQ  /  FLOOR 2" if player.global_position.y > 540.0 else "BIOLOGIQ  /  FLOOR 1"
-
-
-func _process(_delta: float) -> void:
-	var hovered := _find_hovered_object()
-	if hovered != hovered_object:
-		hovered_object = hovered
-		queue_redraw()
+		floor_title.text = "BIOLOGIQ  /  FLOOR 2" if player.global_position.y > 1000.0 else "BIOLOGIQ  /  FLOOR 1"
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -99,19 +89,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
 		if dialogue_open:
-			if not dialogue_choices.is_empty():
-				_choose_dialogue_option(selected_choice)
-			else:
-				_advance_dialogue()
+			_advance_dialogue()
 		return
 	if event.keycode == KEY_E and not dialogue_open and not menu_open:
 		_interact()
 		return
-	if dialogue_open and not dialogue_choices.is_empty():
-		if event.keycode == KEY_LEFT or event.keycode == KEY_A:
-			_select_choice(maxi(0, selected_choice - 1))
-		elif event.keycode == KEY_RIGHT or event.keycode == KEY_D:
-			_select_choice(mini(dialogue_choices.size() - 1, selected_choice + 1))
 
 
 func _setup_input() -> void:
@@ -139,7 +121,6 @@ func _load_player_status() -> void:
 	var saved: Dictionary = get_node("/root/SaveManager").get_save_state()
 	player_program = str(saved.get("degree_program", player_program))
 	player_status = str(saved.get("degree_status", player_status))
-	inventory.assign(saved.get("inventory", []))
 
 
 func capture_save_state() -> Dictionary:
@@ -150,14 +131,13 @@ func capture_save_state() -> Dictionary:
 	state["player"] = player_data
 	state["degree_program"] = player_program
 	state["degree_status"] = player_status
-	state["inventory"] = inventory.duplicate()
+	state.erase("inventory")
 	return state
 
 
 func restore_save_state(data: Dictionary) -> void:
 	player_program = str(data.get("degree_program", player_program))
 	player_status = str(data.get("degree_status", player_status))
-	inventory.assign(data.get("inventory", []))
 	var player_data: Dictionary = data.get("player", {}) if data.get("player", {}) is Dictionary else {}
 	var saved_position: Variant = player_data.get("position", Vector2.ZERO)
 	if is_instance_valid(player) and saved_position is Vector2 and saved_position != Vector2.ZERO:
@@ -165,66 +145,92 @@ func restore_save_state(data: Dictionary) -> void:
 
 
 func _build_map() -> void:
-	# Floor one: reception and training rooms run along the east-west hall.
-	_add_room("Internship", "Reception", "Sharon O'Riley", 0, Rect2(250, 145, 230, 145), Vector2(360, 300), Vector2(360, 310), "reception_room.tscn")
-	_add_room("Internship", "Intern Quarters", "Internship Program", 0, Rect2(510, 145, 210, 145), Vector2(615, 300), Vector2(615, 310), "internship_room.tscn")
-	_add_room("High School", "Student Lab", "Dr. Eli Warren", 1, Rect2(760, 145, 210, 145), Vector2(865, 300), Vector2(865, 310), "student_lab_room.tscn")
-	_add_room("College", "College Lab", "Dr. Nia Brooks", 2, Rect2(1010, 145, 220, 145), Vector2(1120, 300), Vector2(1120, 310), "college_lab_room.tscn")
-	_add_room("College", "Low College Lab", "Dr. Samir Lee", 2, Rect2(1270, 145, 220, 145), Vector2(1380, 300), Vector2(1380, 310), "low_college_room.tscn")
-	_add_room("College", "Job Quarters", "College Team", 2, Rect2(1510, 145, 200, 145), Vector2(1610, 300), Vector2(1610, 310), "job_quarters_room.tscn")
+	# First-floor rooms form the broad crossbar, with the entrance centered below the sign.
+	_add_room("Intern Quarters", Rect2(320, 210, 300, 240), Vector2(470, 450))
+	_add_room("Student Lab", Rect2(660, 210, 300, 240), Vector2(810, 450))
+	_add_room("Reception", Rect2(1000, 210, 300, 240), Vector2(1150, 450))
+	_add_room("College Lab", Rect2(2300, 210, 300, 240), Vector2(2450, 450))
+	_add_room("Low College Lab", Rect2(2640, 210, 300, 240), Vector2(2790, 450))
+	_add_room("Job Quarters", Rect2(2980, 210, 300, 240), Vector2(3130, 450))
 
-	# Floor two starts beyond the stairwell and continues down the long hall.
-	_add_room("Bachelor's", "Bachelor's Lab", "Dr. Jun Park", 3, Rect2(1850, 510, 200, 145), Vector2(1950, 665), Vector2(1950, 675), "bachelors_room.tscn")
-	_add_room("Master's", "Molecular Biology", "Dr. Maria-Rose Valdez", 4, Rect2(2090, 510, 230, 145), Vector2(2205, 665), Vector2(2205, 675), "molecular_biology_room.tscn")
-	_add_room("Master's", "Biochemistry", "Dr. Valdez's Team", 4, Rect2(2360, 510, 220, 145), Vector2(2470, 665), Vector2(2470, 675), "biochemistry_room.tscn")
-	_add_room("Master's", "Masters Suite", "Dr. Maria-Rose Valdez", 4, Rect2(2620, 810, 220, 145), Vector2(2730, 796), Vector2(2730, 790), "masters_suite_room.tscn")
-	_add_room("Doctorate", "Advanced Research", "Dr. Ravi Shah", 5, Rect2(2880, 510, 220, 145), Vector2(2990, 665), Vector2(2990, 675), "advanced_research_room.tscn")
-	_add_room("Doctorate", "Graduate Suite", "Dr. Ravi Shah", 5, Rect2(3140, 810, 220, 145), Vector2(3250, 796), Vector2(3250, 790), "graduate_suite_room.tscn")
+	# The research wing forms the long stem below the first-floor crossbar.
+	_add_room("Bachelor's Lab", Rect2(900, 1120, 500, 250), Vector2(1400, 1330), "right")
+	_add_room("Molecular Biology", Rect2(900, 1420, 500, 250), Vector2(1400, 1630), "right")
+	_add_room("Biochemistry", Rect2(900, 1720, 500, 250), Vector2(1400, 1930), "right")
+	_add_room("Masters Suite", Rect2(2200, 1120, 500, 250), Vector2(2200, 1330), "left")
+	_add_room("Advanced Research", Rect2(2200, 1420, 500, 250), Vector2(2200, 1630), "left")
+	_add_room("Graduate Suite", Rect2(2200, 1720, 500, 250), Vector2(2200, 1930), "left")
 
-	_add_object("Reception desk", Vector2(185, 250), "A tidy reception desk. Sharon is sorting today's visitor badges.", "inspect")
-	_add_object("Visitor badge", Vector2(245, 250), "A visitor badge with a clip and a blank name strip.", "pickup", "Pick up", "Leave")
-	_add_object("Large succulent", Vector2(180, 445), "It's quite a large succulent. The leaves look healthy and glossy.", "inspect")
-	_add_object("Gel electrophoresis box", Vector2(2470, 745), "A gel electrophoresis box. Begin a sample-preparation minigame?", "minigame", "Start minigame", "Not now")
-	_add_object("Lab notebook", Vector2(3370, 745), "A lab notebook with several pages of careful observations.", "pickup", "Pick up", "Leave")
-	_add_object("Stairwell", Vector2(1740, 550), "The stairwell links the first-floor hall to the second-floor research wing.", "inspect")
-	_add_object("Exit", Vector2(100, 370), "The front entrance leads back to the walkway and the town.", "inspect")
+	_add_object("Large succulent", Vector2(1510, 740), "A healthy succulent brightens the reception hall.", "inspect")
+	_add_object("Stairwell", Vector2(1800, 960), "The stairwell connects the first-floor cross hall to the research wing.", "inspect")
+	_build_side_door_sprites()
 	queue_redraw()
 
 
-func _add_room(status: String, room_name: String, owner: String, rank: int, room_rect: Rect2, plaque_position: Vector2, entrance_position: Vector2, scene_file: String) -> void:
-	interactables.append({
-		"name": room_name, "position": entrance_position, "plaque_position": plaque_position, "kind": "room",
-		"description": room_name + " — " + owner + ".", "status": status, "rank": rank,
-		"owner": owner, "room_rect": room_rect,
-		"scene_path": "res://Scenes/Rooms/" + scene_file,
-	})
+func _add_room(room_name: String, room_rect: Rect2, door_position: Vector2, door_side: String = "bottom") -> void:
+	room_doors.append({"name": room_name, "room_rect": room_rect, "position": door_position, "side": door_side})
 
 
-func _add_object(object_name: String, at: Vector2, description: String, kind: String, first_choice: String = "", second_choice: String = "") -> void:
-	var entry := {"name": object_name, "position": at, "kind": kind, "description": description}
-	if first_choice != "":
-		entry["choices"] = [first_choice, second_choice]
-	interactables.append(entry)
+func _build_side_door_sprites() -> void:
+	side_door_texture = _make_side_door_texture()
+	for room in room_doors:
+		var side := str(room.get("side", "bottom"))
+		if side != "left" and side != "right":
+			continue
+		var door: Vector2 = room.position
+		var sprite := Sprite2D.new()
+		sprite.name = "%sClosedDoor" % str(room.name).replace(" ", "")
+		sprite.texture = side_door_texture
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		sprite.flip_h = side == "left"
+		sprite.position = Vector2(door.x + 10.0 if side == "right" else door.x - 10.0, door.y)
+		add_child(sprite)
+
+
+func _make_side_door_texture() -> ImageTexture:
+	var image := Image.create(20, int(SIDE_DOOR_HEIGHT), false, Image.FORMAT_RGBA8)
+	image.fill(Color(0, 0, 0, 0))
+	_image_rect(image, Rect2i(0, 0, 8, int(SIDE_DOOR_HEIGHT)), Color("#81563b"))
+	_image_rect(image, Rect2i(2, 0, 3, int(SIDE_DOOR_HEIGHT)), Color("#a87550"))
+	for y in [8, 38, 69]:
+		_image_rect(image, Rect2i(0, y, 8, 3), Color("#704932"))
+	for y in range(56, 63):
+		for x in range(10, 17):
+			if Vector2(x - 13, y - 59).length_squared() <= 10.0:
+				image.set_pixel(x, y, Color("#f3d28a"))
+	return ImageTexture.create_from_image(image)
+
+
+func _image_rect(image: Image, rect: Rect2i, color: Color) -> void:
+	for x in range(rect.position.x, rect.end.x):
+		for y in range(rect.position.y, rect.end.y):
+			image.set_pixel(x, y, color)
+
+
+func _add_object(object_name: String, at: Vector2, description: String, kind: String) -> void:
+	interactables.append({"name": object_name, "position": at, "kind": kind, "description": description})
 
 
 func _build_characters() -> void:
 	# Use only the seated figure from each sprite-sheet frame; the standing pose is a separate figure in the same cell.
-	var sharon := _make_npc("Sharon", Vector2(194, 276), _sharon_frames(), 3.4)
+	var sharon := _make_npc("Sharon", Vector2(2070, 590), _sharon_frames(), 3.4)
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
 	sharon_sprite.position = Vector2(0, -72)
 	sharon_sprite.play("typing")
 	_add_character_interaction("Sharon O'Riley", sharon.position, ["SHARON: Welcome to BIOLOGIQ. Please check in before exploring.", "SHARON: Your orientation packet is ready. The room plaques show the training level for each lab."])
-	# The navy front panel hides Sharon's lower half, so she reads clearly as seated behind the counter.
-	var counter_front := Polygon2D.new()
-	counter_front.name = "ReceptionCounterFront"
-	counter_front.z_index = 1
-	counter_front.color = Color("#115293")
-	counter_front.polygon = PackedVector2Array([Vector2(112, 258), Vector2(280, 258), Vector2(280, 282), Vector2(112, 282)])
-	add_child(counter_front)
+	var desk_collider := StaticBody2D.new()
+	desk_collider.name = "ReceptionDeskCollider"
+	desk_collider.position = Vector2(2075, 594)
+	var desk_shape := CollisionShape2D.new()
+	var desk_rectangle := RectangleShape2D.new()
+	desk_rectangle.size = Vector2(190, 48)
+	desk_shape.shape = desk_rectangle
+	desk_collider.add_child(desk_shape)
+	add_child(desk_collider)
 
 	player = CharacterBody2D.new()
 	player.name = "Player"
-	player.position = Vector2(200, 380)
+	player.position = Vector2(1800, 650)
 	add_child(player)
 	var shadow := Polygon2D.new()
 	shadow.name = "Shadow"
@@ -327,9 +333,7 @@ func _build_hud() -> void:
 	status.add_theme_font_size_override("font_size", 14)
 	interaction_hint = _label(hud, "InteractionHint", "", Vector2(270, 645), Vector2(740, 32), 17, Color("#143d47"))
 	interaction_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inventory_label = _label(hud, "Inventory", _inventory_text(), Vector2(875, 20), Vector2(380, 34), 14, Color("#42636a"))
-	inventory_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Interact   Enter Continue   F Menu", Vector2(25, 688), Vector2(750, 25), 13, Color("#42636a"))
+	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
 	controls.add_theme_font_size_override("font_size", 13)
 
 	dialogue_panel = PanelContainer.new()
@@ -354,17 +358,6 @@ func _build_hud() -> void:
 	dialogue_label.add_theme_font_size_override("font_size", 18)
 	dialogue_label.custom_minimum_size = Vector2(810, 50)
 	box.add_child(dialogue_label)
-	var choice_row := HBoxContainer.new()
-	choice_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	choice_row.add_theme_constant_override("separation", 18)
-	box.add_child(choice_row)
-	for index in 2:
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(260, 38)
-		button.add_theme_font_size_override("font_size", 15)
-		button.pressed.connect(_choose_dialogue_option.bind(index))
-		choice_row.add_child(button)
-		choice_buttons.append(button)
 	var hint := Label.new()
 	hint.name = "DialogueHint"
 	hint.add_theme_color_override("font_color", Color("#b8d2c6"))
@@ -473,49 +466,16 @@ func _interact() -> void:
 	if target.is_empty():
 		return
 	var kind := str(target.kind)
-	if kind == "room":
-		if int(target.rank) > int(DEGREE_RANK.get(player_status, 0)):
-			_start_dialogue(["UNAUTHORIZED ACCESS: %s required." % _required_status_text(str(target.status))])
-		else:
-			var save_manager := get_node_or_null("/root/SaveManager")
-			if save_manager != null:
-				save_manager.remember_room_entry_position(player.global_position)
-			var destination := str(target.scene_path)
-			if str(target.name) == "Student Lab" and save_manager != null:
-				if save_manager.is_student_lab_dna_complete():
-					destination = "res://Scenes/Rooms/student_lab_data_room.tscn"
-				elif save_manager.is_student_lab_pipette_complete():
-					destination = "res://Scenes/Rooms/student_lab_dna_room.tscn"
-			var error := get_tree().change_scene_to_file(destination)
-			if error != OK:
-				if save_manager != null:
-					save_manager.take_room_return_position(player.global_position)
-				_start_dialogue(["The %s room could not be opened." % str(target.name)])
-		return
 	if kind == "person":
 		_start_dialogue(target.lines)
 		return
-	var choices: Array[String] = []
-	var actions: Array[String] = []
-	if kind == "pickup":
-		if inventory.size() >= 2:
-			_start_dialogue(["You can carry only two objects. Your inventory is full."])
-			return
-		choices = ["Pick up", "Leave"]
-		actions = ["pickup", "leave"]
-	elif kind == "minigame":
-		choices = ["Start minigame", "Not now"]
-		actions = ["minigame", "leave"]
-	_start_dialogue([str(target.description)], choices, actions)
+	_start_dialogue([str(target.description)])
 
 
-func _start_dialogue(lines: Array, choices: Array[String] = [], actions: Array[String] = []) -> void:
+func _start_dialogue(lines: Array) -> void:
 	dialogue_lines.clear()
 	for line in lines:
 		dialogue_lines.append(str(line))
-	dialogue_choices = choices.duplicate()
-	choice_actions = actions.duplicate()
-	selected_choice = 0
 	if dialogue_lines.is_empty():
 		return
 	dialogue_index = 0
@@ -526,44 +486,7 @@ func _start_dialogue(lines: Array, choices: Array[String] = [], actions: Array[S
 
 func _show_dialogue_line() -> void:
 	dialogue_label.text = dialogue_lines[dialogue_index]
-	for index in choice_buttons.size():
-		var visible_choice := index < dialogue_choices.size()
-		choice_buttons[index].visible = visible_choice
-		if visible_choice:
-			choice_buttons[index].text = dialogue_choices[index]
-			choice_buttons[index].modulate = Color.WHITE if index == selected_choice else Color(0.76, 0.82, 0.8)
-		var hint := "← / → choose   ENTER select   ESC close" if not dialogue_choices.is_empty() else "ENTER continue"
-		dialogue_hint.text = hint
-
-
-func _select_choice(index: int) -> void:
-	selected_choice = index
-	_show_dialogue_line()
-
-
-func _choose_dialogue_option(index: int) -> void:
-	if index < 0 or index >= choice_actions.size():
-		return
-	var action := choice_actions[index]
-	var object_name := ""
-	var target := _nearest_interactable()
-	if not target.is_empty():
-		object_name = str(target.name)
-	match action:
-		"pickup":
-			if inventory.size() >= 2:
-				_close_dialogue()
-				_start_dialogue(["You can carry only two objects. Your inventory is full."])
-				return
-			inventory.append(object_name)
-			inventory_label.text = _inventory_text()
-			_save_inventory()
-			interactables.erase(target)
-			queue_redraw()
-			_close_dialogue()
-			_start_dialogue(["%s added to your inventory." % object_name])
-		_:
-			_close_dialogue()
+	dialogue_hint.text = "ENTER continue"
 
 
 func _advance_dialogue() -> void:
@@ -577,8 +500,6 @@ func _advance_dialogue() -> void:
 func _close_dialogue() -> void:
 	dialogue_open = false
 	dialogue_panel.hide()
-	dialogue_choices.clear()
-	choice_actions.clear()
 	_update_interaction_hint()
 
 
@@ -593,37 +514,18 @@ func _nearest_interactable() -> Dictionary:
 	return closest
 
 
-func _enforce_room_access(previous_position: Vector2) -> void:
-	for room in interactables:
-		if str(room.kind) != "room" or int(room.rank) <= int(DEGREE_RANK.get(player_status, 0)):
-			continue
-		if room.room_rect.has_point(player.global_position):
-			player.global_position = previous_position
-			return
-
-
 func _is_walkable_position(at: Vector2) -> bool:
-	# Keep movement on the two interior floorplates and their connecting stairwell.
-	# The only outside area left walkable is the small, marked entrance walkway.
+	# The player can move through the halls and stairwell. Room doors stay closed.
 	var walkable_zones: Array[Rect2] = [
-		Rect2(84, 120, 1604, 420),
-		Rect2(1664, 402, 156, 240),
-		Rect2(1808, 474, 1702, 456),
-		Rect2(14, 344, 82, 54),
+		Rect2(260, 450, 3080, 480),
+		Rect2(1542, 140, 516, 310),
+		Rect2(1400, 850, 800, 300),
+		Rect2(1400, 1090, 800, 1120),
 	]
 	for zone in walkable_zones:
 		if zone.has_point(at):
 			return true
 	return false
-
-
-func _find_hovered_object() -> int:
-	var mouse_position := get_global_mouse_position()
-	for index in interactables.size():
-		var hover_position: Vector2 = interactables[index].get("plaque_position", interactables[index].position)
-		if mouse_position.distance_to(hover_position) < 28.0:
-			return index
-	return -1
 
 
 func _update_interaction_hint() -> void:
@@ -633,12 +535,10 @@ func _update_interaction_hint() -> void:
 	var target := _nearest_interactable()
 	if target.is_empty():
 		interaction_hint.text = ""
-	elif str(target.kind) == "room" and int(target.rank) <= int(DEGREE_RANK.get(player_status, 0)):
-		interaction_hint.text = "Enter %s?   Press E to enter" % str(target.name)
-	elif str(target.kind) == "room":
-		interaction_hint.text = "%s room   ·   E to check access" % str(target.name)
+	elif str(target.kind) == "person":
+		interaction_hint.text = "E  Talk to %s" % str(target.name)
 	else:
-		interaction_hint.text = "E  Interact with %s" % str(target.name)
+		interaction_hint.text = "E  Inspect %s" % str(target.name)
 
 
 func _update_player_animation(is_moving: bool) -> void:
@@ -671,29 +571,6 @@ func _close_menu() -> void:
 	_update_interaction_hint()
 
 
-func _inventory_text() -> String:
-	return "Inventory  ·  " + (", ".join(PackedStringArray(inventory)) if not inventory.is_empty() else "empty")
-
-
-func _required_status_text(status: String) -> String:
-	match status:
-		"Master's": return "Master's degree"
-		"Bachelor's": return "Bachelor's degree"
-		"Doctorate": return "Doctoral degree"
-		"College": return "College enrollment"
-		"High School": return "High school enrollment"
-		_: return status
-
-
-func _save_inventory() -> void:
-	var manager := get_node_or_null("/root/SaveManager")
-	if manager == null:
-		return
-	var saved: Dictionary = manager.get_save_state()
-	saved["inventory"] = inventory.duplicate()
-	manager.set_save_state(saved)
-
-
 func _draw() -> void:
 	# Campus lawn uses broad color patches and pixel tufts instead of a hard checker pattern.
 	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#789b61"))
@@ -713,115 +590,179 @@ func _draw() -> void:
 	_draw_room_zones()
 	_draw_stairwell_and_walkway()
 	_draw_furniture_and_objects()
-	if hovered_object >= 0 and hovered_object < interactables.size():
-		var hovered: Dictionary = interactables[hovered_object]
-		var at: Vector2 = hovered.get("plaque_position", hovered.position)
-		draw_circle(at, 28, Color(0.94, 0.76, 0.31, 0.17))
-		draw_arc(at, 25, 0.0, TAU, 40, Color("#edaa42"), 3.0, true)
 
 
 func _draw_hallway() -> void:
-	# Two connected, clearly separated wings with consistent 16 px wall and tile rhythm.
-	_draw_pixel_panel(Rect2(54, 92, 1660, 475), Color("#192787"), Color("#FAF5E6"))
-	_draw_pixel_panel(Rect2(1780, 444, 1760, 520), Color("#192787"), Color("#FAF5E6"))
-	_draw_tile_floor(Rect2(72, 290, 1624, 248))
-	_draw_tile_floor(Rect2(1798, 638, 1724, 146))
-	for x in range(88, 1680, 32):
-		for y in range(306, 536, 32):
-			if (x / 32 + y / 32) % 2 == 0:
-				draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"))
-	for x in range(1814, 3500, 32):
-		for y in range(654, 782, 32):
-			if (x / 32 + y / 32) % 2 == 0:
-				draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"))
-	draw_string(ThemeDB.fallback_font, Vector2(92, 132), "01  /  FIRST FLOOR", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(1818, 484), "02  /  SECOND FLOOR", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(92, 156), "WELCOME • TRAINING • STUDENT LABS", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#5D9374"))
-	draw_string(ThemeDB.fallback_font, Vector2(1818, 508), "RESEARCH • GRADUATE STUDIES", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#5D9374"))
+	# A wide first-floor crossbar joined to a narrower research wing below forms the T plan.
+	_draw_pixel_panel(Rect2(240, 140, 3120, 820), Color("#192787"), Color("#d6dfc2"))
+	_draw_pixel_panel(Rect2(880, 920, 1840, 1320), Color("#192787"), Color("#d6dfc2"))
+	_draw_tile_floor(Rect2(260, 450, 3080, 480))
+	_draw_tile_floor(Rect2(1400, 930, 800, 180))
+	_draw_tile_floor(Rect2(1400, 1090, 800, 1120))
+	draw_rect(Rect2(260, 438, 3080, 12), Color("#5D9374"))
+	draw_rect(Rect2(260, 922, 3080, 10), Color("#8c6544"))
+	draw_rect(Rect2(1400, 1080, 800, 10), Color("#5D9374"))
+	draw_rect(Rect2(1400, 2200, 800, 10), Color("#8c6544"))
+	# Hall lights repeat along each axis and lead the eye through the T.
+	for x in range(500, 3300, 300):
+		if x < 1500 or x > 2100:
+			draw_rect(Rect2(x, 650, 120, 10), Color("#f7f0d9"))
+			draw_rect(Rect2(x + 8, 652, 104, 3), Color("#fffbea"))
+	for y in range(1220, 2180, 220):
+		draw_rect(Rect2(1740, y, 120, 10), Color("#f7f0d9"))
+		draw_rect(Rect2(1748, y + 2, 104, 3), Color("#fffbea"))
 
 
 func _draw_pixel_panel(rect: Rect2, outline: Color, fill: Color) -> void:
 	draw_rect(rect, outline)
 	draw_rect(Rect2(rect.position + Vector2(12, 12), rect.size - Vector2(24, 24)), fill)
-	# Repeating inset blocks give the walls a crisp pixel-art trim.
-	for x in range(int(rect.position.x + 16), int(rect.end.x - 16), 32):
-		draw_rect(Rect2(x, rect.position.y + 4, 16, 8), Color("#8BC8D8"))
-		draw_rect(Rect2(x, rect.end.y - 12, 16, 8), Color("#8BC8D8"))
+	# Thick baseboards and stepped wall caps echo the exterior laboratory art.
+	draw_rect(Rect2(rect.position.x + 12, rect.position.y + 12, rect.size.x - 24, 12), Color("#5D9374"))
+	draw_rect(Rect2(rect.position.x + 12, rect.end.y - 24, rect.size.x - 24, 12), Color("#8c6544"))
+	for x in range(int(rect.position.x + 20), int(rect.end.x - 20), 64):
+		draw_rect(Rect2(x, rect.position.y + 14, 32, 5), Color("#8BC8D8"))
 
 
 func _draw_tile_floor(rect: Rect2) -> void:
-	draw_rect(rect, Color("#FAF5E6"))
-	for x in range(int(rect.position.x), int(rect.end.x), 32):
-		for y in range(int(rect.position.y), int(rect.end.y), 32):
-			draw_rect(Rect2(x, y, 32, 32), Color("#F3EEDC"), false, 1.0)
+	draw_rect(rect, Color("#e8e2cc"))
+	for row in range(0, int(rect.size.y), 40):
+		var y := rect.position.y + row
+		var offset := 0 if (row / 40) % 2 == 0 else 32
+		for x in range(int(rect.position.x) + offset, int(rect.end.x), 64):
+			var tile := Rect2(x, y, 62, 38)
+			draw_rect(tile, Color("#f2edda") if (x / 64 + row / 40) % 3 != 0 else Color("#e4ddc7"))
+			draw_rect(tile, Color("#c9c5ae"), false, 1.0)
+			draw_rect(Rect2(x + 4, y + 3, 54, 2), Color("#faf6e7"))
 
 
 func _draw_room_zones() -> void:
-	for target in interactables:
-		if str(target.kind) != "room":
-			continue
-		var rect: Rect2 = target.room_rect
-		var locked := int(target.rank) > int(DEGREE_RANK.get(player_status, 0))
-		draw_rect(rect, Color("#8BC8D8") if not locked else Color("#E6E0D2"))
-		draw_rect(rect.grow(5), Color("#192787") if not locked else Color("#D77A45"), false, 5.0)
-		draw_rect(Rect2(rect.position.x, rect.position.y, rect.size.x, 12), Color("#5D9374") if not locked else Color("#D77A45"))
-		draw_rect(Rect2(rect.position.x + 12, rect.position.y + 24, rect.size.x - 24, 4), Color("#FAF5E6"))
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 54), str(target.name).to_upper(), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 14, Color("#192787"))
-		draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 78), str(target.status) + "  /  ACCESS", HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 28, 11, Color("#5D9374"))
-		if locked:
-			draw_string(ThemeDB.fallback_font, rect.position + Vector2(14, 96), "LOCKED  ·  " + _required_status_text(str(target.status)), HORIZONTAL_ALIGNMENT_LEFT, rect.size.x - 24, 10, Color("#a14f46"))
-		# Doorway, threshold, and marker on corridor-facing wall.
-		var door: Vector2 = target["position"]
-		draw_rect(Rect2(door - Vector2(27, 7), Vector2(54, 18)), Color("#FAF5E6"))
-		draw_rect(Rect2(door + Vector2(-27, -8), Vector2(6, 16)), Color("#192787"))
-		draw_rect(Rect2(door + Vector2(21, -8), Vector2(6, 16)), Color("#192787"))
-	_draw_room_plaques()
+	for room in room_doors:
+		var rect: Rect2 = room.room_rect
+		# Low sage walls define each room without boxing in the door artwork.
+		draw_rect(rect.grow(4), Color("#5D9374"))
+		draw_rect(rect, Color("#dedfc9"))
+		for x in range(int(rect.position.x + 8), int(rect.end.x - 8), 40):
+			draw_line(Vector2(x, rect.position.y + 8), Vector2(x, rect.end.y - 8), Color("#d2d6c0"), 1.0)
+		for y in range(int(rect.position.y + 8), int(rect.end.y - 8), 40):
+			draw_line(Vector2(rect.position.x + 8, y), Vector2(rect.end.x - 8, y), Color("#d2d6c0"), 1.0)
+		draw_rect(Rect2(rect.position.x + 8, rect.position.y + 8, rect.size.x - 16, 8), Color("#5D9374"))
+		draw_rect(Rect2(rect.position.x + 12, rect.position.y + 18, 26, 4), Color("#8BC8D8"))
+		_draw_closed_door(room)
+
+
+func _draw_closed_door(room: Dictionary) -> void:
+	var door: Vector2 = room.position
+	var room_name := str(room.name).to_upper()
+	var side := str(room.get("side", "bottom"))
+	if side == "left" or side == "right":
+		# Side doors are independent sprites; this pass only draws their labels.
+		var label_y := door.y - SIDE_DOOR_HEIGHT * 0.5 - 10.0
+		draw_string(ThemeDB.fallback_font, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
+	else:
+		# The lower edge of each tall door meets the bottom wall of its room.
+		var door_rect := Rect2(door.x - 34, door.y - DOOR_HEIGHT, 68.0, DOOR_HEIGHT)
+		_draw_door_leaf(door_rect, false)
+		var label_y := door_rect.position.y - 10.0
+		draw_string(ThemeDB.fallback_font, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
+
+
+func _draw_door_leaf(door: Rect2, hinges_on_right: bool) -> void:
+	# Slim jambs, inset panels, hinges, and a brass handle make a closed wooden door.
+	draw_rect(door, Color("#704932"))
+	var inset := door.grow(-5.0)
+	draw_rect(inset, Color("#9b6949"))
+	var panel_height := (inset.size.y - 24.0) * 0.5
+	for index in 2:
+		var panel := Rect2(inset.position.x + 8.0, inset.position.y + 8.0 + index * (panel_height + 8.0), inset.size.x - 16.0, panel_height)
+		draw_rect(panel, Color("#81563b"))
+		draw_rect(panel.grow(-4.0), Color("#a87550"))
+		draw_rect(Rect2(panel.position.x + 4.0, panel.position.y + 4.0, panel.size.x - 8.0, 2.0), Color("#c18b62"))
+	var hardware_x := door.end.x - 7.0 if hinges_on_right else door.position.x + 2.0
+	var handle_x := door.position.x + 14.0 if hinges_on_right else door.end.x - 14.0
+	for hinge_y in [door.position.y + 12.0, door.end.y - 16.0]:
+		draw_rect(Rect2(hardware_x, hinge_y, 5.0, 9.0), Color("#d7b66e"))
+	draw_circle(Vector2(handle_x, door.position.y + door.size.y * 0.78), 4.0, Color("#f3d28a"))
 
 
 func _draw_stairwell_and_walkway() -> void:
-	_draw_pixel_panel(Rect2(1650, 390, 160, 260), Color("#192787"), Color("#FAF5E6"))
-	for tread in 10:
-		var y := 410 + tread * 22
-		draw_rect(Rect2(1680, y, 100, 6), Color("#8BC8D8"))
-	draw_string(ThemeDB.fallback_font, Vector2(1690, 535), "STAIRS", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#192787"))
-	_draw_pixel_panel(Rect2(0, 330, 104, 82), Color("#192787"), Color("#FAF5E6"))
-	draw_string(ThemeDB.fallback_font, Vector2(12, 375), "EXIT", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(112, 324), "ENTRANCE / EXIT", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
+	# Entrance forecourt, closed front door, and a broad central stair connecting both floors.
+	draw_rect(Rect2(1540, 0, 520, 140), Color("#aaa98e"))
+	draw_rect(Rect2(1552, 0, 496, 140), Color("#d7cfb6"))
+	for y in range(16, 140, 32):
+		draw_line(Vector2(1552, y), Vector2(2048, y), Color("#b4ad96"), 2.0)
+	for x in range(1584, 2048, 64):
+		draw_line(Vector2(x, 0), Vector2(x, 140), Color("#b4ad96"), 2.0)
+	_draw_tile_floor(Rect2(1542, 140, 516, 298))
+	draw_rect(Rect2(1530, 140, 12, 298), Color("#5D9374"))
+	draw_rect(Rect2(2058, 140, 12, 298), Color("#5D9374"))
+	_draw_main_glass_entry()
+	_draw_pixel_panel(Rect2(1400, 850, 800, 250), Color("#192787"), Color("#d6dfc2"))
+	draw_rect(Rect2(1412, 862, 776, 226), Color("#e8e2cc"))
+	for tread in 12:
+		var y := 882 + tread * 17
+		draw_rect(Rect2(1510, y, 580, 5), Color("#8c6544"))
+		draw_rect(Rect2(1518, y - 4, 564, 4), Color("#f2edda"))
+	draw_rect(Rect2(1494, 870, 10, 200), Color("#5D9374"))
+	draw_rect(Rect2(2096, 870, 10, 200), Color("#5D9374"))
+
+
+func _draw_main_glass_entry() -> void:
+	# The shorter glazed double door sits at the building's outer edge in the vestibule opening.
+	var left := 1542.0
+	var top := 64.0
+	var width := 516.0
+	var height := 76.0
+	draw_rect(Rect2(left, top, width, height), Color("#192787"))
+	draw_rect(Rect2(left + 6, top + 6, width - 12, height - 12), Color("#6fabb1"))
+	# Side lights and reflections frame the two central glass leaves.
+	for x in [left + 18, left + 96, left + 174, left + 342, left + 420, left + 498]:
+		draw_rect(Rect2(x, top + 10, 4, height - 20), Color("#d5eee0"))
+		draw_rect(Rect2(x + 8, top + 14, 2, height - 28), Color("#9bd0c8"))
+	# Central double leaves, meeting stile, and paired pull handles.
+	draw_rect(Rect2(1694, top + 6, 106, height - 12), Color("#8bc8d8"))
+	draw_rect(Rect2(1800, top + 6, 106, height - 12), Color("#79b7bb"))
+	draw_rect(Rect2(1796, top + 6, 8, height - 12), Color("#192787"))
+	draw_rect(Rect2(1778, top + 36, 5, 22), Color("#f3d28a"))
+	draw_rect(Rect2(1810, top + 36, 5, 22), Color("#f3d28a"))
+	for x in [left, 1690.0, 1904.0, left + width - 6]:
+		draw_rect(Rect2(x, top, 6, height), Color("#5D9374"))
+	draw_rect(Rect2(left, top + height - 4, width, 4), Color("#d77a45"))
+	draw_string(ThemeDB.fallback_font, Vector2(1600, top - 10), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
 
 
 func _draw_furniture_and_objects() -> void:
-	# Reception desk sits to the left of the room entrance to leave the doorway clear.
-	draw_rect(Rect2(104, 238, 184, 48), Color("#192787"))
-	draw_rect(Rect2(112, 238, 168, 10), Color("#D77A45"))
-	draw_rect(Rect2(120, 248, 152, 30), Color("#115293"))
-	draw_rect(Rect2(108, 278, 176, 8), Color("#192787"))
-	draw_rect(Rect2(237, 218, 24, 12), Color("#FAF5E6"))
-	draw_rect(Rect2(242, 214, 8, 4), Color("#D77A45"))
-	# A few square planters and research props, kept outside the walking lane.
-	draw_rect(Rect2(164, 432, 32, 28), Color("#D77A45"))
-	draw_rect(Rect2(168, 416, 8, 16), Color("#5D9374"))
-	draw_rect(Rect2(180, 408, 8, 24), Color("#5D9374"))
-	draw_rect(Rect2(188, 420, 8, 12), Color("#5D9374"))
-	draw_rect(Rect2(2398, 742, 144, 28), Color("#115293"))
-	draw_rect(Rect2(2410, 770, 8, 24), Color("#192787"))
-	draw_rect(Rect2(2520, 770, 8, 24), Color("#192787"))
-	draw_rect(Rect2(3328, 734, 48, 32), Color("#D77A45"))
-	draw_rect(Rect2(3338, 722, 26, 14), Color("#FAF5E6"))
-	draw_string(ThemeDB.fallback_font, Vector2(3315, 717), "NOTEBOOK", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
-	draw_string(ThemeDB.fallback_font, Vector2(129, 232), "RECEPTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color("#FAF5E6"))
-	draw_string(ThemeDB.fallback_font, Vector2(2400, 734), "ELECTROPHORESIS", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("#192787"))
+	# Blue countertop is solid; the separate lower front panel remains removed.
+	draw_rect(Rect2(1980, 570, 190, 48), Color("#192787"))
+	draw_rect(Rect2(1988, 570, 174, 10), Color("#D77A45"))
+	draw_rect(Rect2(1996, 580, 158, 30), Color("#115293"))
+	draw_rect(Rect2(1984, 610, 182, 8), Color("#192787"))
+	# No plant image is present in Art Assets, so use matching code-drawn pixel plants.
+	for plant_base: Vector2 in [Vector2(276, 700), Vector2(3324, 700), Vector2(420, 900), Vector2(1320, 900), Vector2(2280, 900), Vector2(3180, 900), Vector2(1418, 1380), Vector2(2182, 1380), Vector2(1418, 2000), Vector2(2182, 2000)]:
+		_draw_potted_plant(plant_base)
 
 
-func _draw_room_plaques() -> void:
-	for target in interactables:
-		if str(target.kind) != "room":
-			continue
-		var at: Vector2 = target.plaque_position
-		var locked := int(target.rank) > int(DEGREE_RANK.get(player_status, 0))
-		draw_rect(Rect2(at - Vector2(52, 9), Vector2(104, 18)), Color("#D77A45") if locked else Color("#192787"))
-		var plaque_text := "UNAUTH. " + str(target.status).to_upper() if locked else str(target.owner).replace("Dr. ", "")
-		draw_string(ThemeDB.fallback_font, at + Vector2(-48, 3), plaque_text, HORIZONTAL_ALIGNMENT_LEFT, 96, 8, Color("#FAF5E6"))
+func _draw_potted_plant(base: Vector2) -> void:
+	# Pot bottoms sit flush to wall/baseboard edges; layered leaves add the missing plant art.
+	draw_rect(Rect2(base + Vector2(-14, 20), Vector2(28, 4)), Color("#526f54"))
+	draw_rect(Rect2(base + Vector2(-15, 5), Vector2(30, 5)), Color("#192787"))
+	var pot := PackedVector2Array([
+		base + Vector2(-12, 9), base + Vector2(12, 9),
+		base + Vector2(9, 23), base + Vector2(-9, 23),
+	])
+	draw_colored_polygon(pot, Color("#b66d4a"))
+	draw_polyline(PackedVector2Array([pot[0], pot[1], pot[2], pot[3], pot[0]]), Color("#7c4f3b"), 2.0, true)
+	draw_line(base + Vector2(0, 9), base + Vector2(0, -15), Color("#477748"), 4.0)
+	_draw_plant_leaf(base + Vector2(-1, 3), base + Vector2(-22, -31), 8.0, Color("#4d814b"), Color("#80a85b"))
+	_draw_plant_leaf(base + Vector2(0, 0), base + Vector2(-9, -46), 8.0, Color("#5d9251"), Color("#91b76a"))
+	_draw_plant_leaf(base + Vector2(1, 2), base + Vector2(11, -43), 9.0, Color("#477748"), Color("#82a95b"))
+	_draw_plant_leaf(base + Vector2(2, 5), base + Vector2(24, -27), 8.0, Color("#57884a"), Color("#9bbb69"))
+	_draw_plant_leaf(base + Vector2(-1, 7), base + Vector2(-25, -14), 7.0, Color("#648e4c"), Color("#a4bd70"))
 
 
-func _draw_string_small(text: String, at: Vector2) -> void:
-	draw_string(ThemeDB.fallback_font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#42636a"))
+func _draw_plant_leaf(root: Vector2, tip: Vector2, width: float, fill: Color, highlight: Color) -> void:
+	var axis := (tip - root).normalized()
+	var side := Vector2(-axis.y, axis.x) * width
+	var shoulder := root.lerp(tip, 0.42)
+	var leaf := PackedVector2Array([root, shoulder + side, tip, shoulder - side])
+	draw_colored_polygon(leaf, fill)
+	draw_line(root.lerp(tip, 0.18), tip, highlight, 2.0)
