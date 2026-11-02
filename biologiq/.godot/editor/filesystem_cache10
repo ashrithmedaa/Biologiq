@@ -1,12 +1,20 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1793654090
+::res://::1793657264
+619086__mrrap4food__school-teens-and-kids-talking-crowd.mp3::AudioStreamMP3::7035358393158223517::1793657264::1793657265::1::::<><><>0<>0<>356db8d85111c69bae4753f0f4396e84<>res://.godot/imported/619086__mrrap4food__school-teens-and-kids-talking-crowd.mp3-36787f6bb2a94ca7a85626536234cc03.mp3str::
+684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3::AudioStreamMP3::7389782028925386957::1793657264::1793657265::1::::<><><>0<>0<>e6ec34bc7d8d8e9c565eb86c49186007<>res://.godot/imported/684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3-3929422f16ceba23b99be4835b5254fd.mp3str::
 button.gd::GDScript::3298754275729814078::1792786998::0::1::::<>Button<><>0<>0<><>::
 chararter_selection_fr.tscn::PackedScene::3161268116910610674::1792956677::0::1::::<><><>0<>0<><>::res://Scripts/character_selection.gd
 export_presets.cfg::TextFile::-1::1793548374::0::1::::<><><>0<>0<><>::
 SAVE_SYSTEM_SETUP.md::TextFile::-1::1793550127::0::1::::<><><>0<>0<><>::
+tunetank.com_talking-gibberish-silly-character.wav::AudioStreamWAV::4881552231097711516::1793657264::1793657265::1::::<><><>0<>0<>e1cd6114a080d01a26b1920b1bd83a20<>res://.godot/imported/tunetank.com_talking-gibberish-silly-character.wav-f1c2be6a4f00479c7b4318c50083190d.sample::
+tunetank.com_tuba-heavy-walking.wav::AudioStreamWAV::1139677786114667953::1793657264::1793657265::1::::<><><>0<>0<>79dae837295b988ec0e6504715fc1f20<>res://.godot/imported/tunetank.com_tuba-heavy-walking.wav-08f0b6f432461c9236499be2783939a6.sample::
 walking.tscn::PackedScene::225148834721085733::1793550375::0::1::::<><><>0<>0<><>::res://walking_screen.gd
 walking_screen.gd::GDScript::1239616994173692386::1793550720::0::1::::<>Node2D<><>0<>0<><>::
-::res://addons/::1792786997
+::res://addons/::1793657256
+619086__mrrap4food__school-teens-and-kids-talking-crowd.mp3::AudioStreamMP3::2878867204547468990::1793657255::1793657256::1::::<><><>0<>0<>e84212f723c7a0ddcaaadfc1c6a7752d<>res://.godot/imported/619086__mrrap4food__school-teens-and-kids-talking-crowd.mp3-ecbb8ccc3bb7dac5bb6cfaa70659577f.mp3str::
+684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3::AudioStreamMP3::5572462734722776522::1793657255::1793657256::1::::<><><>0<>0<>9ce9c1e390908efe62f12d5c68b722d5<>res://.godot/imported/684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3-157407db93219cbee6037ddcc8ba5f57.mp3str::
+tunetank.com_talking-gibberish-silly-character.wav::AudioStreamWAV::3705083689016238933::1793657255::1793657256::1::::<><><>0<>0<>9fc785a330a6529f63c73460522f844d<>res://.godot/imported/tunetank.com_talking-gibberish-silly-character.wav-64535ca4976ba7ce85e0b1de76b23168.sample::
+tunetank.com_tuba-heavy-walking.wav::AudioStreamWAV::1214641854635375776::1793657255::1793657256::1::::<><><>0<>0<>ccfa5f4052809cbf32a04272040b20d5<>res://.godot/imported/tunetank.com_tuba-heavy-walking.wav-34f0476b231fbd2f004457e60b9301a4.sample::
 ::res://addons/godot_ai/::1792786998
 client_configurator.gd::GDScript::1846084051969471465::1792786997::0::1::::McpClientConfigurator<>RefCounted<><>0<>1<><>::
 connection.gd::GDScript::3256190740644037847::1792786998::0::1::::McpConnection<>Node<><>0<>1<><>::
@@ -194,13 +202,14 @@ Sam - Side walking spritesheet.png::CompressedTexture2D::5760494617979774649::17
 Sam walking - Back spritesheet.png::CompressedTexture2D::6238813465816152161::1792786997::1792787200::1::::<><><>0<>0<>d5e384b70176959d7092492d0fa32583<>res://.godot/imported/Sam walking - Back spritesheet.png-8274c4410a302c18a979d04ed1aec666.ctex::
 Sharon O_Riley - Typing.png::CompressedTexture2D::4049790517071178757::1792786997::1792787200::1::::<><><>0<>0<>813494f661aeb50534fa837dff1594b5<>res://.godot/imported/Sharon O_Riley - Typing.png-c84dd15812ceda097983182559595bb1.ctex::
 yellow dna base (t).png::CompressedTexture2D::4127215578475555937::1792953197::1792953198::1::::<><><>0<>0<>686010c9542f0dfcedf840bec7c8f851<>res://.godot/imported/yellow dna base (t).png-0d0995bdca0c40dd7be75f8c7cc6aa16.ctex::
-::res://Scenes/::1793550001
+::res://Scenes/::1793656490
 character_selection.tscn::PackedScene::7682856018276769756::1792956697::0::1::::<><><>0<>0<><>::res://Scripts/character_selection.gd
 employee_orientation.tscn::PackedScene::4883233758753234375::1792956375::0::1::::<><><>0<>0<><>::uid://byiu4pxfco80d::::res://Scripts/employee_orientation.gd
 main.tscn::PackedScene::4852200704718087825::1792956646::0::1::::<><><>0<>0<><>::uid://5nux8iroat8b::::res://Scripts/main.gd
 main_map.tscn::PackedScene::2609260930503460611::1792954216::0::1::::<><><>0<>0<><>::uid://bspd5oi70gh2x::::res://Scripts/main_map.gd
 save_select_screen.tscn::PackedScene::865738293471267613::1793550001::0::1::::<><><>0<>0<><>::uid://160fmjcestdn::::res://Scripts/save_select_screen.gd
 select_screen.tscn::PackedScene::3832581093315241208::1792956732::0::1::::<><><>0<>0<><>::uid://sibp7tea2plp::::res://Scripts/select_screen.gd
+thank_you.tscn::PackedScene::-1::1793656490::0::1::::<><><>0<>0<><>::
 ::res://Scenes/Rooms/::1792956028
 advanced_research_room.tscn::PackedScene::-1::1792786997::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
 bachelors_room.tscn::PackedScene::-1::1792786997::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
@@ -216,19 +225,20 @@ reception_room.tscn::PackedScene::-1::1792786997::0::1::::<><><>0<>0<><>::res://
 student_lab_data_room.tscn::PackedScene::-1::1792956028::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_data_minigame.gd
 student_lab_dna_room.tscn::PackedScene::-1::1792954902::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_dna_minigame.gd
 student_lab_room.tscn::PackedScene::-1::1792953804::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_minigame.gd
-::res://Scripts/::1793563718
+::res://Scripts/::1793656612
 character_selection.gd::GDScript::3927632141134071249::1793550169::0::1::::<>Control<><>0<>0<><>::
 employee_orientation.gd::GDScript::4088734904528120521::1793550186::0::1::::<>Node2D<><>0<>0<><>::
 game_font.gd::GDScript::7500686473244519134::1793563752::0::1::::<>Node<><>0<>0<><>::
 intern_quarters_workstation.gd::GDScript::3663925449838606493::1793563689::0::1::::<>Control<><>0<>0<><>::
 main.gd::GDScript::2133759379479014575::1793550001::0::1::::<>Control<><>0<>0<><>::
-main_map.gd::GDScript::3681022009456951049::1793564087::0::1::::<>Node2D<><>0<>0<><>::
+main_map.gd::GDScript::3681022009456951049::1793656476::0::1::::<>Node2D<><>0<>0<><>::
 room_scene.gd::GDScript::2899309924611777210::1793563689::0::1::::<>Node2D<><>0<>0<><>::
-save_manager.gd::GDScript::8832076846113268833::1793562619::0::1::::<>Node<><>0<>0<><>::
+save_manager.gd::GDScript::8832076846113268833::1793655227::0::1::::<>Node<><>0<>0<><>::
 save_select_screen.gd::GDScript::1890433143033768335::1793550001::0::1::::<>Node2D<><>0<>0<><>::
 select_screen.gd::GDScript::1280003421699710169::1793550001::0::1::::<>Control<><>0<>0<><>::
-student_lab_data_minigame.gd::GDScript::7884759871285921068::1793563689::0::1::::<>Control<><>0<>0<><>::
-student_lab_dna_minigame.gd::GDScript::8995382640001672032::1793563689::0::1::::<>Control<><>0<>0<><>::
-student_lab_minigame.gd::GDScript::4923848298825191887::1793563689::0::1::::<>Control<><>0<>0<><>::
+student_lab_data_minigame.gd::GDScript::7884759871285921068::1793655947::0::1::::<>Control<><>0<>0<><>::
+student_lab_dna_minigame.gd::GDScript::8995382640001672032::1793655228::0::1::::<>Control<><>0<>0<><>::
+student_lab_minigame.gd::GDScript::4923848298825191887::1793655531::0::1::::<>Control<><>0<>0<><>::
+thank_you_screen.gd::GDScript::7205084365125349537::1793656749::0::1::::<>Control<><>0<>0<><>::
 ::res://Themes/::1793563696
 pixel_theme.tres::Theme::-1::1793563696::0::1::::<><><>0<>0<><>::res://Art Assets/CascadiaMono.ttf

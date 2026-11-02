@@ -16,6 +16,8 @@ const WORLD_WIDTH := 3600.0
 const WORLD_HEIGHT := 2400.0
 const DOOR_HEIGHT := 148.0
 const SIDE_DOOR_HEIGHT := 80.0
+const DOOR_SOUND := "res://684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3"
+const TALKING_SOUND := "res://tunetank.com_talking-gibberish-silly-character.wav"
 
 var player: CharacterBody2D
 var player_sprite: AnimatedSprite2D
@@ -65,10 +67,13 @@ var room_doors: Array[Dictionary] = []
 var player_program := "Research Shadowing"
 var player_status := "Master's"
 var side_door_texture: Texture2D
+var talking_audio: AudioStreamPlayer
+var npc_dialogue_active := false
 
 
 func _ready() -> void:
 	_setup_input()
+	_setup_audio()
 	_load_player_status()
 	_build_map()
 	_build_characters()
@@ -644,10 +649,12 @@ func _on_save_status_changed(message: String, is_error: bool) -> void:
 
 func _interact() -> void:
 	if farewell_done and player.global_position.distance_to(MAIN_ENTRANCE_EXIT_POSITION) <= INTERACT_DISTANCE:
+		_play_door_sound()
 		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
 		return
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():
+		_play_door_sound()
 		var save_manager := get_node_or_null("/root/SaveManager")
 		if save_manager != null:
 			save_manager.remember_room_entry_position(enterable_door.position + Vector2(0, 80))
@@ -655,6 +662,7 @@ func _interact() -> void:
 		return
 	var nearby_door := _nearest_door()
 	if not nearby_door.is_empty():
+		_play_door_sound()
 		_start_dialogue(["This room is not available in the demo"])
 		return
 	var target := _nearest_interactable()
@@ -683,7 +691,7 @@ func _interact() -> void:
 					"Sharon: Go to the intern quarters to begin working"
 				])
 			else:
-				_start_dialogue(["Sharon is busy right now"])
+				_start_dialogue(["Sharon is busy right now"], false, true)
 		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
 			dialogue_completes_tour_stop = true
 			_start_dialogue(_tour_lines_for_phase(tour_phase))
@@ -693,7 +701,7 @@ func _interact() -> void:
 	_start_dialogue([str(target.description)])
 
 
-func _start_dialogue(lines: Array, completes_checkin: bool = false) -> void:
+func _start_dialogue(lines: Array, completes_checkin: bool = false, is_npc_dialogue: bool = false) -> void:
 	dialogue_lines.clear()
 	for line in lines:
 		dialogue_lines.append(str(line))
@@ -701,8 +709,15 @@ func _start_dialogue(lines: Array, completes_checkin: bool = false) -> void:
 		return
 	dialogue_index = 0
 	dialogue_completes_checkin = completes_checkin
+	npc_dialogue_active = is_npc_dialogue
+	for line in dialogue_lines:
+		if line.begins_with("Sharon:") or line.begins_with("Sam:") or line.begins_with("Maria:"):
+			npc_dialogue_active = true
+			break
 	dialogue_open = true
 	dialogue_panel.show()
+	if npc_dialogue_active and not talking_audio.playing:
+		talking_audio.play()
 	_show_dialogue_line()
 
 
@@ -1029,6 +1044,8 @@ func _update_sam_interactable() -> void:
 
 func _close_dialogue() -> void:
 	dialogue_open = false
+	npc_dialogue_active = false
+	talking_audio.stop()
 	dialogue_completes_checkin = false
 	dialogue_completes_sam_intro = false
 	dialogue_completes_tour_stop = false
@@ -1039,6 +1056,29 @@ func _close_dialogue() -> void:
 	dialogue_completes_farewell = false
 	dialogue_panel.hide()
 	_update_interaction_hint()
+
+
+func _setup_audio() -> void:
+	talking_audio = AudioStreamPlayer.new()
+	talking_audio.name = "NpcTalkingAudio"
+	talking_audio.stream = load(TALKING_SOUND) as AudioStream
+	talking_audio.volume_db = -14.0
+	talking_audio.finished.connect(_on_talking_audio_finished)
+	add_child(talking_audio)
+
+
+func _on_talking_audio_finished() -> void:
+	if npc_dialogue_active and dialogue_open:
+		talking_audio.play()
+
+
+func _play_door_sound() -> void:
+	var sound := AudioStreamPlayer.new()
+	sound.stream = load(DOOR_SOUND) as AudioStream
+	sound.volume_db = -5.0
+	get_tree().root.add_child(sound)
+	sound.finished.connect(sound.queue_free)
+	sound.play()
 
 
 func _nearest_enterable_door() -> Dictionary:
