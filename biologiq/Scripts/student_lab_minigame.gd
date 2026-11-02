@@ -1,8 +1,10 @@
 extends Control
 
-const TARGET_VOLUME := 250
+const FIRST_ROUND_TARGET := 250
+const SECOND_ROUND_TARGET := 465
 const TRANSFER_AMOUNTS: Array[int] = [5, 10, 25, 50, 75]
-const TRANSFER_COUNT := 10
+const FIRST_ROUND_MINIMUM_DROPS := 4
+const SECOND_ROUND_MINIMUM_DROPS := 8
 const PIPETTE_ART := "res://Art Assets/pipette.png"
 const PIPETTE_HOME := Vector2(640, 442)
 const SOURCE_AREA := Rect2(285, 360, 225, 210)
@@ -18,6 +20,9 @@ var loaded := false
 var selected_transfer_volume := 5
 var loaded_volume := 0
 var current_volume := 0
+var drop_count := 0
+var target_volume := FIRST_ROUND_TARGET
+var minimum_drops := FIRST_ROUND_MINIMUM_DROPS
 var earned_stars := 5
 var completed := false
 
@@ -25,6 +30,10 @@ var completed := false
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager != null and save_manager.get_intern_quarters_round() >= 2:
+		target_volume = SECOND_ROUND_TARGET
+		minimum_drops = SECOND_ROUND_MINIMUM_DROPS
 	pipette_texture = load(PIPETTE_ART) as Texture2D
 	queue_redraw()
 
@@ -39,11 +48,13 @@ func _gui_input(event: InputEvent) -> void:
 		elif TARGET_AREA.has_point(event.position) and TARGET_AREA.has_point(pipette_position) and loaded:
 			loaded = false
 			current_volume += loaded_volume
+			drop_count += 1
 			loaded_volume = 0
-			if current_volume >= TARGET_VOLUME:
+			if current_volume >= target_volume:
 				completed = true
-				if current_volume > TARGET_VOLUME:
-					earned_stars = 4
+				earned_stars = maxi(0, 5 - maxi(0, drop_count - minimum_drops))
+				if current_volume > target_volume:
+					earned_stars = maxi(0, earned_stars - 1)
 				var save_manager := get_node_or_null("/root/SaveManager")
 				if save_manager != null:
 					save_manager.complete_student_lab_pipette()
@@ -87,20 +98,22 @@ func _draw() -> void:
 	draw_rect(Rect2(20, 20, size.x - 40, size.y - 40), Color("#FAF5E6"))
 	draw_rect(Rect2(20, 20, size.x - 40, 10), Color("#5D9374"))
 	draw_string(GameFont.FONT, Vector2(64, 82), "INTERN QUARTERS  /  PIPETTE PRACTICE", HORIZONTAL_ALIGNMENT_LEFT, -1, 27, Color("#192787"))
-	draw_string(GameFont.FONT, Vector2(64, 116), "Dial the pipette volume with number keys. Reach exactly 250 mL to earn all five stars.", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(64, 116), "Dial the pipette volume with number keys. Reach exactly %d mL using as few drops as possible." % target_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#42636a"))
 
 	_draw_station(SOURCE_AREA, "SOURCE WELL", "Position pipette here, then right-click to collect", Color("#D77A45"))
 	_draw_station(TARGET_AREA, "SAMPLE TUBE", "Position loaded pipette here, then right-click to dispense", Color("#5D9374"))
 	_draw_well(Vector2(397, 472), Color("#D77A45"), 0.82)
-	_draw_beaker(Vector2(882, 425), current_volume / float(TARGET_VOLUME))
+	_draw_beaker(Vector2(882, 425), current_volume / float(target_volume))
 
 	draw_rect(Rect2(514, 276, 252, 54), Color("#E6E0D2"))
-	draw_rect(Rect2(514, 276, 252 * clampf(current_volume / float(TARGET_VOLUME), 0.0, 1.0), 54), Color("#5D9374"))
+	draw_rect(Rect2(514, 276, 252 * clampf(current_volume / float(target_volume), 0.0, 1.0), 54), Color("#5D9374"))
 	draw_rect(Rect2(514, 276, 252, 54), Color("#192787"), false, 3.0)
-	draw_string(GameFont.FONT, Vector2(564, 311), "%d / %d mL" % [current_volume, TARGET_VOLUME], HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color("#192787"))
+	draw_string(GameFont.FONT, Vector2(564, 311), "%d / %d mL" % [current_volume, target_volume], HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color("#192787"))
 
-	for transfer in range(TRANSFER_COUNT):
-		var pip := Vector2(525 + transfer * 25, 350)
+	var progress_mark_count := ceili(float(target_volume) / 25.0)
+	var marker_spacing := 220.0 / float(maxi(1, progress_mark_count - 1))
+	for transfer in progress_mark_count:
+		var pip := Vector2(530 + transfer * marker_spacing, 350)
 		draw_circle(pip, 7, Color("#5D9374") if transfer < int(current_volume / 25.0) else Color("#D8D2C3"))
 
 	if not completed:
@@ -111,7 +124,7 @@ func _draw() -> void:
 			draw_string(GameFont.FONT, pipette_position + Vector2(-24, -72), "%d mL" % loaded_volume, HORIZONTAL_ALIGNMENT_CENTER, 72, 14, Color("#192787"))
 		draw_string(GameFont.FONT, Vector2(0, 612), "VOLUME DIAL:  1 = 5 mL     2 = 10 mL     3 = 25 mL     4 = 50 mL     5 = 75 mL", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#192787"))
 		draw_string(GameFont.FONT, Vector2(0, 638), "Selected: %d mL. LEFT-DRAG pipette; RIGHT-CLICK source to draw, then sample tube to dispense." % selected_transfer_volume, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
-		draw_string(GameFont.FONT, Vector2(0, 660), "Hit exactly 250 mL for five stars. Going over costs one star. ESC returns to workstation.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
+		draw_string(GameFont.FONT, Vector2(0, 660), "Minimum %d drops = 5 stars; each extra drop costs a star. Overfilling costs one more. ESC returns to workstation." % minimum_drops, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
 	else:
 		_draw_completion()
 
@@ -143,7 +156,7 @@ func _draw_beaker(center: Vector2, fill_ratio: float) -> void:
 		var y := center.y + 122.0 - mark * 102.0
 		draw_line(Vector2(center.x + 21, y), Vector2(center.x + 42, y), Color("#192787"), 2.0)
 	draw_string(GameFont.FONT, center + Vector2(-38, 158), "%d mL" % current_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#192787"))
-	draw_string(GameFont.FONT, center + Vector2(-38, 181), "TARGET 250 mL", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#5D9374"))
+	draw_string(GameFont.FONT, center + Vector2(-38, 181), "TARGET %d mL" % target_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#5D9374"))
 
 
 func _draw_completion() -> void:
@@ -151,8 +164,9 @@ func _draw_completion() -> void:
 	draw_rect(Rect2(300, 126, 680, 490), Color("#FAF5E6"))
 	draw_rect(Rect2(300, 126, 680, 12), Color("#5D9374"))
 	draw_string(GameFont.FONT, Vector2(0, 208), "PRACTICAL COMPLETE!", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 34, Color("#192787"))
-	var result_line := "Perfect volume: 250 mL" if earned_stars == 5 else "Overfilled: %d mL. One star lost." % current_volume
-	draw_string(GameFont.FONT, Vector2(0, 250), result_line, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 18, Color("#42636a"))
+	draw_string(GameFont.FONT, Vector2(0, 250), "%d mL in %d drops (minimum: %d)" % [current_volume, drop_count, minimum_drops], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 18, Color("#42636a"))
+	if current_volume > target_volume:
+		draw_string(GameFont.FONT, Vector2(0, 278), "Overfilled: one star lost.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 14, Color("#a14f46"))
 	for star_index in 5:
 		var star_center := Vector2(464 + star_index * 88, 354)
 		var points := PackedVector2Array()

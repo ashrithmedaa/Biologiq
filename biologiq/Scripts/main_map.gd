@@ -7,6 +7,7 @@ const SAM_FRONT_SHEET := "res://Art Assets/Sam - Front walking spritesheet trans
 const SAM_SIDE_SHEET := "res://Art Assets/Sam - Side walking spritesheet.png"
 const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
 const MAIN_ENTRANCE_POSITION := Vector2(1800, 390)
+const MAIN_ENTRANCE_EXIT_POSITION := Vector2(1800, 155)
 const WALK_SPEED := 230.0
 const SAM_WALK_SPEED := 250.0
 const DIALOGUE_CHARACTERS_PER_SECOND := 38.0
@@ -52,6 +53,11 @@ var dialogue_completes_tour_stop := false
 var maria_scene_active := false
 var maria_meeting_done := false
 var student_lab_task_received := false
+var intern_quarters_round := 1
+var dialogue_completes_second_task_list := false
+var dialogue_completes_farewell := false
+var farewell_scene_active := false
+var farewell_done := false
 var menu_open := false
 var player_facing := "down"
 var interactables: Array[Dictionary] = []
@@ -97,7 +103,7 @@ func _ready() -> void:
 			sam.show()
 			_begin_maria_scene()
 	if student_lab_task_received:
-		guide_label.text = "Go to the intern quarters"
+		guide_label.text = _intern_quarters_task_text()
 		guide_label.show()
 	if save_manager != null:
 		save_manager.status_changed.connect(_on_save_status_changed)
@@ -105,7 +111,7 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if dialogue_open or menu_open or sam_entrance_active or maria_scene_active:
+	if dialogue_open or menu_open or sam_entrance_active or maria_scene_active or farewell_scene_active:
 		player.velocity = Vector2.ZERO
 		_update_player_animation(false)
 		return
@@ -145,12 +151,12 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if event.keycode == KEY_ESCAPE:
 		if DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-		elif dialogue_open and not maria_scene_active:
+		elif dialogue_open and not maria_scene_active and not farewell_scene_active:
 			_close_dialogue()
 		elif menu_open:
 			_close_menu()
 		return
-	if event.keycode == KEY_F and not dialogue_open and not maria_scene_active:
+	if event.keycode == KEY_F and not dialogue_open and not maria_scene_active and not farewell_scene_active:
 		_toggle_menu()
 		return
 	if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER:
@@ -158,7 +164,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_advance_dialogue()
 		return
 	if event.keycode == KEY_E and not dialogue_open and not menu_open:
-		if sam_entrance_active or maria_scene_active:
+		if sam_entrance_active or maria_scene_active or farewell_scene_active:
 			return
 		_interact()
 		return
@@ -203,6 +209,8 @@ func capture_save_state() -> Dictionary:
 	state["sam_intro_done"] = sam_intro_done
 	state["maria_meeting_done"] = maria_meeting_done
 	state["student_lab_task_received"] = student_lab_task_received
+	state["intern_quarters_round"] = intern_quarters_round
+	state["farewell_done"] = farewell_done
 	state["tour_phase"] = tour_phase
 	if is_instance_valid(sam):
 		state["sam_position"] = sam.global_position
@@ -218,6 +226,8 @@ func restore_save_state(data: Dictionary) -> void:
 	sam_intro_done = bool(data.get("sam_intro_done", false))
 	maria_meeting_done = bool(data.get("maria_meeting_done", false))
 	student_lab_task_received = bool(data.get("student_lab_task_received", false))
+	intern_quarters_round = maxi(1, int(data.get("intern_quarters_round", 1)))
+	farewell_done = bool(data.get("farewell_done", false))
 	tour_phase = int(data.get("tour_phase", tour_phase))
 	var saved_sam_position: Variant = data.get("sam_position", Vector2.ZERO)
 	if is_instance_valid(sam) and saved_sam_position is Vector2 and saved_sam_position != Vector2.ZERO:
@@ -497,7 +507,7 @@ func _build_hud() -> void:
 		guide_label.text = "Get to do list from Sharon"
 		guide_label.show()
 	if student_lab_task_received:
-		guide_label.text = "Go to the intern quarters"
+		guide_label.text = _intern_quarters_task_text()
 		guide_label.show()
 	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect / Enter Room   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
 	controls.add_theme_font_size_override("font_size", 13)
@@ -633,6 +643,9 @@ func _on_save_status_changed(message: String, is_error: bool) -> void:
 
 
 func _interact() -> void:
+	if farewell_done and player.global_position.distance_to(MAIN_ENTRANCE_EXIT_POSITION) <= INTERACT_DISTANCE:
+		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
+		return
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():
 		var save_manager := get_node_or_null("/root/SaveManager")
@@ -652,6 +665,16 @@ func _interact() -> void:
 		if str(target.name) == "Sharon O'Riley":
 			if not sharon_checked_in:
 				_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
+			elif intern_quarters_round == 1 and student_lab_task_received and _intern_quarters_tasks_complete():
+				dialogue_completes_second_task_list = true
+				_start_dialogue([
+					"Sharon: Done already?",
+					"Sharon: Most interns (and some employees) usually take all day to get that stuff done",
+					"Sharon: I suppose I could give you more to do",
+					"Sharon: Come back to me once you finish everything on this new list"
+				])
+			elif intern_quarters_round >= 2 and student_lab_task_received and _intern_quarters_tasks_complete() and not farewell_done:
+				_begin_sam_farewell_entrance()
 			elif maria_meeting_done and not student_lab_task_received:
 				dialogue_completes_student_lab_task = true
 				_start_dialogue([
@@ -724,11 +747,25 @@ func _advance_dialogue() -> void:
 		if dialogue_completes_student_lab_task:
 			dialogue_completes_student_lab_task = false
 			student_lab_task_received = true
-			guide_label.text = "Go to the intern quarters"
+			guide_label.text = _intern_quarters_task_text()
 			guide_label.show()
 			var save_manager := get_node_or_null("/root/SaveManager")
 			if save_manager != null:
 				save_manager.set_save_state(capture_save_state())
+		if dialogue_completes_second_task_list:
+			dialogue_completes_second_task_list = false
+			intern_quarters_round = 2
+			student_lab_task_received = true
+			var save_manager := get_node_or_null("/root/SaveManager")
+			if save_manager != null:
+				save_manager.reset_intern_quarters_tasks()
+			guide_label.text = "Go to the intern quarters"
+			guide_label.show()
+			if save_manager != null:
+				save_manager.set_save_state(capture_save_state())
+		if dialogue_completes_farewell:
+			dialogue_completes_farewell = false
+			_begin_sam_farewell_exit()
 		_close_dialogue()
 
 
@@ -766,6 +803,57 @@ func _on_sam_arrived() -> void:
 		"Sam: Oh I’m just joking around. Come on, follow me. I’m your official tour guide today!",
 		"Sam: For today you'll only be using the intern quarters"
 	])
+
+
+func _begin_sam_farewell_entrance() -> void:
+	if farewell_scene_active:
+		return
+	farewell_scene_active = true
+	guide_label.text = "Sam is coming to say goodnight..."
+	guide_label.show()
+	interaction_hint.text = ""
+	sam.position = Vector2(player.global_position.x + 520.0, player.global_position.y + 10.0)
+	sam.show()
+	_set_sam_walk_animation("walk_left")
+	var target_position := Vector2(player.global_position.x + 58.0, player.global_position.y + 10.0)
+	var arrival := create_tween()
+	arrival.tween_property(sam, "position", target_position, maxf(0.8, sam.position.distance_to(target_position) / SAM_WALK_SPEED))
+	arrival.finished.connect(_on_sam_farewell_arrived)
+
+
+func _on_sam_farewell_arrived() -> void:
+	_set_sam_walk_animation("walk_left")
+	sam_sprite.stop()
+	dialogue_completes_farewell = true
+	_start_dialogue([
+		"Sam: Phew, we survived. See you tomorrow!",
+		"Sharon: Hmph. You didn’t break anything on day one. Better luck tomorrow. Goodnight."
+	])
+
+
+func _begin_sam_farewell_exit() -> void:
+	var entrance_hall_position := Vector2(1800.0, sam.position.y)
+	var inside_entry_position := Vector2(1800.0, 154.0)
+	var outside_position := Vector2(1800.0, 48.0)
+	_set_sam_walk_animation("walk_left")
+	var exit_tween := create_tween()
+	exit_tween.tween_property(sam, "position", entrance_hall_position, maxf(0.8, sam.position.distance_to(entrance_hall_position) / SAM_WALK_SPEED))
+	exit_tween.tween_callback(_set_sam_walk_animation.bind("walk_back"))
+	exit_tween.tween_property(sam, "position", inside_entry_position, maxf(0.8, absf(sam.position.y - inside_entry_position.y) / SAM_WALK_SPEED))
+	exit_tween.tween_property(sam, "position", outside_position, 0.7)
+	exit_tween.finished.connect(_on_sam_farewell_exit_finished)
+
+
+func _on_sam_farewell_exit_finished() -> void:
+	sam.hide()
+	farewell_scene_active = false
+	farewell_done = true
+	guide_label.text = "Exit the building to go home"
+	guide_label.show()
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager != null:
+		save_manager.set_save_state(capture_save_state())
+	_update_interaction_hint()
 
 
 func _tour_lines_for_phase(phase: int) -> Array[String]:
@@ -947,6 +1035,8 @@ func _close_dialogue() -> void:
 	dialogue_completes_maria_lines = false
 	dialogue_completes_sam_final_lines = false
 	dialogue_completes_student_lab_task = false
+	dialogue_completes_second_task_list = false
+	dialogue_completes_farewell = false
 	dialogue_panel.hide()
 	_update_interaction_hint()
 
@@ -958,6 +1048,23 @@ func _nearest_enterable_door() -> Dictionary:
 	if not door.is_empty() and str(door.name) == "Intern Quarters":
 		return door
 	return {}
+
+
+func _intern_quarters_tasks_complete() -> bool:
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager == null:
+		return false
+	return save_manager.is_student_lab_pipette_complete() \
+		and save_manager.is_student_lab_dna_complete() \
+		and save_manager.is_student_lab_data_complete()
+
+
+func _intern_quarters_task_text() -> String:
+	if _intern_quarters_tasks_complete():
+		if intern_quarters_round == 1:
+			return "Return to Sharon"
+		return "Exit the building to go home" if farewell_done else "All tasks completed! Return to Sharon"
+	return "Go to the intern quarters"
 
 
 func _nearest_door() -> Dictionary:
@@ -997,8 +1104,11 @@ func _is_walkable_position(at: Vector2) -> bool:
 
 
 func _update_interaction_hint() -> void:
-	if dialogue_open or menu_open or sam_entrance_active or tour_moving or maria_scene_active:
+	if dialogue_open or menu_open or sam_entrance_active or tour_moving or maria_scene_active or farewell_scene_active:
 		interaction_hint.text = ""
+		return
+	if farewell_done and player.global_position.distance_to(MAIN_ENTRANCE_EXIT_POSITION) <= INTERACT_DISTANCE:
+		interaction_hint.text = "E  Exit the building"
 		return
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():

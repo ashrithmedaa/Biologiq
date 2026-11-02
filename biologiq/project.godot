@@ -20,10 +20,6 @@ SaveManager="*res://Scripts/save_manager.gd"
 GameFont="*res://Scripts/game_font.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
-[gui]
-
-theme/custom="res://Themes/pixel_theme.tres"
-
 [display]
 
 window/size/viewport_width=1280
@@ -34,6 +30,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
+
+[gui]
+
+theme/custom="res://Themes/pixel_theme.tres"
 
 [physics]
 

@@ -114,6 +114,18 @@ func complete_student_lab_data() -> void:
 	_current_state["world_flags"] = world_flags
 
 
+func reset_intern_quarters_tasks() -> void:
+	var world_flags: Dictionary = _current_state.get("world_flags", {}).duplicate(true)
+	world_flags["student_lab_pipette_complete"] = false
+	world_flags["student_lab_dna_complete"] = false
+	world_flags["student_lab_data_complete"] = false
+	_current_state["world_flags"] = world_flags
+
+
+func get_intern_quarters_round() -> int:
+	return maxi(1, int(_current_state.get("intern_quarters_round", 1)))
+
+
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 

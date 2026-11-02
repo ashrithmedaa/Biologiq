@@ -16,12 +16,15 @@ const CARD_GAP := 25.0
 const CARD_START_X := 165.0
 const CARD_START_Y := 340.0
 const CONTINUE_BUTTON := Rect2(500, 542, 280, 58)
+const PATTERN_TIME_LIMIT := 3.0
 
 var option_patterns: Array[String] = []
 var target_pattern := ""
 var round_number := 0
 var points := 0
 var time_remaining := 60.0
+var pattern_time_remaining := PATTERN_TIME_LIMIT
+var second_sequence_mode := false
 var game_over := false
 var feedback := ""
 var wrong_option_index := -1
@@ -31,6 +34,8 @@ var wrong_feedback_timer := 0.0
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	var save_manager := get_node_or_null("/root/SaveManager")
+	second_sequence_mode = save_manager != null and save_manager.get_intern_quarters_round() >= 2
 	_load_next_pattern()
 	queue_redraw()
 
@@ -52,6 +57,13 @@ func _process(delta: float) -> void:
 		var save_manager := get_node_or_null("/root/SaveManager")
 		if save_manager != null:
 			save_manager.complete_student_lab_data()
+		queue_redraw()
+		return
+	if second_sequence_mode:
+		pattern_time_remaining = maxf(0.0, pattern_time_remaining - delta)
+		if pattern_time_remaining <= 0.0:
+			_reroll_pattern()
+			feedback = "Time expired. The pattern was reset."
 	queue_redraw()
 
 
@@ -94,6 +106,7 @@ func _load_next_pattern() -> void:
 	option_patterns.shuffle()
 	wrong_option_index = -1
 	wrong_feedback_timer = 0.0
+	pattern_time_remaining = PATTERN_TIME_LIMIT
 
 
 func _reroll_pattern() -> void:
@@ -107,6 +120,7 @@ func _reroll_pattern() -> void:
 		option_patterns.append(next_pattern)
 		available_patterns.erase(next_pattern)
 	option_patterns.shuffle()
+	pattern_time_remaining = PATTERN_TIME_LIMIT
 	feedback = "New pattern ready. Find its matching record."
 
 
@@ -133,6 +147,11 @@ func _draw() -> void:
 	draw_rect(Rect2(370, 140, 540, 148), Color("#F3EEDC"))
 	draw_rect(Rect2(370, 140, 540, 148), Color("#192787"), false, 3.0)
 	draw_string(GameFont.FONT, Vector2(0, 176), "VERIFY THIS DATA PATTERN", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 17, Color("#42636a"))
+	if second_sequence_mode and not game_over:
+		var pattern_seconds := ceili(pattern_time_remaining)
+		draw_string(GameFont.FONT, Vector2(0, 199), "PATTERN TIME 0:%02d" % pattern_seconds, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 12, Color("#a14f46") if pattern_seconds <= 1 else Color("#5D9374"))
+		draw_rect(Rect2(520, 202, 240, 4), Color("#D8D2C3"))
+		draw_rect(Rect2(520, 202, 240 * pattern_time_remaining / PATTERN_TIME_LIMIT, 4), Color("#D77A45"))
 	_draw_pattern(target_pattern, Vector2(640, 235), 52.0, 12.0)
 	draw_rect(Rect2(340, 304, 600, 12), Color("#E6E0D2"))
 	draw_rect(Rect2(340, 304, 600 * time_remaining / 60.0, 12), Color("#5D9374"))

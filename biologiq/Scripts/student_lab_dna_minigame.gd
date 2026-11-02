@@ -18,6 +18,7 @@ const DNA_RECT := Rect2(390, 112, 500, 500)
 const DNA_SCALE := 5.0
 const TARGET_ROW_Y := [25.0, 29.0, 33.0, 37.0, 64.0, 68.0, 72.0, 76.0]
 const TARGET_CENTER_X := 60.0
+const SEGMENTS_PER_ROUND := 2
 const CARD_TOP := 550.0
 const CARD_SIZE := Vector2(204, 80)
 const CARD_GAP := 24.0
@@ -29,6 +30,8 @@ var base_icons: Dictionary = {}
 var base_sequence: Array[String] = []
 var placed_bases: Array[String] = []
 var segment_index := 0
+var sequence_start := 0
+var sequence_end := SEGMENTS_PER_ROUND
 var dragging_base := ""
 var drag_position := Vector2.ZERO
 var round_complete := false
@@ -38,6 +41,10 @@ var feedback := ""
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	var save_manager := get_node_or_null("/root/SaveManager")
+	if save_manager != null and save_manager.get_intern_quarters_round() >= 2:
+		sequence_start = 2
+		sequence_end = SEGMENTS.size()
 	for segment in SEGMENTS:
 		segment_textures.append(load(str(segment.art)) as Texture2D)
 	for base in BASE_ART:
@@ -45,7 +52,7 @@ func _ready() -> void:
 		atlas.atlas = load(str(BASE_ART[base])) as Texture2D
 		atlas.region = Rect2(40, 40, 22, 3)
 		base_icons[base] = atlas
-	_load_segment(0)
+	_load_segment(sequence_start)
 	queue_redraw()
 
 
@@ -54,7 +61,7 @@ func _gui_input(event: InputEvent) -> void:
 		if event.pressed:
 			if round_complete:
 				if ADVANCE_BUTTON.has_point(event.position):
-					if segment_index + 1 < SEGMENTS.size():
+					if segment_index + 1 < sequence_end:
 						_load_segment(segment_index + 1)
 					else:
 						get_tree().change_scene_to_file("res://Scenes/Rooms/internship_room.tscn")
@@ -78,7 +85,7 @@ func _gui_input(event: InputEvent) -> void:
 						feedback = "%s pairs with %s. Nice work!" % [base_sequence[slot], dragging_base]
 						if not placed_bases.has(""):
 							round_complete = true
-							if segment_index + 1 >= SEGMENTS.size():
+							if segment_index + 1 >= sequence_end:
 								var save_manager := get_node_or_null("/root/SaveManager")
 								if save_manager != null:
 									save_manager.complete_student_lab_dna()
@@ -138,7 +145,7 @@ func _draw() -> void:
 	draw_rect(Rect2(20, 20, size.x - 40, size.y - 40), Color("#FAF5E6"))
 	draw_rect(Rect2(20, 20, size.x - 40, 10), Color("#5D9374"))
 	draw_string(GameFont.FONT, Vector2(64, 72), "INTERN QUARTERS  /  DNA MATCHING", HORIZONTAL_ALIGNMENT_LEFT, -1, 25, Color("#192787"))
-	draw_string(GameFont.FONT, Vector2(64, 100), "SEGMENT %d OF %d" % [segment_index + 1, SEGMENTS.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#5D9374"))
+	draw_string(GameFont.FONT, Vector2(64, 100), "SEGMENT %d OF %d" % [segment_index - sequence_start + 1, SEGMENTS_PER_ROUND], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("#5D9374"))
 	draw_string(GameFont.FONT, Vector2(0, 106), "Drag the complementary base from its box onto each open rung.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#42636a"))
 	_draw_star_progress()
 
@@ -193,22 +200,25 @@ func _draw_joined_pair(added_base: String, center: Vector2) -> void:
 
 
 func _draw_star_progress() -> void:
-	for index in SEGMENTS.size():
-		var star_center := Vector2(1044 + index * 42, 68)
-		_draw_star(star_center, 15.0, Color("#D77A45") if index < segment_index or (index == segment_index and round_complete) else Color("#D8D2C3"))
+	for index in SEGMENTS_PER_ROUND:
+		var absolute_index := sequence_start + index
+		var star_center := Vector2(1080 + index * 42, 68)
+		_draw_star(star_center, 15.0, Color("#D77A45") if absolute_index < segment_index or (absolute_index == segment_index and round_complete) else Color("#D8D2C3"))
 
 
 func _draw_round_complete() -> void:
 	draw_rect(Rect2(0, 0, size.x, size.y), Color(0.07, 0.12, 0.28, 0.82))
 	draw_rect(Rect2(300, 180, 680, 430), Color("#FAF5E6"))
 	draw_rect(Rect2(300, 180, 680, 12), Color("#5D9374"))
-	var final_segment := segment_index + 1 >= SEGMENTS.size()
-	var heading := "ALL DNA SEGMENTS MATCHED!" if final_segment else "DNA SEGMENT %d COMPLETE!" % [segment_index + 1]
+	var final_segment := segment_index + 1 >= sequence_end
+	var round_segment_number := segment_index - sequence_start + 1
+	var heading := "DNA TASK COMPLETE!" if final_segment else "DNA SEGMENT %d COMPLETE!" % round_segment_number
 	draw_string(GameFont.FONT, Vector2(0, 254), heading, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 30, Color("#192787"))
 	draw_string(GameFont.FONT, Vector2(0, 295), "Eight complementary pairs placed correctly.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 17, Color("#42636a"))
-	for index in SEGMENTS.size():
-		_draw_star(Vector2(544 + index * 48, 372), 22.0, Color("#D77A45") if index <= segment_index else Color("#D8D2C3"))
-	draw_string(GameFont.FONT, Vector2(0, 427), "%d of 4 segment stars earned" % [segment_index + 1], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#5D9374"))
+	for index in SEGMENTS_PER_ROUND:
+		var star_x := 640.0 + (float(index) - (SEGMENTS_PER_ROUND - 1) * 0.5) * 48.0
+		_draw_star(Vector2(star_x, 372), 22.0, Color("#D77A45") if index < round_segment_number else Color("#D8D2C3"))
+	draw_string(GameFont.FONT, Vector2(0, 427), "%d of %d segment stars earned" % [round_segment_number, SEGMENTS_PER_ROUND], HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 16, Color("#5D9374"))
 	if final_segment:
 		draw_string(GameFont.FONT, Vector2(0, 464), "Return to the workstation to begin data verification.", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#42636a"))
 	_draw_action_button(ADVANCE_BUTTON, "CONTINUE" if final_segment else "NEXT SEGMENT")

@@ -1,14 +1,4 @@
-res://Scripts/character_selection.gd
-res://Scripts/employee_orientation.gd
-res://Scripts/main.gd
 res://Scripts/main_map.gd
-res://Scripts/save_select_screen.gd
-res://Scripts/select_screen.gd
-res://walking_screen.gd
-res://Scripts/student_lab_data_minigame.gd
-res://Scripts/student_lab_dna_minigame.gd
-res://Scripts/student_lab_minigame.gd
-res://Scripts/intern_quarters_workstation.gd
 res://Scripts/save_manager.gd
-res://Scripts/room_scene.gd
-res://Scripts/game_font.gd
+res://Scripts/student_lab_dna_minigame.gd
+res://Scripts/thank_you_screen.gd
