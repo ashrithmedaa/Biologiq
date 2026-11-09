@@ -15,8 +15,6 @@ const DIALOGUE_CHARACTERS_PER_SECOND := 38.0
 const INTERACT_DISTANCE := 78.0
 const WORLD_WIDTH := 3600.0
 const WORLD_HEIGHT := 2400.0
-const DOOR_HEIGHT := 148.0
-const SIDE_DOOR_HEIGHT := 80.0
 const DOOR_SOUND := "res://684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3"
 const TALKING_SOUND := "res://tunetank.com_talking-gibberish-silly-character.wav"
 const CHARACTER_VOICES := {
@@ -82,6 +80,8 @@ var dialogue_voice := ""
 
 
 func _ready() -> void:
+	if Engine.is_editor_hint():
+		return
 	_setup_input()
 	_setup_audio()
 	_load_player_status()
@@ -257,26 +257,21 @@ func restore_save_state(data: Dictionary) -> void:
 
 
 func _build_map() -> void:
-	# First-floor rooms form the broad crossbar, with the entrance centered below the sign.
-	_add_room("Student Lab", Rect2(320, 210, 300, 240), Vector2(470, 450))
-	_add_room("Intern Quarters", Rect2(660, 210, 300, 240), Vector2(810, 450))
-	_add_room("Reception", Rect2(1000, 210, 300, 240), Vector2(1150, 450))
-	_add_room("College Lab", Rect2(2300, 210, 300, 240), Vector2(2450, 450))
-	_add_room("Low College Lab", Rect2(2640, 210, 300, 240), Vector2(2790, 450))
-	_add_room("Job Quarters", Rect2(2980, 210, 300, 240), Vector2(3130, 450))
-
-	# The research wing forms the long stem below the first-floor crossbar.
-	_add_room("Bachelor's Lab", Rect2(900, 1120, 500, 250), Vector2(1400, 1330), "right")
-	_add_room("Molecular Biology", Rect2(900, 1420, 500, 250), Vector2(1400, 1630), "right")
-	_add_room("Biochemistry", Rect2(900, 1720, 500, 250), Vector2(1400, 1930), "right")
-	_add_room("Masters Suite", Rect2(2200, 1120, 500, 250), Vector2(2200, 1330), "left")
-	_add_room("Advanced Research", Rect2(2200, 1420, 500, 250), Vector2(2200, 1630), "left")
-	_add_room("Graduate Suite", Rect2(2200, 1720, 500, 250), Vector2(2200, 1930), "left")
+	var rooms_root := get_node("MapArt/Rooms")
+	for room_node in rooms_root.get_children():
+		var room_size: Vector2 = room_node.get_meta("room_size")
+		var door_local: Vector2 = room_node.get_meta("door_local")
+		var room_position: Vector2 = room_node.global_position
+		_add_room(
+			str(room_node.get_meta("room_name")),
+			Rect2(room_position, room_size),
+			room_node.to_global(door_local),
+			str(room_node.get_meta("door_side"))
+		)
 
 	_add_object("Large succulent", Vector2(1510, 740), "A healthy succulent brightens the reception hall.", "inspect")
-	_add_object("Stairwell", Vector2(1800, 960), "The stairwell connects the first-floor cross hall to the research wing.", "inspect")
 	_build_side_door_sprites()
-	queue_redraw()
+	_build_room_door_art()
 
 
 func _add_room(room_name: String, room_rect: Rect2, door_position: Vector2, door_side: String = "bottom") -> void:
@@ -288,24 +283,64 @@ func _build_side_door_sprites() -> void:
 	var closed_door := AtlasTexture.new()
 	closed_door.atlas = door_atlas
 	closed_door.region = Rect2(0, 0, 600, 880)
+	# A narrow cross-section through the door at handle height reads as a door edge
+	# when turned sideways, with the original handle still visible.
+	var side_door_detail := AtlasTexture.new()
+	side_door_detail.atlas = door_atlas
+	side_door_detail.region = Rect2(0, 455, 600, 105)
 	var open_door := AtlasTexture.new()
 	open_door.atlas = door_atlas
 	open_door.region = Rect2(600, 0, 600, 880)
 	side_door_texture = closed_door
 	open_door_texture = open_door
 	for room in room_doors:
-		var side := str(room.get("side", "bottom"))
-		if side != "left" and side != "right":
+		var room_art := _room_art_node(str(room.name))
+		if room_art == null:
 			continue
-		var door: Vector2 = room.position
-		var sprite := Sprite2D.new()
-		sprite.name = "%sClosedDoor" % str(room.name).replace(" ", "")
-		sprite.texture = side_door_texture
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		sprite.rotation = PI * 0.5
-		sprite.scale = Vector2(0.13, 0.025)
-		sprite.position = door
-		add_child(sprite)
+		var sprite := room_art.get_node_or_null("DoorAnchor/DoorSprite") as Sprite2D
+		if sprite == null:
+			continue
+		var side := str(room.get("side", "bottom"))
+		sprite.texture = side_door_detail if side == "left" or side == "right" else closed_door
+		sprite.set_meta("map_door_name", str(room.name))
+
+
+func _build_room_door_art() -> void:
+	for room in room_doors:
+		var room_art := _room_art_node(str(room.name))
+		if room_art == null:
+			continue
+		var sprite := room_art.get_node_or_null("DoorAnchor/DoorSprite") as Sprite2D
+		if sprite == null:
+			continue
+		sprite.set_meta("map_door_name", str(room.name))
+
+	var entrance_sprite := get_node("MapArt/Entrance/MainEntranceDoor") as Sprite2D
+	entrance_sprite.texture = side_door_texture
+	entrance_sprite.set_meta("main_entrance_door", true)
+	_refresh_map_door_art()
+
+
+func _refresh_map_door_art() -> void:
+	var entrance_sprite := get_node_or_null("MapArt/Entrance/MainEntranceDoor") as Sprite2D
+	if entrance_sprite != null:
+		entrance_sprite.texture = open_door_texture if main_entry_open else side_door_texture
+	for room in room_doors:
+		var room_art := _room_art_node(str(room.name))
+		if room_art == null:
+			continue
+		var sprite := room_art.get_node_or_null("DoorAnchor/DoorSprite") as Sprite2D
+		if sprite == null:
+			continue
+		if str(room.get("side", "bottom")) == "bottom":
+			sprite.texture = open_door_texture if str(room.name) == open_door_name else side_door_texture
+
+
+func _room_art_node(room_name: String) -> Node2D:
+	for room_node in get_node("MapArt/Rooms").get_children():
+		if str(room_node.get_meta("room_name")) == room_name:
+			return room_node as Node2D
+	return null
 
 
 func _add_object(object_name: String, at: Vector2, description: String, kind: String) -> void:
@@ -313,10 +348,10 @@ func _add_object(object_name: String, at: Vector2, description: String, kind: St
 
 
 func _build_characters() -> void:
-	# Use only the seated figure from each sprite-sheet frame; the standing pose is a separate figure in the same cell.
-	var sharon := _make_npc("Sharon", Vector2(2070, 590), _sharon_frames(), 3.4)
+	# The scene desk is centered at (1801, 613); place Sharon's seated typing art there.
+	var sharon := _make_npc("Sharon", Vector2(1801, 613), _sharon_frames(), 3.4)
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
-	sharon_sprite.position = Vector2(0, -72)
+	sharon_sprite.position = Vector2(0, -56)
 	sharon_sprite.play("typing")
 	_add_character_interaction("Sharon O'Riley", sharon.position, [])
 	sam = _make_npc("Sam", Vector2(2320, 690), _sam_frames(), 0.19)
@@ -332,7 +367,7 @@ func _build_characters() -> void:
 	maria.hide()
 	var desk_collider := StaticBody2D.new()
 	desk_collider.name = "ReceptionDeskCollider"
-	desk_collider.position = Vector2(2075, 594)
+	desk_collider.position = Vector2(1801, 613)
 	var desk_shape := CollisionShape2D.new()
 	var desk_rectangle := RectangleShape2D.new()
 	desk_rectangle.size = Vector2(190, 48)
@@ -412,11 +447,12 @@ func _sharon_frames() -> SpriteFrames:
 	frames.set_animation_loop("typing", true)
 	frames.set_animation_speed("typing", 6.0)
 	var texture := load(SHARON_SHEET) as Texture2D
-	for index in 6:
+	for index in 12:
 		var atlas := AtlasTexture.new()
 		atlas.atlas = texture
-		# The 200 px cell shows both standing and seated poses. Crop only the seated figure's head and torso.
-		atlas.region = Rect2(Vector2(index * 200 + 65, 0), Vector2(35, 36))
+		# Each 100 px frame pairs a standing pose with the seated computer setup.
+		# Keep the full monitor, seated pose, keyboard, and desk while excluding the standing figure.
+		atlas.region = Rect2(Vector2(index * 100 + 52, 14), Vector2(48, 22))
 		frames.add_frame("typing", atlas)
 	return frames
 
@@ -649,7 +685,7 @@ func _on_save_status_changed(message: String, is_error: bool) -> void:
 func _interact() -> void:
 	if farewell_done and player.global_position.distance_to(MAIN_ENTRANCE_EXIT_POSITION) <= INTERACT_DISTANCE:
 		main_entry_open = true
-		queue_redraw()
+		_refresh_map_door_art()
 		_play_door_sound()
 		await get_tree().create_timer(0.2).timeout
 		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
@@ -657,7 +693,7 @@ func _interact() -> void:
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():
 		open_door_name = str(enterable_door.name)
-		queue_redraw()
+		_refresh_map_door_art()
 		_play_door_sound()
 		await get_tree().create_timer(0.2).timeout
 		var save_manager := get_node_or_null("/root/SaveManager")
@@ -891,21 +927,20 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 	match phase:
 		2:
 			return [
-				"This is the college and Job Quarters wing.",
-				"The College Lab and Low College Lab are along this hallway.",
-				"The Job Quarters are at this end of the hall."
+				"Along this hallway are Community Connections Center, Talent Acquisition, and College Lab.",
+				"Across from them are Quality Control, Administration, and Marketing & Sales."
 			]
 		4:
 			return [
-				"This is our research and graduate wing.",
-				"On this side are the Bachelor's Lab, Molecular Biology, and Biochemistry.",
-				"Across the hall are the Master's Suite, Advanced Research, and Graduate Suite."
+				"This is our research wing.",
+				"On this side are Industrial, Environmental, and Diagnostic Research.",
+				"Across the hall are Aquatic, Agricultural, and Medical."
 			]
 		6:
 			return [
-				"This hallway has the Student Lab, Intern Quarters, and Reception.",
-				"Reception is where you checked in.",
-				"The Student Lab and Intern Quarters are down this wing."
+				"This hallway has Community Connections Center, Talent Acquisition, and College Lab.",
+				"Community Connections Center is where you checked in.",
+				"Talent Acquisition is where you can pick up your internship tasks."
 			]
 	return []
 
@@ -1101,7 +1136,7 @@ func _nearest_enterable_door() -> Dictionary:
 	if not student_lab_task_received:
 		return {}
 	var door := _nearest_door()
-	if not door.is_empty() and str(door.name) == "Intern Quarters":
+	if not door.is_empty() and str(door.name) == "Talent Acquisition":
 		return door
 	return {}
 
@@ -1146,15 +1181,11 @@ func _nearest_interactable() -> Dictionary:
 
 
 func _is_walkable_position(at: Vector2) -> bool:
-	# The player can move through the halls and stairwell. Room doors stay closed.
-	var walkable_zones: Array[Rect2] = [
-		Rect2(260, 450, 3080, 480),
-		Rect2(1542, 140, 516, 310),
-		Rect2(1400, 850, 800, 300),
-		Rect2(1400, 1090, 800, 1120),
-	]
-	for zone in walkable_zones:
-		if zone.has_point(at):
+	for floor_region in get_node("MapArt/Floors").get_children():
+		if not bool(floor_region.get_meta("walkable", false)):
+			continue
+		var floor_size: Vector2 = floor_region.get_meta("floor_size", Vector2.ZERO)
+		if Rect2(Vector2.ZERO, floor_size).has_point(floor_region.to_local(at)):
 			return true
 	return false
 
@@ -1168,7 +1199,7 @@ func _update_interaction_hint() -> void:
 		return
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():
-		interaction_hint.text = "E  Enter Intern Quarters"
+		interaction_hint.text = "E  Enter Talent Acquisition"
 		return
 	if not _nearest_door().is_empty():
 		interaction_hint.text = "E  Check room availability"
@@ -1210,178 +1241,3 @@ func _close_menu() -> void:
 	menu_open = false
 	menu_layer.hide()
 	_update_interaction_hint()
-
-
-func _draw() -> void:
-	# Campus lawn uses broad color patches and pixel tufts instead of a hard checker pattern.
-	draw_rect(Rect2(0, 0, WORLD_WIDTH, WORLD_HEIGHT), Color("#789b61"))
-	for x in range(0, int(WORLD_WIDTH), 96):
-		for y in range(0, int(WORLD_HEIGHT), 96):
-			var seed := (x * 17 + y * 31) % 17
-			if seed < 6:
-				draw_rect(Rect2(x + 12 + seed * 3, y + 14, 34 + seed, 14), Color("#6d9159"))
-				draw_rect(Rect2(x + 22 + seed * 2, y + 22, 18, 10), Color("#73975d"))
-			elif seed < 11:
-				draw_rect(Rect2(x + 42, y + 50, 28, 12), Color("#88a96c"))
-			if (x / 96 + y / 96) % 3 == 0:
-				draw_line(Vector2(x + 74, y + 38), Vector2(x + 78, y + 28), Color("#597f50"), 3.0)
-				draw_line(Vector2(x + 78, y + 38), Vector2(x + 84, y + 30), Color("#628a52"), 3.0)
-				draw_line(Vector2(x + 82, y + 38), Vector2(x + 86, y + 32), Color("#597f50"), 3.0)
-	_draw_hallway()
-	_draw_room_zones()
-	_draw_stairwell_and_walkway()
-	_draw_furniture_and_objects()
-
-
-func _draw_hallway() -> void:
-	# A wide first-floor crossbar joined to a narrower research wing below forms the T plan.
-	_draw_pixel_panel(Rect2(240, 140, 3120, 820), Color("#192787"), Color("#d6dfc2"))
-	_draw_pixel_panel(Rect2(880, 920, 1840, 1320), Color("#192787"), Color("#d6dfc2"))
-	_draw_tile_floor(Rect2(260, 450, 3080, 480))
-	_draw_tile_floor(Rect2(1400, 930, 800, 180))
-	_draw_tile_floor(Rect2(1400, 1090, 800, 1120))
-	draw_rect(Rect2(260, 438, 3080, 12), Color("#5D9374"))
-	draw_rect(Rect2(260, 922, 3080, 10), Color("#8c6544"))
-	draw_rect(Rect2(1400, 1080, 800, 10), Color("#5D9374"))
-	draw_rect(Rect2(1400, 2200, 800, 10), Color("#8c6544"))
-	# Hall lights repeat along each axis and lead the eye through the T.
-	for x in range(500, 3300, 300):
-		if x < 1500 or x > 2100:
-			draw_rect(Rect2(x, 650, 120, 10), Color("#f7f0d9"))
-			draw_rect(Rect2(x + 8, 652, 104, 3), Color("#fffbea"))
-	for y in range(1220, 2180, 220):
-		draw_rect(Rect2(1740, y, 120, 10), Color("#f7f0d9"))
-		draw_rect(Rect2(1748, y + 2, 104, 3), Color("#fffbea"))
-
-
-func _draw_pixel_panel(rect: Rect2, outline: Color, fill: Color) -> void:
-	draw_rect(rect, outline)
-	draw_rect(Rect2(rect.position + Vector2(12, 12), rect.size - Vector2(24, 24)), fill)
-	# Thick baseboards and stepped wall caps echo the exterior laboratory art.
-	draw_rect(Rect2(rect.position.x + 12, rect.position.y + 12, rect.size.x - 24, 12), Color("#5D9374"))
-	draw_rect(Rect2(rect.position.x + 12, rect.end.y - 24, rect.size.x - 24, 12), Color("#8c6544"))
-	for x in range(int(rect.position.x + 20), int(rect.end.x - 20), 64):
-		draw_rect(Rect2(x, rect.position.y + 14, 32, 5), Color("#8BC8D8"))
-
-
-func _draw_tile_floor(rect: Rect2) -> void:
-	draw_rect(rect, Color("#e8e2cc"))
-	for row in range(0, int(rect.size.y), 40):
-		var y := rect.position.y + row
-		var offset := 0 if (row / 40) % 2 == 0 else 32
-		for x in range(int(rect.position.x) + offset, int(rect.end.x), 64):
-			var tile := Rect2(x, y, 62, 38)
-			draw_rect(tile, Color("#f2edda") if (x / 64 + row / 40) % 3 != 0 else Color("#e4ddc7"))
-			draw_rect(tile, Color("#c9c5ae"), false, 1.0)
-			draw_rect(Rect2(x + 4, y + 3, 54, 2), Color("#faf6e7"))
-
-
-func _draw_room_zones() -> void:
-	for room in room_doors:
-		var rect: Rect2 = room.room_rect
-		# Low sage walls define each room without boxing in the door artwork.
-		draw_rect(rect.grow(4), Color("#5D9374"))
-		draw_rect(rect, Color("#dedfc9"))
-		for x in range(int(rect.position.x + 8), int(rect.end.x - 8), 40):
-			draw_line(Vector2(x, rect.position.y + 8), Vector2(x, rect.end.y - 8), Color("#d2d6c0"), 1.0)
-		for y in range(int(rect.position.y + 8), int(rect.end.y - 8), 40):
-			draw_line(Vector2(rect.position.x + 8, y), Vector2(rect.end.x - 8, y), Color("#d2d6c0"), 1.0)
-		draw_rect(Rect2(rect.position.x + 8, rect.position.y + 8, rect.size.x - 16, 8), Color("#5D9374"))
-		draw_rect(Rect2(rect.position.x + 12, rect.position.y + 18, 26, 4), Color("#8BC8D8"))
-		_draw_closed_door(room)
-
-
-func _draw_closed_door(room: Dictionary) -> void:
-	var door: Vector2 = room.position
-	var room_name := str(room.name).to_upper()
-	var side := str(room.get("side", "bottom"))
-	if side == "left" or side == "right":
-		# Rotate and center each label inside its own room rectangle, away from the wall edge.
-		var room_rect: Rect2 = room.room_rect
-		var label_x := room_rect.end.x - 18.0 if side == "right" else room_rect.position.x + 18.0
-		var label_angle := PI * 0.5 if side == "right" else -PI * 0.5
-		var label_width := room_rect.size.y - 24.0
-		draw_set_transform(Vector2(label_x, room_rect.get_center().y), label_angle)
-		draw_string(GameFont.FONT, Vector2(-label_width * 0.5, 4), room_name, HORIZONTAL_ALIGNMENT_CENTER, label_width, 12, Color("#192787"))
-		draw_set_transform(Vector2.ZERO, 0.0)
-	else:
-		# The lower edge of each tall door meets the bottom wall of its room.
-		var door_rect := Rect2(door.x - 34, door.y - DOOR_HEIGHT, 68.0, DOOR_HEIGHT)
-		var door_texture := _door_texture_for(str(room.name))
-		if door_texture != null:
-			draw_texture_rect(door_texture, door_rect, false)
-		var label_y := door_rect.position.y - 10.0
-		draw_string(GameFont.FONT, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
-
-
-func _door_texture_for(room_name: String) -> Texture2D:
-	return open_door_texture if room_name == open_door_name else side_door_texture
-
-
-func _draw_stairwell_and_walkway() -> void:
-	# Entrance forecourt, closed front door, and a broad central stair connecting both floors.
-	draw_rect(Rect2(1540, 0, 520, 140), Color("#aaa98e"))
-	draw_rect(Rect2(1552, 0, 496, 140), Color("#d7cfb6"))
-	for y in range(16, 140, 32):
-		draw_line(Vector2(1552, y), Vector2(2048, y), Color("#b4ad96"), 2.0)
-	for x in range(1584, 2048, 64):
-		draw_line(Vector2(x, 0), Vector2(x, 140), Color("#b4ad96"), 2.0)
-	_draw_tile_floor(Rect2(1542, 140, 516, 298))
-	draw_rect(Rect2(1530, 140, 12, 298), Color("#5D9374"))
-	draw_rect(Rect2(2058, 140, 12, 298), Color("#5D9374"))
-	_draw_main_glass_entry()
-	_draw_pixel_panel(Rect2(1400, 850, 800, 250), Color("#192787"), Color("#d6dfc2"))
-	draw_rect(Rect2(1412, 862, 776, 226), Color("#e8e2cc"))
-	for tread in 12:
-		var y := 882 + tread * 17
-		draw_rect(Rect2(1510, y, 580, 5), Color("#8c6544"))
-		draw_rect(Rect2(1518, y - 4, 564, 4), Color("#f2edda"))
-	draw_rect(Rect2(1494, 870, 10, 200), Color("#5D9374"))
-	draw_rect(Rect2(2096, 870, 10, 200), Color("#5D9374"))
-
-
-func _draw_main_glass_entry() -> void:
-	# Use the same supplied door sprite for the main map entrance.
-	var door_rect := Rect2(1542, 64, 516, 76)
-	var door_texture: Texture2D = open_door_texture if main_entry_open else side_door_texture
-	if door_texture != null:
-		draw_texture_rect(door_texture, door_rect, false)
-	draw_string(GameFont.FONT, Vector2(1600, 54), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
-
-
-func _draw_furniture_and_objects() -> void:
-	# Blue countertop is solid; the separate lower front panel remains removed.
-	draw_rect(Rect2(1980, 570, 190, 48), Color("#192787"))
-	draw_rect(Rect2(1988, 570, 174, 10), Color("#D77A45"))
-	draw_rect(Rect2(1996, 580, 158, 30), Color("#115293"))
-	draw_rect(Rect2(1984, 610, 182, 8), Color("#192787"))
-	# No plant image is present in Art Assets, so use matching code-drawn pixel plants.
-	for plant_base: Vector2 in [Vector2(276, 700), Vector2(3324, 700), Vector2(420, 900), Vector2(1320, 900), Vector2(2280, 900), Vector2(3180, 900), Vector2(1418, 1380), Vector2(2182, 1380), Vector2(1418, 2000), Vector2(2182, 2000)]:
-		_draw_potted_plant(plant_base)
-
-
-func _draw_potted_plant(base: Vector2) -> void:
-	# Pot bottoms sit flush to wall/baseboard edges; layered leaves add the missing plant art.
-	draw_rect(Rect2(base + Vector2(-14, 20), Vector2(28, 4)), Color("#526f54"))
-	draw_rect(Rect2(base + Vector2(-15, 5), Vector2(30, 5)), Color("#192787"))
-	var pot := PackedVector2Array([
-		base + Vector2(-12, 9), base + Vector2(12, 9),
-		base + Vector2(9, 23), base + Vector2(-9, 23),
-	])
-	draw_colored_polygon(pot, Color("#b66d4a"))
-	draw_polyline(PackedVector2Array([pot[0], pot[1], pot[2], pot[3], pot[0]]), Color("#7c4f3b"), 2.0, true)
-	draw_line(base + Vector2(0, 9), base + Vector2(0, -15), Color("#477748"), 4.0)
-	_draw_plant_leaf(base + Vector2(-1, 3), base + Vector2(-22, -31), 8.0, Color("#4d814b"), Color("#80a85b"))
-	_draw_plant_leaf(base + Vector2(0, 0), base + Vector2(-9, -46), 8.0, Color("#5d9251"), Color("#91b76a"))
-	_draw_plant_leaf(base + Vector2(1, 2), base + Vector2(11, -43), 9.0, Color("#477748"), Color("#82a95b"))
-	_draw_plant_leaf(base + Vector2(2, 5), base + Vector2(24, -27), 8.0, Color("#57884a"), Color("#9bbb69"))
-	_draw_plant_leaf(base + Vector2(-1, 7), base + Vector2(-25, -14), 7.0, Color("#648e4c"), Color("#a4bd70"))
-
-
-func _draw_plant_leaf(root: Vector2, tip: Vector2, width: float, fill: Color, highlight: Color) -> void:
-	var axis := (tip - root).normalized()
-	var side := Vector2(-axis.y, axis.x) * width
-	var shoulder := root.lerp(tip, 0.42)
-	var leaf := PackedVector2Array([root, shoulder + side, tip, shoulder - side])
-	draw_colored_polygon(leaf, fill)
-	draw_line(root.lerp(tip, 0.18), tip, highlight, 2.0)

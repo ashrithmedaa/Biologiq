@@ -1,2 +1,2 @@
-res://walking_screen.gd
+res://Scenes/main_map.tscn
 res://Scripts/main_map.gd

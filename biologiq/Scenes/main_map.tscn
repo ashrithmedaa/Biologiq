@@ -1,6 +1,1895 @@
 [gd_scene format=3 uid="uid://bdf7e8eqd2gv0"]
 
 [ext_resource type="Script" uid="uid://bspd5oi70gh2x" path="res://Scripts/main_map.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bg81lb154rtnt" path="res://Art Assets/map_floor_tiles_phase0.svg" id="2_floor0"]
+[ext_resource type="Texture2D" uid="uid://dmd0ahou6nrfn" path="res://Art Assets/map_grass_detail.svg" id="3_grass"]
+[ext_resource type="Texture2D" uid="uid://5rk1wvv0vlbi" path="res://Art Assets/door.png" id="4_door"]
+[ext_resource type="FontFile" uid="uid://duw5inie3ygj5" path="res://Art Assets/CascadiaMono.ttf" id="5_font"]
+[ext_resource type="Texture2D" uid="uid://c84afh6dkxpmp" path="res://Art Assets/map_floor_tiles_phase1.svg" id="6_floor1"]
+
+[sub_resource type="AtlasTexture" id="DoorClosed"]
+atlas = ExtResource("4_door")
+region = Rect2(0, 0, 600, 880)
+
+[sub_resource type="AtlasTexture" id="DoorSideDetail"]
+atlas = ExtResource("4_door")
+region = Rect2(0, 455, 600, 105)
 
 [node name="MainMap" type="Node2D" unique_id=1248756143]
 script = ExtResource("1")
+
+[node name="MapArt" type="Node2D" parent="." unique_id=1984469810]
+
+[node name="Ground" type="Node2D" parent="MapArt" unique_id=972793582]
+
+[node name="CampusGrass" type="Polygon2D" parent="MapArt/Ground" unique_id=784872517]
+color = Color(0.47058824, 0.60784316, 0.38039216, 1)
+polygon = PackedVector2Array(0, 0, 3600, 0, 3600, 2400, 0, 2400)
+
+[node name="GroundDetails" type="Polygon2D" parent="MapArt/Ground" unique_id=288477676]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("3_grass")
+polygon = PackedVector2Array(0, 0, 3600, 0, 3600, 2400, 0, 2400)
+uv = PackedVector2Array(0, 0, 3600, 0, 3600, 2400, 0, 2400)
+
+[node name="HallwayPanels" type="Node2D" parent="MapArt" unique_id=1494436179]
+
+[node name="MainHallShell" type="Node2D" parent="MapArt/HallwayPanels" unique_id=93371376]
+
+[node name="Outline" type="Polygon2D" parent="MapArt/HallwayPanels/MainHallShell" unique_id=676775245]
+scale = Vector2(1.1544871, 1.5890243)
+color = Color(0.09803922, 0.15294118, 0.5294118, 1)
+polygon = PackedVector2Array(0, 0, 3120, 0, 3120, 399.20947, 3120, 820, 1561.1705, 819.9999, 0, 820)
+
+[node name="Interior" type="Polygon2D" parent="MapArt/HallwayPanels/MainHallShell" unique_id=691847665]
+position = Vector2(12, 12)
+color = Color(0.8392157, 0.8745098, 0.7607843, 1)
+polygon = PackedVector2Array(0, 0, 3096, 0, 3096, 796, 0, 796)
+
+[node name="TopTrim" type="Polygon2D" parent="MapArt/HallwayPanels/MainHallShell" unique_id=1181774901]
+position = Vector2(12, 12)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 3096, 0, 3096, 12, 0, 12)
+
+[node name="BottomTrim" type="Polygon2D" parent="MapArt/HallwayPanels/MainHallShell" unique_id=1582298448]
+position = Vector2(12, 796)
+color = Color(0.54901963, 0.39607844, 0.26666668, 1)
+polygon = PackedVector2Array(0, 0, 3096, 0, 3096, 12, 0, 12)
+
+[node name="ResearchWingShell" type="Node2D" parent="MapArt/HallwayPanels" unique_id=277734892]
+
+[node name="Interior" type="Polygon2D" parent="MapArt/HallwayPanels/ResearchWingShell" unique_id=1019861809]
+position = Vector2(15, 12)
+color = Color(0.8392157, 0.8745098, 0.7607843, 1)
+polygon = PackedVector2Array(0, 0, 1816, 0, 1816, 1296, 0, 1296)
+
+[node name="Interior" type="Polygon2D" parent="MapArt/HallwayPanels/ResearchWingShell/Interior" unique_id=1914030271]
+position = Vector2(2191, 12)
+scale = Vector2(0.7582599, 0.98225313)
+color = Color(0.8392157, 0.8745098, 0.7607843, 1)
+polygon = PackedVector2Array(0, 0, 1816, 0, 1816.0001, 647.60626, 1816, 1296, 0, 1296)
+
+[node name="TopTrim" type="Polygon2D" parent="MapArt/HallwayPanels/ResearchWingShell" unique_id=1461901500]
+position = Vector2(12, 12)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 1816, 0, 1816, 12, 0, 12)
+
+[node name="BottomTrim" type="Polygon2D" parent="MapArt/HallwayPanels/ResearchWingShell" unique_id=440555583]
+position = Vector2(12, 1296)
+color = Color(0.54901963, 0.39607844, 0.26666668, 1)
+polygon = PackedVector2Array(0, 0, 1816, 0, 1816, 12, 0, 12)
+
+[node name="Floors" type="Node2D" parent="MapArt" unique_id=1950935058]
+
+[node name="MainHallFloor" type="Node2D" parent="MapArt/Floors" unique_id=1755366879]
+position = Vector2(260, 450)
+metadata/floor_size = Vector2(3080, 480)
+metadata/walkable = true
+
+[node name="Base" type="Polygon2D" parent="MapArt/Floors/MainHallFloor" unique_id=1907761664]
+color = Color(0.9098039, 0.8862745, 0.8, 1)
+polygon = PackedVector2Array(0, 0, 3080, 0, 3080, 480, 0, 480)
+
+[node name="TilePattern" type="Polygon2D" parent="MapArt/Floors/MainHallFloor" unique_id=2072516144]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0, -8)
+scale = Vector2(1, 1.0166667)
+texture = ExtResource("6_floor1")
+polygon = PackedVector2Array(0, 0, 3080, 0, 3080, 480, 0, 480)
+uv = PackedVector2Array(0, 0, 3080, 0, 3080, 480, 0, 480)
+
+[node name="LandingFloor" type="Node2D" parent="MapArt/Floors" unique_id=1947971818]
+position = Vector2(1400, 930)
+metadata/floor_size = Vector2(800, 180)
+metadata/walkable = true
+
+[node name="Base" type="Polygon2D" parent="MapArt/Floors/LandingFloor" unique_id=1262623992]
+color = Color(0.9098039, 0.8862745, 0.8, 1)
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 180, 0, 180)
+
+[node name="TilePattern" type="Polygon2D" parent="MapArt/Floors/LandingFloor" unique_id=627369511]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("2_floor0")
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 180, 0, 180)
+uv = PackedVector2Array(0, 0, 800, 0, 800, 180, 0, 180)
+
+[node name="ResearchFloorUpper" type="Node2D" parent="MapArt/Floors" unique_id=1337322843]
+position = Vector2(1400, 1090)
+metadata/floor_size = Vector2(800, 1120)
+metadata/walkable = true
+
+[node name="Base" type="Polygon2D" parent="MapArt/Floors/ResearchFloorUpper" unique_id=1844432441]
+color = Color(0.9098039, 0.8862745, 0.8, 1)
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 1120, 0, 1120)
+
+[node name="TilePattern" type="Polygon2D" parent="MapArt/Floors/ResearchFloorUpper" unique_id=137320477]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("2_floor0")
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 1120, 0, 1120)
+uv = PackedVector2Array(0, 0, 800, 0, 800, 1120, 0, 1120)
+
+[node name="EntranceFloor" type="Node2D" parent="MapArt/Floors" unique_id=417159022]
+position = Vector2(1542, 140)
+metadata/floor_size = Vector2(516, 310)
+metadata/walkable = true
+
+[node name="Base" type="Polygon2D" parent="MapArt/Floors/EntranceFloor" unique_id=2004096987]
+color = Color(0.9098039, 0.8862745, 0.8, 1)
+polygon = PackedVector2Array(0, 0, 516, 0, 516, 298, 0, 298)
+
+[node name="TilePattern" type="Polygon2D" parent="MapArt/Floors/EntranceFloor" unique_id=1713647946]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("2_floor0")
+polygon = PackedVector2Array(0, 0, 516, 0, 516, 298, 0, 298)
+uv = PackedVector2Array(0, 0, 516, 0, 516, 298, 0, 298)
+
+[node name="FormerStairFloor" type="Node2D" parent="MapArt/Floors" unique_id=580700073]
+position = Vector2(1400, 850)
+metadata/floor_size = Vector2(800, 240)
+metadata/walkable = true
+
+[node name="Base" type="Polygon2D" parent="MapArt/Floors/FormerStairFloor" unique_id=1645691551]
+color = Color(0.9098039, 0.8862745, 0.8, 1)
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 240, 0, 240)
+
+[node name="TilePattern" type="Polygon2D" parent="MapArt/Floors/FormerStairFloor" unique_id=1941533911]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("2_floor0")
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 240, 0, 240)
+uv = PackedVector2Array(0, 0, 800, 0, 800, 240, 0, 240)
+
+[node name="Rooms" type="Node2D" parent="MapArt" unique_id=1166621584]
+
+[node name="CommunityConnectionsCenter" type="Node2D" parent="MapArt/Rooms" unique_id=1473195128]
+position = Vector2(320, 210)
+metadata/room_name = "Community Connections Center"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=2130340960]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=687599759]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1931502255]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1064035893]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=2111289691]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=772644240]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=519423617]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1974316741]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1456491615]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=762298070]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1270859177]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=833362862]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=13842050]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=2133571651]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=2100873261]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=2038086648]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1194610977]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=697299193]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=15259723]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/CommunityConnectionsCenter/DoorAnchor" unique_id=593558211]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/CommunityConnectionsCenter" unique_id=1776282379]
+z_index = 3
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "COMMUNITY CONNECTIONS CENTER"
+horizontal_alignment = 1
+
+[node name="TalentAcquisition" type="Node2D" parent="MapArt/Rooms" unique_id=695560129]
+position = Vector2(660, 210)
+metadata/room_name = "Talent Acquisition"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1254782029]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=2021302491]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=303820336]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1068947759]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1750823297]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=968492838]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1421750129]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=533793821]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1466336206]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1183914527]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1508439447]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=2026808543]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=785189991]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=237195092]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1861005214]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=2140398984]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1050229358]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=1459352278]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/TalentAcquisition" unique_id=666403753]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/TalentAcquisition/DoorAnchor" unique_id=1722115933]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/TalentAcquisition" unique_id=1219630513]
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "TALENT ACQUISITION"
+horizontal_alignment = 1
+
+[node name="CollegeLab" type="Node2D" parent="MapArt/Rooms" unique_id=537484386]
+position = Vector2(1000, 210)
+metadata/room_name = "College Lab"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=2107227575]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=301799620]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=729319972]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1859987320]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=140760360]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1345127131]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1011651796]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=568999241]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1095278324]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=265036516]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1358036002]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1958844935]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=63130789]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1599091092]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=562290083]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=1680608771]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=600199854]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/CollegeLab" unique_id=638266757]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/CollegeLab" unique_id=225555989]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/CollegeLab/DoorAnchor" unique_id=1429581245]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/CollegeLab" unique_id=702659401]
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "COLLEGE LAB"
+horizontal_alignment = 1
+
+[node name="QualityControl" type="Node2D" parent="MapArt/Rooms" unique_id=1578547969]
+position = Vector2(2300, 210)
+metadata/room_name = "Quality Control"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1858594154]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=424867717]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=776358426]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=681668079]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1915693198]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=280632434]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=2051877518]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1020438905]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=2106570838]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1270234976]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1654038924]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1360835948]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1058784896]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1308216820]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=416326453]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=902011973]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=385144343]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/QualityControl" unique_id=1555188662]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/QualityControl" unique_id=1168785980]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/QualityControl/DoorAnchor" unique_id=1830461371]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/QualityControl" unique_id=882635717]
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "QUALITY CONTROL"
+horizontal_alignment = 1
+
+[node name="Administration" type="Node2D" parent="MapArt/Rooms" unique_id=1706440147]
+position = Vector2(2640, 210)
+metadata/room_name = "Administration"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=860049667]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1300228231]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=211711176]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=283297786]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1674128237]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=938265998]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=2147071681]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=853802473]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=554201352]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=760156811]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1407979240]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=231551844]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1727617633]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1166894621]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=2064181277]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=276872853]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=518452747]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Administration" unique_id=1907853425]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Administration" unique_id=840897441]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Administration/DoorAnchor" unique_id=1295038178]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Administration" unique_id=1694099722]
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "ADMINISTRATION"
+horizontal_alignment = 1
+
+[node name="MarketingSales" type="Node2D" parent="MapArt/Rooms" unique_id=1292055842]
+position = Vector2(2980, 210)
+metadata/room_name = "Marketing & Sales"
+metadata/room_size = Vector2(300, 240)
+metadata/door_local = Vector2(150, 240)
+metadata/door_side = "bottom"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1175774149]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 308, 0, 308, 248, 0, 248)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=483879190]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 300, 0, 300, 240, 0, 240)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=234396687]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1867869434]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=2026897854]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1044169037]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1552608697]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1963738896]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1405131127]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1027050473]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 224, 0, 224)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1616463836]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1640378580]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1462648442]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1661252448]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1254542366]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=828051127]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1506239321]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 284, 0, 284, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/MarketingSales" unique_id=1300998694]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/MarketingSales" unique_id=281255401]
+position = Vector2(150, 240)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/MarketingSales/DoorAnchor" unique_id=1719765338]
+z_index = 2
+texture_filter = 1
+position = Vector2(0, -74)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/MarketingSales" unique_id=1714910937]
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 290.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "MARKETING & SALES"
+horizontal_alignment = 1
+
+[node name="Industrial" type="Node2D" parent="MapArt/Rooms" unique_id=1534963486]
+position = Vector2(900, 1120)
+metadata/room_name = "Industrial"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(500, 210)
+metadata/door_side = "right"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=84130557]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=721122191]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=857274863]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=2077212539]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=693229850]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=692646095]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=1711222543]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=284499196]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=1579868396]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=979553043]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=131749883]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=119069401]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=1536122101]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=593022106]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=156521869]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=860931991]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=467098775]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=2131574474]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=2023512808]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=560954742]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=1982979257]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=532058660]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Industrial" unique_id=1125840967]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Industrial" unique_id=730363793]
+position = Vector2(500, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Industrial/DoorAnchor" unique_id=97137140]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Industrial" unique_id=908097182]
+offset_left = 482.0
+offset_top = 12.0
+offset_right = 708.0
+offset_bottom = 28.0
+rotation = 1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "INDUSTRIAL"
+horizontal_alignment = 1
+
+[node name="Environmental" type="Node2D" parent="MapArt/Rooms" unique_id=30612317]
+position = Vector2(900, 1420)
+metadata/room_name = "Environmental"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(500, 210)
+metadata/door_side = "right"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=2047753543]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1673069869]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=467889759]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1881998547]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=471949376]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1369828996]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1411695149]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1740905173]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1937584745]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1376086018]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1435326319]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=337734540]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1301804601]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=2100437542]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1985917127]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1438977581]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1753651019]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=758046707]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1527084052]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=539989287]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1915655707]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=1213061491]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Environmental" unique_id=2106108411]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Environmental" unique_id=827009931]
+position = Vector2(500, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Environmental/DoorAnchor" unique_id=589554223]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Environmental" unique_id=1083504318]
+offset_left = 482.0
+offset_top = 12.0
+offset_right = 708.0
+offset_bottom = 28.0
+rotation = 1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "ENVIRONMENTAL"
+horizontal_alignment = 1
+
+[node name="DiagnosticResearch" type="Node2D" parent="MapArt/Rooms" unique_id=399237092]
+position = Vector2(900, 1720)
+metadata/room_name = "Diagnostic Research"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(500, 210)
+metadata/door_side = "right"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=485417312]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1100550533]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1878956954]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1455505814]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=216613917]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=781923256]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1195119905]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1119800488]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1082000012]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=385995385]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=125540170]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=989426300]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=199823657]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=155870135]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1371082860]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1293967775]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=2076747829]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=191068368]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=821144591]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=433185711]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=909330408]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1515364281]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=1973956242]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/DiagnosticResearch" unique_id=2042621340]
+position = Vector2(500, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/DiagnosticResearch/DoorAnchor" unique_id=865934140]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/DiagnosticResearch" unique_id=461369687]
+offset_left = 482.0
+offset_top = 12.0
+offset_right = 708.0
+offset_bottom = 28.0
+rotation = 1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "DIAGNOSTIC RESEARCH"
+horizontal_alignment = 1
+
+[node name="Aquatic" type="Node2D" parent="MapArt/Rooms" unique_id=588230179]
+position = Vector2(2200, 1120)
+metadata/room_name = "Aquatic"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(0, 210)
+metadata/door_side = "left"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1274143404]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=881964465]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1378565786]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=743818201]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=385936336]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=244760665]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=992775292]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=504969284]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1655097947]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=952392587]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1191801477]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1296513386]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1039037616]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=27319669]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1640064784]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1254207430]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1975680709]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=11938244]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=654331746]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=580656232]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=681321127]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=570171731]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Aquatic" unique_id=1830138133]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Aquatic" unique_id=1928591395]
+position = Vector2(0, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Aquatic/DoorAnchor" unique_id=1660751754]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Aquatic" unique_id=48696239]
+offset_left = 18.0
+offset_top = 238.0
+offset_right = 244.0
+offset_bottom = 254.0
+rotation = -1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "AQUATIC"
+horizontal_alignment = 1
+
+[node name="Agricultural" type="Node2D" parent="MapArt/Rooms" unique_id=1932566011]
+position = Vector2(2200, 1420)
+metadata/room_name = "Agricultural"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(0, 210)
+metadata/door_side = "left"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1111311517]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=750821149]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1827933612]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=700723317]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=834605653]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=2064375269]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=180550858]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1287224168]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=939584882]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=694042204]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=134842176]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1937211439]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=174285154]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=127343802]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1109302449]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1690244277]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=717938008]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1604300000]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=37103690]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1772130841]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1065658425]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=1568740115]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Agricultural" unique_id=558024728]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Agricultural" unique_id=493647978]
+position = Vector2(0, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Agricultural/DoorAnchor" unique_id=556343051]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Agricultural" unique_id=1323116190]
+offset_left = 18.0
+offset_top = 238.0
+offset_right = 244.0
+offset_bottom = 254.0
+rotation = -1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "AGRICULTURAL"
+horizontal_alignment = 1
+
+[node name="Medical" type="Node2D" parent="MapArt/Rooms" unique_id=1354653926]
+position = Vector2(2200, 1720)
+metadata/room_name = "Medical"
+metadata/room_size = Vector2(500, 250)
+metadata/door_local = Vector2(0, 210)
+metadata/door_side = "left"
+
+[node name="WallBorder" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=349422409]
+position = Vector2(-4, -4)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 508, 0, 508, 258, 0, 258)
+
+[node name="RoomFloor" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1278724767]
+color = Color(0.87058824, 0.8745098, 0.7882353, 1)
+polygon = PackedVector2Array(0, 0, 500, 0, 500, 250, 0, 250)
+
+[node name="VertSeam_1" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1702826742]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_2" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=81166271]
+position = Vector2(48, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_3" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1775889446]
+position = Vector2(88, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_4" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1448413084]
+position = Vector2(128, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_5" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=188557144]
+position = Vector2(168, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_6" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1000471175]
+position = Vector2(208, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_7" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=669999578]
+position = Vector2(248, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_8" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1227697581]
+position = Vector2(288, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_9" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1391457901]
+position = Vector2(328, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_10" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=963499299]
+position = Vector2(368, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_11" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=749516673]
+position = Vector2(408, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_12" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1512928926]
+position = Vector2(448, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="VertSeam_13" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1627277317]
+position = Vector2(488, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 1, 0, 1, 234, 0, 234)
+
+[node name="HorizSeam_1" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1447017991]
+position = Vector2(8, 8)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_2" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=910621855]
+position = Vector2(8, 48)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_3" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=853461300]
+position = Vector2(8, 88)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_4" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=29699272]
+position = Vector2(8, 128)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_5" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=1888879730]
+position = Vector2(8, 168)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="HorizSeam_6" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=2128296545]
+position = Vector2(8, 208)
+color = Color(0.8235294, 0.8392157, 0.7529412, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 1, 0, 1)
+
+[node name="RoomTopTrim" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=974598390]
+position = Vector2(8, 8)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 484, 0, 484, 8, 0, 8)
+
+[node name="RoomAccent" type="Polygon2D" parent="MapArt/Rooms/Medical" unique_id=679000032]
+position = Vector2(12, 18)
+color = Color(0.54509807, 0.78431374, 0.84705883, 1)
+polygon = PackedVector2Array(0, 0, 26, 0, 26, 4, 0, 4)
+
+[node name="DoorAnchor" type="Node2D" parent="MapArt/Rooms/Medical" unique_id=328555306]
+position = Vector2(0, 210)
+
+[node name="DoorSprite" type="Sprite2D" parent="MapArt/Rooms/Medical/DoorAnchor" unique_id=1389925354]
+z_index = 2
+texture_filter = 1
+rotation = 1.570796
+scale = Vector2(0.13, 0.13)
+texture = SubResource("DoorSideDetail")
+
+[node name="RoomLabel" type="Label" parent="MapArt/Rooms/Medical" unique_id=744477431]
+offset_left = 18.0
+offset_top = 238.0
+offset_right = 244.0
+offset_bottom = 254.0
+rotation = -1.570796
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "MEDICAL"
+horizontal_alignment = 1
+
+[node name="Walls" type="Node2D" parent="MapArt" unique_id=871927319]
+
+[node name="MainHallTopWall" type="Polygon2D" parent="MapArt/Walls" unique_id=56139813]
+position = Vector2(260, 438)
+scale = Vector2(0.41623375, 1)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 3080, 0, 3080, 5.0853577, 3080, 12, 0, 12)
+
+[node name="MainHallBottomTrim" type="Polygon2D" parent="MapArt/Walls" unique_id=360879769]
+position = Vector2(260, 922)
+scale = Vector2(0.3720779, 1)
+color = Color(0.54901963, 0.39607844, 0.26666668, 1)
+polygon = PackedVector2Array(0, 0, 3080, 0, 3080, 10, 0, 10)
+
+[node name="MainHallBottomTrim" type="Polygon2D" parent="MapArt/Walls/MainHallBottomTrim" unique_id=458085199]
+position = Vector2(5213.961, -1)
+scale = Vector2(0.99476475, 1)
+color = Color(0.54901963, 0.39607844, 0.26666668, 1)
+polygon = PackedVector2Array(0, 0, 766.3447, 0, 1648.3027, 0, 2196.5469, 0, 3080, 0, 3080, 10, 0, 10)
+
+[node name="ResearchWingBottomTrim" type="Polygon2D" parent="MapArt/Walls" unique_id=823884344]
+position = Vector2(1400, 2200)
+color = Color(0.54901963, 0.39607844, 0.26666668, 1)
+polygon = PackedVector2Array(0, 0, 800, 0, 800, 10, 0, 10)
+
+[node name="EntranceLeftWall" type="Polygon2D" parent="MapArt/Walls" unique_id=511758554]
+position = Vector2(1530, 140)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 298, 0, 298)
+
+[node name="EntranceRightWall" type="Polygon2D" parent="MapArt/Walls" unique_id=1328256380]
+position = Vector2(2058, 140)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 298, 0, 298)
+
+[node name="ResearchWingRightWall" type="Polygon2D" parent="MapArt/Walls" unique_id=1469599065]
+position = Vector2(2200, 931)
+scale = Vector2(1, 0.99140626)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 1280, 0, 1280)
+
+[node name="LeftRoomWingWall_4" type="Polygon2D" parent="MapArt/Walls" unique_id=2125514915]
+position = Vector2(1396, 932)
+scale = Vector2(1, 5.5130434)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 230, 0, 230)
+
+[node name="Entrance" type="Node2D" parent="MapArt" unique_id=1849996616]
+
+[node name="OuterWall" type="Polygon2D" parent="MapArt/Entrance" unique_id=1873961810]
+position = Vector2(1540, 0)
+color = Color(0.6666667, 0.6627451, 0.5568628, 1)
+polygon = PackedVector2Array(0, 0, 520, 0, 520, 140, 0, 140)
+
+[node name="InsetWall" type="Polygon2D" parent="MapArt/Entrance" unique_id=1238203279]
+position = Vector2(1552, 0)
+color = Color(0.84313726, 0.8117647, 0.7137255, 1)
+polygon = PackedVector2Array(0, 0, 496, 0, 496, 140, 0, 140)
+
+[node name="Art_1" type="Polygon2D" parent="MapArt/Entrance" unique_id=182271973]
+position = Vector2(1552, 15)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 496, 0, 496, 2, 0, 2)
+
+[node name="Art_2" type="Polygon2D" parent="MapArt/Entrance" unique_id=433132688]
+position = Vector2(1552, 47)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 496, 0, 496, 2, 0, 2)
+
+[node name="Art_3" type="Polygon2D" parent="MapArt/Entrance" unique_id=1062221850]
+position = Vector2(1552, 79)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 496, 0, 496, 2, 0, 2)
+
+[node name="Art_4" type="Polygon2D" parent="MapArt/Entrance" unique_id=1784859345]
+position = Vector2(1552, 111)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 496, 0, 496, 2, 0, 2)
+
+[node name="Art_5" type="Polygon2D" parent="MapArt/Entrance" unique_id=1197632232]
+position = Vector2(1583, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_6" type="Polygon2D" parent="MapArt/Entrance" unique_id=444494646]
+position = Vector2(1647, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_7" type="Polygon2D" parent="MapArt/Entrance" unique_id=1794924307]
+position = Vector2(1711, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_8" type="Polygon2D" parent="MapArt/Entrance" unique_id=879254314]
+position = Vector2(1775, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_9" type="Polygon2D" parent="MapArt/Entrance" unique_id=365744127]
+position = Vector2(1839, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_10" type="Polygon2D" parent="MapArt/Entrance" unique_id=1074521755]
+position = Vector2(1903, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_11" type="Polygon2D" parent="MapArt/Entrance" unique_id=694595515]
+position = Vector2(1967, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="Art_12" type="Polygon2D" parent="MapArt/Entrance" unique_id=1089982183]
+position = Vector2(2031, 0)
+color = Color(0.7058824, 0.6784314, 0.5882353, 1)
+polygon = PackedVector2Array(0, 0, 2, 0, 2, 140, 0, 140)
+
+[node name="DoorBackingWall" type="Polygon2D" parent="MapArt/Entrance" unique_id=1500469078]
+position = Vector2(1542, 0)
+scale = Vector2(1, 1.8421053)
+color = Color(0.6666667, 0.6627451, 0.5568628, 1)
+polygon = PackedVector2Array(0, 0, 516, 0, 516, 76, 0, 76)
+
+[node name="MainEntranceDoor" type="Sprite2D" parent="MapArt/Entrance" unique_id=1633436119]
+z_index = 2
+texture_filter = 1
+position = Vector2(1800, 66)
+scale = Vector2(0.16818, 0.16818)
+texture = SubResource("DoorClosed")
+
+[node name="MainEntranceLabel" type="Label" parent="MapArt/Entrance" unique_id=492692032]
+offset_left = 1600.0
+offset_top = 54.0
+offset_right = 2000.0
+offset_bottom = 70.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_fonts/font = ExtResource("5_font")
+theme_override_font_sizes/font_size = 12
+text = "MAIN ENTRANCE"
+horizontal_alignment = 1
+
+[node name="Lighting" type="Node2D" parent="MapArt" unique_id=597785942]
+
+[node name="Furniture" type="Node2D" parent="MapArt" unique_id=1008188865]
+
+[node name="CounterBase" type="Polygon2D" parent="MapArt/Furniture" unique_id=609196488]
+position = Vector2(1706, 589)
+color = Color(0.09803922, 0.15294118, 0.5294118, 1)
+polygon = PackedVector2Array(0, 0, 190, 0, 190, 48, 0, 48)
+
+[node name="CounterTrim" type="Polygon2D" parent="MapArt/Furniture" unique_id=1913070531]
+position = Vector2(1714, 589)
+color = Color(0.84313726, 0.47843137, 0.27058825, 1)
+polygon = PackedVector2Array(0, 0, 174, 0, 174, 10, 0, 10)
+
+[node name="CounterFace" type="Polygon2D" parent="MapArt/Furniture" unique_id=1652302736]
+position = Vector2(1722, 599)
+color = Color(0.06666667, 0.32156864, 0.5764706, 1)
+polygon = PackedVector2Array(0, 0, 158, 0, 158, 30, 0, 30)
+
+[node name="CounterFoot" type="Polygon2D" parent="MapArt/Furniture" unique_id=1906517030]
+position = Vector2(1710, 629)
+color = Color(0.09803922, 0.15294118, 0.5294118, 1)
+polygon = PackedVector2Array(0, 0, 182, 0, 182, 8, 0, 8)
