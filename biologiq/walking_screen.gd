@@ -1,6 +1,7 @@
 extends Node2D
 
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const DOOR_SPRITE := "res://Art Assets/door.png"
 const WALK_DURATION := 2.6
 const DOOR_PAUSE := 0.6
 const GRASS_DARK := Color("#648d58")
@@ -75,16 +76,10 @@ func _draw_laboratory() -> void:
 	draw_rect(Rect2(788, 244, 184, 22), NAVY)
 	draw_rect(Rect2(796, 252, 168, 14), Color("#8bc8d8"))
 	draw_rect(Rect2(780, 266, 200, 184), NAVY)
-	draw_rect(Rect2(792, 278, 88, 160), Color("#6fabb1"))
-	draw_rect(Rect2(880, 278, 88, 160), Color("#79b7bb"))
-	draw_rect(Rect2(870, 278, 10, 160), Color("#f3eedc"))
-	# Reflections, door rails, handles, and a clearly visible threshold.
-	draw_rect(Rect2(804, 290, 12, 116), Color("#c5e2d5"))
-	draw_rect(Rect2(824, 290, 8, 94), Color("#c5e2d5"))
-	draw_rect(Rect2(900, 290, 12, 116), Color("#c5e2d5"))
-	draw_rect(Rect2(940, 290, 8, 94), Color("#c5e2d5"))
-	draw_rect(Rect2(854, 344, 6, 42), Color("#f3eedc"))
-	draw_rect(Rect2(890, 344, 6, 42), Color("#f3eedc"))
+	# Use the supplied BIOLOGIQ double-door sprite in the entrance opening.
+	var door_texture := load(DOOR_SPRITE) as Texture2D
+	if door_texture != null:
+		draw_texture_rect_region(door_texture, Rect2(780, 266, 200, 184), Rect2(0, 0, 600, 880))
 	draw_rect(Rect2(766, 444, 228, 16), Color("#d77a45"))
 	draw_rect(Rect2(758, 460, 244, 10), NAVY)
 	# Wall lamps and planter ledges.

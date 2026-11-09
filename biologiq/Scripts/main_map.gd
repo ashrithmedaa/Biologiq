@@ -2,7 +2,8 @@ extends Node2D
 
 const SHARON_SHEET := "res://Art Assets/Sharon O_Riley - Typing.png"
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
-const MARIA_SHEET := "res://Art Assets/mariaNOTSHADEDspritesheet.png"
+const MARIA_SHEET := "res://Art Assets/MariaFINAL.png"
+const DOOR_SPRITE := "res://Art Assets/door.png"
 const SAM_FRONT_SHEET := "res://Art Assets/Sam - Front walking spritesheet transparent.png"
 const SAM_SIDE_SHEET := "res://Art Assets/Sam - Side walking spritesheet.png"
 const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
@@ -18,6 +19,11 @@ const DOOR_HEIGHT := 148.0
 const SIDE_DOOR_HEIGHT := 80.0
 const DOOR_SOUND := "res://684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3"
 const TALKING_SOUND := "res://tunetank.com_talking-gibberish-silly-character.wav"
+const CHARACTER_VOICES := {
+	"Sharon": "res://Art Assets/Sharonvoice.mp3",
+	"Sam": "res://Art Assets/Samvoice.mp3",
+	"Maria": "res://Art Assets/Mariavoice.mp3",
+}
 
 var player: CharacterBody2D
 var player_sprite: AnimatedSprite2D
@@ -67,8 +73,12 @@ var room_doors: Array[Dictionary] = []
 var player_program := "Research Shadowing"
 var player_status := "Master's"
 var side_door_texture: Texture2D
+var open_door_texture: Texture2D
+var open_door_name := ""
+var main_entry_open := false
 var talking_audio: AudioStreamPlayer
 var npc_dialogue_active := false
+var dialogue_voice := ""
 
 
 func _ready() -> void:
@@ -274,7 +284,15 @@ func _add_room(room_name: String, room_rect: Rect2, door_position: Vector2, door
 
 
 func _build_side_door_sprites() -> void:
-	side_door_texture = _make_side_door_texture()
+	var door_atlas := load(DOOR_SPRITE) as Texture2D
+	var closed_door := AtlasTexture.new()
+	closed_door.atlas = door_atlas
+	closed_door.region = Rect2(0, 0, 600, 880)
+	var open_door := AtlasTexture.new()
+	open_door.atlas = door_atlas
+	open_door.region = Rect2(600, 0, 600, 880)
+	side_door_texture = closed_door
+	open_door_texture = open_door
 	for room in room_doors:
 		var side := str(room.get("side", "bottom"))
 		if side != "left" and side != "right":
@@ -284,29 +302,10 @@ func _build_side_door_sprites() -> void:
 		sprite.name = "%sClosedDoor" % str(room.name).replace(" ", "")
 		sprite.texture = side_door_texture
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		sprite.flip_h = side == "left"
-		sprite.position = Vector2(door.x + 10.0 if side == "right" else door.x - 10.0, door.y)
+		sprite.rotation = PI * 0.5
+		sprite.scale = Vector2(0.13, 0.025)
+		sprite.position = door
 		add_child(sprite)
-
-
-func _make_side_door_texture() -> ImageTexture:
-	var image := Image.create(20, int(SIDE_DOOR_HEIGHT), false, Image.FORMAT_RGBA8)
-	image.fill(Color(0, 0, 0, 0))
-	_image_rect(image, Rect2i(0, 0, 8, int(SIDE_DOOR_HEIGHT)), Color("#81563b"))
-	_image_rect(image, Rect2i(2, 0, 3, int(SIDE_DOOR_HEIGHT)), Color("#a87550"))
-	for y in [8, 38, 69]:
-		_image_rect(image, Rect2i(0, y, 8, 3), Color("#704932"))
-	for y in range(56, 63):
-		for x in range(10, 17):
-			if Vector2(x - 13, y - 59).length_squared() <= 10.0:
-				image.set_pixel(x, y, Color("#f3d28a"))
-	return ImageTexture.create_from_image(image)
-
-
-func _image_rect(image: Image, rect: Rect2i, color: Color) -> void:
-	for x in range(rect.position.x, rect.end.x):
-		for y in range(rect.position.y, rect.end.y):
-			image.set_pixel(x, y, color)
 
 
 func _add_object(object_name: String, at: Vector2, description: String, kind: String) -> void:
@@ -326,9 +325,9 @@ func _build_characters() -> void:
 	sam_sprite.stop()
 	sam.hide()
 	sam_interaction_index = _add_character_interaction("Sam", sam.position, [])
-	maria = _make_npc("Maria", Vector2.ZERO, _maria_frames(), 0.15)
+	maria = _make_npc("Maria", Vector2.ZERO, _maria_frames(), 0.22)
 	maria_sprite = maria.get_node("Sprite") as AnimatedSprite2D
-	maria_sprite.position = Vector2(0, -65)
+	maria_sprite.position = Vector2(0, -71)
 	maria_sprite.stop()
 	maria.hide()
 	var desk_collider := StaticBody2D.new()
@@ -472,7 +471,7 @@ func _add_vertical_strip(frames: SpriteFrames, animation_name: String, start_fra
 	for index in count:
 		var atlas := AtlasTexture.new()
 		atlas.atlas = texture
-		atlas.region = Rect2(Vector2(0, (start_frame + index) * 950), Vector2(350, 950))
+		atlas.region = Rect2(Vector2((start_frame + index) * 238, 0), Vector2(238, 646))
 		frames.add_frame(animation_name, atlas)
 
 
@@ -649,12 +648,18 @@ func _on_save_status_changed(message: String, is_error: bool) -> void:
 
 func _interact() -> void:
 	if farewell_done and player.global_position.distance_to(MAIN_ENTRANCE_EXIT_POSITION) <= INTERACT_DISTANCE:
+		main_entry_open = true
+		queue_redraw()
 		_play_door_sound()
+		await get_tree().create_timer(0.2).timeout
 		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
 		return
 	var enterable_door := _nearest_enterable_door()
 	if not enterable_door.is_empty():
+		open_door_name = str(enterable_door.name)
+		queue_redraw()
 		_play_door_sound()
+		await get_tree().create_timer(0.2).timeout
 		var save_manager := get_node_or_null("/root/SaveManager")
 		if save_manager != null:
 			save_manager.remember_room_entry_position(enterable_door.position + Vector2(0, 80))
@@ -662,7 +667,6 @@ func _interact() -> void:
 		return
 	var nearby_door := _nearest_door()
 	if not nearby_door.is_empty():
-		_play_door_sound()
 		_start_dialogue(["This room is not available in the demo"])
 		return
 	var target := _nearest_interactable()
@@ -691,17 +695,17 @@ func _interact() -> void:
 					"Sharon: Go to the intern quarters to begin working"
 				])
 			else:
-				_start_dialogue(["Sharon is busy right now"], false, true)
+				_start_dialogue(["Sharon is busy right now"], false, true, "Sharon")
 		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
 			dialogue_completes_tour_stop = true
-			_start_dialogue(_tour_lines_for_phase(tour_phase))
+			_start_dialogue(_tour_lines_for_phase(tour_phase), false, true, "Sam")
 		else:
 			_start_dialogue(target.lines)
 		return
 	_start_dialogue([str(target.description)])
 
 
-func _start_dialogue(lines: Array, completes_checkin: bool = false, is_npc_dialogue: bool = false) -> void:
+func _start_dialogue(lines: Array, completes_checkin: bool = false, is_npc_dialogue: bool = false, speaker: String = "") -> void:
 	dialogue_lines.clear()
 	for line in lines:
 		dialogue_lines.append(str(line))
@@ -710,19 +714,31 @@ func _start_dialogue(lines: Array, completes_checkin: bool = false, is_npc_dialo
 	dialogue_index = 0
 	dialogue_completes_checkin = completes_checkin
 	npc_dialogue_active = is_npc_dialogue
+	dialogue_voice = speaker
 	for line in dialogue_lines:
-		if line.begins_with("Sharon:") or line.begins_with("Sam:") or line.begins_with("Maria:"):
-			npc_dialogue_active = true
-			break
+		for character in CHARACTER_VOICES:
+			if line.begins_with(character + ":"):
+				npc_dialogue_active = true
+				if dialogue_voice.is_empty():
+					dialogue_voice = character
+				break
 	dialogue_open = true
 	dialogue_panel.show()
-	if npc_dialogue_active and not talking_audio.playing:
-		talking_audio.play()
 	_show_dialogue_line()
 
 
 func _show_dialogue_line() -> void:
 	dialogue_label.text = dialogue_lines[dialogue_index]
+	for character in CHARACTER_VOICES:
+		if dialogue_label.text.begins_with(character + ":"):
+			dialogue_voice = character
+			break
+	if npc_dialogue_active:
+		var voice_path: String = CHARACTER_VOICES.get(dialogue_voice, "")
+		if not voice_path.is_empty():
+			talking_audio.stop()
+			talking_audio.stream = load(voice_path) as AudioStream
+			talking_audio.play()
 	dialogue_label.visible_characters = 0
 	dialogue_type_progress = 0.0
 	dialogue_typing = not dialogue_label.text.is_empty()
@@ -1291,27 +1307,15 @@ func _draw_closed_door(room: Dictionary) -> void:
 	else:
 		# The lower edge of each tall door meets the bottom wall of its room.
 		var door_rect := Rect2(door.x - 34, door.y - DOOR_HEIGHT, 68.0, DOOR_HEIGHT)
-		_draw_door_leaf(door_rect, false)
+		var door_texture := _door_texture_for(str(room.name))
+		if door_texture != null:
+			draw_texture_rect(door_texture, door_rect, false)
 		var label_y := door_rect.position.y - 10.0
 		draw_string(GameFont.FONT, Vector2(door.x - 82, label_y), room_name, HORIZONTAL_ALIGNMENT_CENTER, 164, 12, Color("#192787"))
 
 
-func _draw_door_leaf(door: Rect2, hinges_on_right: bool) -> void:
-	# Slim jambs, inset panels, hinges, and a brass handle make a closed wooden door.
-	draw_rect(door, Color("#704932"))
-	var inset := door.grow(-5.0)
-	draw_rect(inset, Color("#9b6949"))
-	var panel_height := (inset.size.y - 24.0) * 0.5
-	for index in 2:
-		var panel := Rect2(inset.position.x + 8.0, inset.position.y + 8.0 + index * (panel_height + 8.0), inset.size.x - 16.0, panel_height)
-		draw_rect(panel, Color("#81563b"))
-		draw_rect(panel.grow(-4.0), Color("#a87550"))
-		draw_rect(Rect2(panel.position.x + 4.0, panel.position.y + 4.0, panel.size.x - 8.0, 2.0), Color("#c18b62"))
-	var hardware_x := door.end.x - 7.0 if hinges_on_right else door.position.x + 2.0
-	var handle_x := door.position.x + 14.0 if hinges_on_right else door.end.x - 14.0
-	for hinge_y in [door.position.y + 12.0, door.end.y - 16.0]:
-		draw_rect(Rect2(hardware_x, hinge_y, 5.0, 9.0), Color("#d7b66e"))
-	draw_circle(Vector2(handle_x, door.position.y + door.size.y * 0.78), 4.0, Color("#f3d28a"))
+func _door_texture_for(room_name: String) -> Texture2D:
+	return open_door_texture if room_name == open_door_name else side_door_texture
 
 
 func _draw_stairwell_and_walkway() -> void:
@@ -1337,27 +1341,12 @@ func _draw_stairwell_and_walkway() -> void:
 
 
 func _draw_main_glass_entry() -> void:
-	# The shorter glazed double door sits at the building's outer edge in the vestibule opening.
-	var left := 1542.0
-	var top := 64.0
-	var width := 516.0
-	var height := 76.0
-	draw_rect(Rect2(left, top, width, height), Color("#192787"))
-	draw_rect(Rect2(left + 6, top + 6, width - 12, height - 12), Color("#6fabb1"))
-	# Side lights and reflections frame the two central glass leaves.
-	for x in [left + 18, left + 96, left + 174, left + 342, left + 420, left + 498]:
-		draw_rect(Rect2(x, top + 10, 4, height - 20), Color("#d5eee0"))
-		draw_rect(Rect2(x + 8, top + 14, 2, height - 28), Color("#9bd0c8"))
-	# Central double leaves, meeting stile, and paired pull handles.
-	draw_rect(Rect2(1694, top + 6, 106, height - 12), Color("#8bc8d8"))
-	draw_rect(Rect2(1800, top + 6, 106, height - 12), Color("#79b7bb"))
-	draw_rect(Rect2(1796, top + 6, 8, height - 12), Color("#192787"))
-	draw_rect(Rect2(1778, top + 36, 5, 22), Color("#f3d28a"))
-	draw_rect(Rect2(1810, top + 36, 5, 22), Color("#f3d28a"))
-	for x in [left, 1690.0, 1904.0, left + width - 6]:
-		draw_rect(Rect2(x, top, 6, height), Color("#5D9374"))
-	draw_rect(Rect2(left, top + height - 4, width, 4), Color("#d77a45"))
-	draw_string(GameFont.FONT, Vector2(1600, top - 10), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
+	# Use the same supplied door sprite for the main map entrance.
+	var door_rect := Rect2(1542, 64, 516, 76)
+	var door_texture: Texture2D = open_door_texture if main_entry_open else side_door_texture
+	if door_texture != null:
+		draw_texture_rect(door_texture, door_rect, false)
+	draw_string(GameFont.FONT, Vector2(1600, 54), "MAIN ENTRANCE", HORIZONTAL_ALIGNMENT_CENTER, 400, 12, Color("#192787"))
 
 
 func _draw_furniture_and_objects() -> void:

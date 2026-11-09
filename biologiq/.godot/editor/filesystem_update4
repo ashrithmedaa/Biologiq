@@ -1,4 +1,2 @@
+res://walking_screen.gd
 res://Scripts/main_map.gd
-res://Scripts/save_manager.gd
-res://Scripts/student_lab_dna_minigame.gd
-res://Scripts/thank_you_screen.gd

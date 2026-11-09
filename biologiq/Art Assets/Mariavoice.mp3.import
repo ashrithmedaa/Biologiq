@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://r7iv1cx1imsb"
+path="res://.godot/imported/Mariavoice.mp3-61482339e1d2d5758ffa64ab13a97b20.mp3str"
+
+[deps]
+
+source_file="res://Art Assets/Mariavoice.mp3"
+dest_files=["res://.godot/imported/Mariavoice.mp3-61482339e1d2d5758ffa64ab13a97b20.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
