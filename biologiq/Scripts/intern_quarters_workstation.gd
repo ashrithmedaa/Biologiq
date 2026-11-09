@@ -1,6 +1,6 @@
 extends Control
 
-const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Clean).png"
 const PIPETTE_SCENE := "res://Scenes/Rooms/student_lab_room.tscn"
 const DNA_SCENE := "res://Scenes/Rooms/student_lab_dna_room.tscn"
 const DATA_SCENE := "res://Scenes/Rooms/student_lab_data_room.tscn"

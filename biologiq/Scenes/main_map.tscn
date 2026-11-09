@@ -43,7 +43,7 @@ color = Color(0.09803922, 0.15294118, 0.5294118, 1)
 polygon = PackedVector2Array(0, 0, 3120, 0, 3120, 399.20947, 3120, 820, 1561.1705, 819.9999, 0, 820)
 
 [node name="Interior" type="Polygon2D" parent="MapArt/HallwayPanels/MainHallShell" unique_id=691847665]
-position = Vector2(12, 12)
+position = Vector2(12, 17)
 color = Color(0.8392157, 0.8745098, 0.7607843, 1)
 polygon = PackedVector2Array(0, 0, 3096, 0, 3096, 796, 0, 796)
 
@@ -398,7 +398,7 @@ offset_bottom = 90.0
 theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
 theme_override_fonts/font = ExtResource("5_font")
 theme_override_font_sizes/font_size = 12
-text = "TALENT ACQUISITION"
+text = "INTERN QUARTERS"
 horizontal_alignment = 1
 
 [node name="CollegeLab" type="Node2D" parent="MapArt/Rooms" unique_id=537484386]
@@ -1735,6 +1735,12 @@ scale = Vector2(0.41623375, 1)
 color = Color(0.3647059, 0.5764706, 0.45490196, 1)
 polygon = PackedVector2Array(0, 0, 3080, 0, 3080, 5.0853577, 3080, 12, 0, 12)
 
+[node name="MainHallTopWall" type="Polygon2D" parent="MapArt/Walls/MainHallTopWall" unique_id=174568631]
+position = Vector2(4319.6895, 4)
+scale = Vector2(0.99999976, 1)
+color = Color(0.3647059, 0.5764706, 0.45490196, 1)
+polygon = PackedVector2Array(0, 0, 367.76416, 0, 3080, 0, 3080, 5.0853577, 3080, 12, 0, 12)
+
 [node name="MainHallBottomTrim" type="Polygon2D" parent="MapArt/Walls" unique_id=360879769]
 position = Vector2(260, 922)
 scale = Vector2(0.3720779, 1)
@@ -1759,8 +1765,9 @@ polygon = PackedVector2Array(0, 0, 12, 0, 12, 298, 0, 298)
 
 [node name="EntranceRightWall" type="Polygon2D" parent="MapArt/Walls" unique_id=1328256380]
 position = Vector2(2058, 140)
+scale = Vector2(1, 1.0134228)
 color = Color(0.3647059, 0.5764706, 0.45490196, 1)
-polygon = PackedVector2Array(0, 0, 12, 0, 12, 298, 0, 298)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 298, 6.3257904, 298, 0, 298)
 
 [node name="ResearchWingRightWall" type="Polygon2D" parent="MapArt/Walls" unique_id=1469599065]
 position = Vector2(2200, 931)
@@ -1860,9 +1867,9 @@ scale = Vector2(0.16818, 0.16818)
 texture = SubResource("DoorClosed")
 
 [node name="MainEntranceLabel" type="Label" parent="MapArt/Entrance" unique_id=492692032]
-offset_left = 1600.0
+offset_left = 1515.0
 offset_top = 54.0
-offset_right = 2000.0
+offset_right = 1915.0
 offset_bottom = 70.0
 theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
 theme_override_fonts/font = ExtResource("5_font")

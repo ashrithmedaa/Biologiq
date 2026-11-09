@@ -1,7 +1,7 @@
 extends Node2D
 
 const SHARON_SHEET := "res://Art Assets/Sharon O_Riley - Typing.png"
-const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Clean).png"
 const MARIA_SHEET := "res://Art Assets/MariaFINAL.png"
 const DOOR_SPRITE := "res://Art Assets/door.png"
 const SAM_FRONT_SHEET := "res://Art Assets/Sam - Front walking spritesheet transparent.png"
@@ -9,8 +9,9 @@ const SAM_SIDE_SHEET := "res://Art Assets/Sam - Side walking spritesheet.png"
 const SAM_BACK_SHEET := "res://Art Assets/Sam walking - Back spritesheet.png"
 const MAIN_ENTRANCE_POSITION := Vector2(1800, 390)
 const MAIN_ENTRANCE_EXIT_POSITION := Vector2(1800, 155)
-const WALK_SPEED := 230.0
-const SAM_WALK_SPEED := 250.0
+const WALK_SPEED := 250.0
+const SAM_WALK_SPEED := WALK_SPEED
+const MARIA_WALK_SPEED := 250.0
 const DIALOGUE_CHARACTERS_PER_SECOND := 38.0
 const INTERACT_DISTANCE := 78.0
 const WORLD_WIDTH := 3600.0
@@ -269,7 +270,6 @@ func _build_map() -> void:
 			str(room_node.get_meta("door_side"))
 		)
 
-	_add_object("Large succulent", Vector2(1510, 740), "A healthy succulent brightens the reception hall.", "inspect")
 	_build_side_door_sprites()
 	_build_room_door_art()
 
@@ -343,10 +343,6 @@ func _room_art_node(room_name: String) -> Node2D:
 	return null
 
 
-func _add_object(object_name: String, at: Vector2, description: String, kind: String) -> void:
-	interactables.append({"name": object_name, "position": at, "kind": kind, "description": description})
-
-
 func _build_characters() -> void:
 	# The scene desk is centered at (1801, 613); place Sharon's seated typing art there.
 	var sharon := _make_npc("Sharon", Vector2(1801, 613), _sharon_frames(), 3.4)
@@ -378,6 +374,7 @@ func _build_characters() -> void:
 	player = CharacterBody2D.new()
 	player.name = "Player"
 	player.position = Vector2(1800, 650)
+	player.z_index = 3
 	add_child(player)
 	var shadow := Polygon2D.new()
 	shadow.name = "Shadow"
@@ -466,6 +463,10 @@ func _sam_frames() -> SpriteFrames:
 	# The side sheet changes facing direction halfway through; use its left-facing frames only.
 	_add_strip(frames, "walk_left", SAM_SIDE_SHEET, 3, 3, Vector2(1600, 1600), true, 10.0)
 	var back_sheet := _sam_back_sheet_upscaled()
+	if back_sheet == null:
+		# Keep Sam visible in Web builds if an imported back-facing texture is unavailable.
+		_add_strip(frames, "walk_back", SAM_FRONT_SHEET, 0, 4, Vector2(1600, 1600), true, 8.0)
+		return frames
 	frames.add_animation("walk_back")
 	frames.set_animation_loop("walk_back", true)
 	frames.set_animation_speed("walk_back", 8.0)
@@ -478,7 +479,13 @@ func _sam_frames() -> SpriteFrames:
 
 
 func _sam_back_sheet_upscaled() -> Texture2D:
-	var source := Image.load_from_file(SAM_BACK_SHEET)
+	# Load the imported Texture2D through ResourceLoader so exported PCK/Web builds can access it.
+	var back_texture := load(SAM_BACK_SHEET) as Texture2D
+	if back_texture == null:
+		return null
+	var source := back_texture.get_image()
+	if source == null or source.is_empty():
+		return null
 	var enlarged := Image.create(6400, 1600, false, Image.FORMAT_RGBA8)
 	enlarged.fill(Color(0, 0, 0, 0))
 	for index in 4:
@@ -549,7 +556,7 @@ func _build_hud() -> void:
 	if student_lab_task_received:
 		guide_label.text = _intern_quarters_task_text()
 		guide_label.show()
-	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Inspect / Enter Room   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
+	var controls := _label(hud, "Controls", "WASD / Arrows Move   E Talk / Enter Room   Enter Continue   F Menu", Vector2(25, 688), Vector2(790, 25), 13, Color("#42636a"))
 	controls.add_theme_font_size_override("font_size", 13)
 
 	dialogue_panel = PanelContainer.new()
@@ -708,37 +715,33 @@ func _interact() -> void:
 	var target := _nearest_interactable()
 	if target.is_empty():
 		return
-	var kind := str(target.kind)
-	if kind == "person":
-		if str(target.name) == "Sharon O'Riley":
-			if not sharon_checked_in:
-				_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
-			elif intern_quarters_round == 1 and student_lab_task_received and _intern_quarters_tasks_complete():
-				dialogue_completes_second_task_list = true
-				_start_dialogue([
-					"Sharon: Done already?",
-					"Sharon: Most interns (and some employees) usually take all day to get that stuff done",
-					"Sharon: I suppose I could give you more to do",
-					"Sharon: Come back to me once you finish everything on this new list"
-				])
-			elif intern_quarters_round >= 2 and student_lab_task_received and _intern_quarters_tasks_complete() and not farewell_done:
-				_begin_sam_farewell_entrance()
-			elif maria_meeting_done and not student_lab_task_received:
-				dialogue_completes_student_lab_task = true
-				_start_dialogue([
-					"Sharon: I see Sam is finally done showing you around",
-					"Sharon: Here's your task list for the day.",
-					"Sharon: Go to the intern quarters to begin working"
-				])
-			else:
-				_start_dialogue(["Sharon is busy right now"], false, true, "Sharon")
-		elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
-			dialogue_completes_tour_stop = true
-			_start_dialogue(_tour_lines_for_phase(tour_phase), false, true, "Sam")
+	if str(target.name) == "Sharon O'Riley":
+		if not sharon_checked_in:
+			_start_dialogue(["Sharon: Name? …Ah, right. The new intern? Hold on while I pull up your file…"], true)
+		elif intern_quarters_round == 1 and student_lab_task_received and _intern_quarters_tasks_complete():
+			dialogue_completes_second_task_list = true
+			_start_dialogue([
+				"Sharon: Done already?",
+				"Sharon: Most interns (and some employees) usually take all day to get that stuff done",
+				"Sharon: I suppose I could give you more to do",
+				"Sharon: Come back to me once you finish everything on this new list"
+			])
+		elif intern_quarters_round >= 2 and student_lab_task_received and _intern_quarters_tasks_complete() and not farewell_done:
+			_begin_sam_farewell_entrance()
+		elif maria_meeting_done and not student_lab_task_received:
+			dialogue_completes_student_lab_task = true
+			_start_dialogue([
+				"Sharon: I see Sam is finally done showing you around",
+				"Sharon: Here's your task list for the day.",
+				"Sharon: Go to the intern quarters to begin working"
+			])
 		else:
-			_start_dialogue(target.lines)
-		return
-	_start_dialogue([str(target.description)])
+			_start_dialogue(["Sharon is busy right now"], false, true, "Sharon")
+	elif str(target.name) == "Sam" and not tour_moving and tour_phase in [2, 4, 6]:
+		dialogue_completes_tour_stop = true
+		_start_dialogue(_tour_lines_for_phase(tour_phase), false, true, "Sam")
+	else:
+		_start_dialogue(target.lines)
 
 
 func _start_dialogue(lines: Array, completes_checkin: bool = false, is_npc_dialogue: bool = false, speaker: String = "") -> void:
@@ -927,20 +930,21 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 	match phase:
 		2:
 			return [
-				"Along this hallway are Community Connections Center, Talent Acquisition, and College Lab.",
-				"Across from them are Quality Control, Administration, and Marketing & Sales."
+				"Sam: This is the East Wing.",
+				"Sam: In biotechnology, scientific discoveries can’t fund themselves! We need commercial and regulatory jobs to turn breakthroughs into real products.",
+				"Sam: (Those federal agencies would be real upset if we couldn’t meet their standards)"
 			]
 		4:
 			return [
-				"This is our research wing.",
-				"On this side are Industrial, Environmental, and Diagnostic Research.",
-				"Across the hall are Aquatic, Agricultural, and Medical."
+				"Sam: This is the South Wing.",
+				"Sam: There are many branches in biotechnology, all of which use living organisms or their processes to make products that help us.",
+				"Sam: Some fields combat pollution. Others combat diseases. All are extremely important to improving the world."
 			]
 		6:
 			return [
-				"This hallway has Community Connections Center, Talent Acquisition, and College Lab.",
-				"Community Connections Center is where you checked in.",
-				"Talent Acquisition is where you can pick up your internship tasks."
+				"Sam: Finally, this is the West Wing. You will be doing all lab work in the Intern Quarters.",
+				"Sam: Besides that, we also have a lab for the college students.",
+				"Sam: And, if you ever want to find real-world opportunities near you, check out the Community Connections Center! You’ll be able to take your career exploration to the next level there."
 			]
 	return []
 
@@ -955,15 +959,15 @@ func _begin_tour_walk() -> void:
 	var route: Array[Vector2] = []
 	match tour_phase:
 		1:
-			route.append(Vector2(3300, 650))
+			route.append(Vector2(2770, 650))
 		3:
 			route.append(Vector2(1800, 650))
 			route.append(Vector2(1800, 900))
-			route.append(Vector2(1800, 2180))
+			route.append(Vector2(1800, 1570))
 		5:
 			route.append(Vector2(1800, 900))
-			route.append(Vector2(400, 900))
-			route.append(Vector2(400, 650))
+			route.append(Vector2(830, 900))
+			route.append(Vector2(830, 650))
 	if route.is_empty():
 		tour_moving = false
 		return
@@ -1031,7 +1035,7 @@ func _begin_maria_scene() -> void:
 	_set_maria_walk_animation("walk_left")
 	var target_position := Vector2(player.global_position.x + 80.0, player.global_position.y)
 	var arrival := create_tween()
-	arrival.tween_property(maria, "position", target_position, maxf(0.8, maria.position.distance_to(target_position) / SAM_WALK_SPEED))
+	arrival.tween_property(maria, "position", target_position, maxf(0.8, maria.position.distance_to(target_position) / MARIA_WALK_SPEED))
 	arrival.finished.connect(_on_maria_arrived)
 
 
@@ -1054,7 +1058,7 @@ func _begin_maria_exit() -> void:
 	_set_maria_walk_animation("walk_right")
 	var offscreen_position := Vector2(player.global_position.x + 1000.0, maria.position.y)
 	var departure := create_tween()
-	departure.tween_property(maria, "position", offscreen_position, maxf(0.8, maria.position.distance_to(offscreen_position) / SAM_WALK_SPEED))
+	departure.tween_property(maria, "position", offscreen_position, maxf(0.8, maria.position.distance_to(offscreen_position) / MARIA_WALK_SPEED))
 	departure.finished.connect(_on_maria_exit_finished)
 
 
@@ -1063,8 +1067,8 @@ func _on_maria_exit_finished() -> void:
 	dialogue_completes_sam_final_lines = true
 	_start_dialogue([
 		"Sam: Man…she's awesome. Anyway! You should go to Sharon to pick up your task list.",
-		"Sam: I've got to go do some very important work or something.",
-		"Sam: See ya around!"
+		"Sam: I’ll be waiting in the Intern Quarters for you after you talk to Sharon. I can’t let the new intern wander around the lab all by themselves!",
+		"Sam: (Not again)"
 	])
 
 
@@ -1207,10 +1211,8 @@ func _update_interaction_hint() -> void:
 	var target := _nearest_interactable()
 	if target.is_empty():
 		interaction_hint.text = ""
-	elif str(target.kind) == "person":
-		interaction_hint.text = "E  Talk to %s" % str(target.name)
 	else:
-		interaction_hint.text = "E  Inspect %s" % str(target.name)
+		interaction_hint.text = "E  Talk to %s" % str(target.name)
 
 
 func _update_player_animation(is_moving: bool) -> void:

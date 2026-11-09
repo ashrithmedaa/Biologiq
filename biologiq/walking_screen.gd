@@ -1,6 +1,6 @@
 extends Node2D
 
-const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Clean).png"
 const DOOR_SPRITE := "res://Art Assets/door.png"
 const WALK_DURATION := 2.6
 const DOOR_PAUSE := 0.6
@@ -72,14 +72,15 @@ func _draw_laboratory() -> void:
 	draw_rect(Rect2(748, 162, 260, 38), Color("#f3eedc"))
 	draw_string(ThemeDB.fallback_font, Vector2(782, 187), "BIOLOGIQ", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, NAVY)
 	draw_rect(Rect2(740, 214, 276, 12), Color("#d77a45"))
-	# Glass doors and transom.
-	draw_rect(Rect2(788, 244, 184, 22), NAVY)
-	draw_rect(Rect2(796, 252, 168, 14), Color("#8bc8d8"))
-	draw_rect(Rect2(780, 266, 200, 184), NAVY)
-	# Use the supplied BIOLOGIQ double-door sprite in the entrance opening.
+	# Glass transom and a framed pair of full-size entrance door sprites.
+	draw_rect(Rect2(760, 244, 260, 22), NAVY)
+	draw_rect(Rect2(768, 252, 244, 14), Color("#8bc8d8"))
+	draw_rect(Rect2(752, 266, 276, 184), NAVY)
+	# Draw both leaves from the supplied BIOLOGIQ door sheet at its native aspect ratio.
 	var door_texture := load(DOOR_SPRITE) as Texture2D
 	if door_texture != null:
-		draw_texture_rect_region(door_texture, Rect2(780, 266, 200, 184), Rect2(0, 0, 600, 880))
+		draw_texture_rect_region(door_texture, Rect2(760, 266, 126, 184), Rect2(0, 0, 600, 880))
+		draw_texture_rect_region(door_texture, Rect2(894, 266, 126, 184), Rect2(600, 0, 600, 880))
 	draw_rect(Rect2(766, 444, 228, 16), Color("#d77a45"))
 	draw_rect(Rect2(758, 460, 244, 10), NAVY)
 	# Wall lamps and planter ledges.

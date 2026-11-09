@@ -1,6 +1,6 @@
 extends Control
 
-const PLAYER_ART := "res://Art Assets/Player - Walking Animations (Front, Side, Back).png"
+const PLAYER_ART := "res://Art Assets/Player - Walking Animations (Clean).png"
 const CREAM := Color("#FAF5E6")
 const NAVY := Color("#192787")
 const SAGE := Color("#5D9374")

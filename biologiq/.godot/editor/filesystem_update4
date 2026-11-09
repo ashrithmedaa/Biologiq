@@ -1,2 +1,4 @@
 res://Scenes/main_map.tscn
 res://Scripts/main_map.gd
+res://walking_screen.gd
+res://Scripts/character_selection.gd
