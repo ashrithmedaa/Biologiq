@@ -38,9 +38,11 @@ var sam_interaction_index := -1
 var sam_last_stop_position := Vector2.ZERO
 var maria: Node2D
 var maria_sprite: AnimatedSprite2D
+var sharon: Node2D
 var floor_title: Label
 var menu_layer: CanvasLayer
 var menu_status_label: Label
+var demo_progress_bar: ProgressBar
 var dialogue_lines: Array[String] = []
 var dialogue_index := 0
 var dialogue_open := false
@@ -143,6 +145,7 @@ func _physics_process(_delta: float) -> void:
 	if not _is_walkable_position(player.global_position):
 		player.global_position = previous_position
 		player.velocity = Vector2.ZERO
+	_update_sharon_draw_order()
 	_update_player_animation(direction.length_squared() > 0.0)
 	_update_interaction_hint()
 	if floor_title != null:
@@ -158,6 +161,7 @@ func _process(delta: float) -> void:
 	dialogue_label.visible_characters = visible_count
 	if visible_count >= dialogue_label.text.length():
 		dialogue_typing = false
+		talking_audio.stop()
 		dialogue_hint.text = "Click or press Enter to continue"
 
 
@@ -345,11 +349,20 @@ func _room_art_node(room_name: String) -> Node2D:
 
 func _build_characters() -> void:
 	# The scene desk is centered at (1801, 613); place Sharon's seated typing art there.
-	var sharon := _make_npc("Sharon", Vector2(1801, 613), _sharon_frames(), 3.4)
+	sharon = _make_npc("Sharon", Vector2(1801, 613), _sharon_frames(), 3.4)
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
 	sharon_sprite.position = Vector2(0, -56)
 	sharon_sprite.play("typing")
 	_add_character_interaction("Sharon O'Riley", sharon.position, [])
+	var sharon_blocker := StaticBody2D.new()
+	sharon_blocker.name = "SharonBlocker"
+	sharon_blocker.position = Vector2(1801, 603)
+	var sharon_block_shape := CollisionShape2D.new()
+	var sharon_block_rectangle := RectangleShape2D.new()
+	sharon_block_rectangle.size = Vector2(48, 30)
+	sharon_block_shape.shape = sharon_block_rectangle
+	sharon_blocker.add_child(sharon_block_shape)
+	add_child(sharon_blocker)
 	sam = _make_npc("Sam", Vector2(2320, 690), _sam_frames(), 0.19)
 	sam_sprite = sam.get_node("Sprite") as AnimatedSprite2D
 	_set_sam_walk_animation("walk_left")
@@ -403,6 +416,14 @@ func _build_characters() -> void:
 	camera.limit_bottom = int(WORLD_HEIGHT)
 	player.add_child(camera)
 	camera.make_current()
+	_update_sharon_draw_order()
+
+
+func _update_sharon_draw_order() -> void:
+	if not is_instance_valid(sharon) or not is_instance_valid(player):
+		return
+	# Smaller screen Y is behind the desk; larger screen Y is in front of it.
+	sharon.z_index = 4 if player.global_position.y < 613.0 else 2
 
 
 func _add_character_interaction(character_name: String, at: Vector2, lines: Array[String]) -> int:
@@ -616,8 +637,8 @@ func _build_menu() -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	menu_layer.add_child(shade)
 	var card := PanelContainer.new()
-	card.position = Vector2(440, 155)
-	card.size = Vector2(400, 410)
+	card.position = Vector2(440, 120)
+	card.size = Vector2(400, 480)
 	var card_style := StyleBoxFlat.new()
 	card_style.bg_color = Color("#fff9e9")
 	card_style.set_corner_radius_all(18)
@@ -636,6 +657,28 @@ func _build_menu() -> void:
 	heading.add_theme_color_override("font_color", Color("#143d47"))
 	heading.add_theme_font_size_override("font_size", 28)
 	column.add_child(heading)
+	var progress_title := Label.new()
+	progress_title.text = "DEMO PROGRESS"
+	progress_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	progress_title.add_theme_color_override("font_color", Color("#42636a"))
+	progress_title.add_theme_font_size_override("font_size", 14)
+	column.add_child(progress_title)
+	demo_progress_bar = ProgressBar.new()
+	demo_progress_bar.name = "DemoProgress"
+	demo_progress_bar.min_value = 0.0
+	demo_progress_bar.max_value = 100.0
+	demo_progress_bar.value = _demo_progress_percent()
+	demo_progress_bar.show_percentage = true
+	demo_progress_bar.custom_minimum_size = Vector2(320, 22)
+	var progress_background := StyleBoxFlat.new()
+	progress_background.bg_color = Color("#e3e5d9")
+	progress_background.set_corner_radius_all(8)
+	demo_progress_bar.add_theme_stylebox_override("background", progress_background)
+	var progress_fill := StyleBoxFlat.new()
+	progress_fill.bg_color = Color("#5d9374")
+	progress_fill.set_corner_radius_all(8)
+	demo_progress_bar.add_theme_stylebox_override("fill", progress_fill)
+	column.add_child(demo_progress_bar)
 	var resume := _menu_button("Resume", "Resume", column)
 	resume.pressed.connect(_close_menu)
 	var home := _menu_button("Home", "Return to home", column)
@@ -659,6 +702,45 @@ func _build_menu() -> void:
 	esc_hint.add_theme_color_override("font_color", Color("#42636a"))
 	column.add_child(esc_hint)
 	menu_layer.hide()
+	_update_demo_progress_bar()
+
+
+func _demo_progress_percent() -> float:
+	var progress := 0.0
+	if sharon_checked_in:
+		progress += 0.5
+	if sam_intro_done:
+		progress += 0.5
+	if tour_phase >= 3:
+		progress += 0.5
+	if tour_phase >= 5:
+		progress += 0.5
+	if tour_phase >= 7 or maria_meeting_done:
+		progress += 0.5
+	if maria_meeting_done:
+		progress += 1.0
+	if student_lab_task_received:
+		progress += 0.5
+	var manager := get_node_or_null("/root/SaveManager")
+	if intern_quarters_round >= 2:
+		progress += 1.5
+	if manager != null:
+		if manager.is_student_lab_pipette_complete():
+			progress += 0.5
+		if manager.is_student_lab_dna_complete():
+			progress += 0.5
+		if manager.is_student_lab_data_complete():
+			progress += 0.5
+	if intern_quarters_round >= 2:
+		progress += 0.5
+	if farewell_done:
+		progress += 0.5
+	return minf(progress, 8.0)
+
+
+func _update_demo_progress_bar() -> void:
+	if is_instance_valid(demo_progress_bar):
+		demo_progress_bar.value = _demo_progress_percent()
 
 
 func _menu_button(node_name: String, text: String, parent: Node) -> Button:
@@ -710,7 +792,10 @@ func _interact() -> void:
 		return
 	var nearby_door := _nearest_door()
 	if not nearby_door.is_empty():
-		_start_dialogue(["This room is not available in the demo"])
+		var room_lines := _room_dialogue_for(str(nearby_door.name))
+		if room_lines.is_empty():
+			room_lines = ["This room is not available in the demo"]
+		_start_dialogue(room_lines)
 		return
 	var target := _nearest_interactable()
 	if target.is_empty():
@@ -773,9 +858,9 @@ func _show_dialogue_line() -> void:
 			dialogue_voice = character
 			break
 	if npc_dialogue_active:
+		talking_audio.stop()
 		var voice_path: String = CHARACTER_VOICES.get(dialogue_voice, "")
 		if not voice_path.is_empty():
-			talking_audio.stop()
 			talking_audio.stream = load(voice_path) as AudioStream
 			talking_audio.play()
 	dialogue_label.visible_characters = 0
@@ -788,6 +873,7 @@ func _advance_dialogue() -> void:
 	if dialogue_typing:
 		dialogue_label.visible_characters = -1
 		dialogue_typing = false
+		talking_audio.stop()
 		dialogue_hint.text = "Click or press Enter to continue"
 		return
 	if dialogue_index + 1 < dialogue_lines.size():
@@ -930,9 +1016,9 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 	match phase:
 		2:
 			return [
-				"Sam: This is the East Wing.",
 				"Sam: In biotechnology, scientific discoveries can’t fund themselves! We need commercial and regulatory jobs to turn breakthroughs into real products.",
-				"Sam: (Those federal agencies would be real upset if we couldn’t meet their standards)"
+				"Sam: (Those federal agencies would be real upset if we couldn’t meet their standards)",
+				"Sam: This is the East Wing, featuring non-scientific business & operational roles that maintain proper structure within a biotechnology company. Fundamental teams include Quality Assurance (QA), Regulatory Affairs (RA), Administration, and Marketing & Sales. These are important to the operations of these companies because they allow for the legal, financial, and safety compliances required to proceed with experimentation and production."
 			]
 		4:
 			return [
@@ -945,6 +1031,92 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 				"Sam: Finally, this is the West Wing. You will be doing all lab work in the Intern Quarters.",
 				"Sam: Besides that, we also have a lab for the college students.",
 				"Sam: And, if you ever want to find real-world opportunities near you, check out the Community Connections Center! You’ll be able to take your career exploration to the next level there."
+			]
+	return []
+
+
+func _room_dialogue_for(room_name: String) -> Array[String]:
+	match room_name:
+		"Community Connections Center":
+			return [
+				"Explore real postsecondary and career options in your community, learn from real professionals, and see what you can do in your future!",
+				"Currently locked for the demo."
+			]
+		"Talent Acquisition":
+			return [
+				"Currently locked.",
+				"Shadow a lab technician, perform scientific procedures, and analyze data like a professional."
+			]
+		"Intern Quarters":
+			return [
+				"Currently locked.",
+				"Shadow a lab technician, perform scientific procedures, and analyze data like a professional."
+			]
+		"College Lab":
+			return ["Unauthorized access: player is not at collegiate level."]
+		"Industrial":
+			return [
+				"This is the door leading to the Industrial Department.",
+				"Our goal is to make sustainable products and energy.",
+				"Research includes: bioremediation, bioplastics, and biofuels.",
+				"Currently locked for the demo."
+			]
+		"Environmental":
+			return [
+				"This is the door leading to the Environmental Department.",
+				"Our goal is to monitor and clean up environmental pollution for sustainable development.",
+				"Research includes: bioremediation, wastewater treatment, climate management, and biosensors.",
+				"Currently locked for the demo."
+			]
+		"Diagnostic Research":
+			return [
+				"This is the door leading to the Diagnostic Research Department.",
+				"Our goal is to investigate and design biological tools that can detect, organize, and monitor diseases, conditions, or pathogens.",
+				"Research includes DNA and protein synthesis and sequencing, forensics, and CRISPR/Cas technology.",
+				"Currently locked for the demo."
+			]
+		"Aquatic":
+			return [
+				"This is the door leading to the Aquatic Department.",
+				"Our goal is to develop sustainable solutions for medicine, food production, and the environment through living aquatic organisms.",
+				"Research includes aquaculture, pharmaceuticals, and bioremediation.",
+				"Currently locked for the demo."
+			]
+		"Agricultural":
+			return [
+				"This is the door leading to the Agricultural Department.",
+				"Our goal is to modify living organisms and improve agricultural sustainability.",
+				"Research includes: breeding livestock and plants, genetic engineering, and tissue cultures.",
+				"Currently locked for the demo."
+			]
+		"Medical":
+			return [
+				"This is the door leading to the Medical Department.",
+				"Our goal is to create products and technologies to prevent, diagnose, and treat human diseases.",
+				"Research includes: medicines derived from plants, animals, and fungi, vaccine and gene therapy, and medicines from genetically engineered cells.",
+				"Currently locked for the demo."
+			]
+		"Quality Control":
+			return [
+				"This is the door leading to the Quality Assurance Department.",
+				"Quality Assurance is involved in regulating the final quality of a product. Focusing on the more internal systems of a company, this accounts for research required, clinical trial safety, and processes and system designs needed when producing a product",
+				"Quality Assurance generally offers a clear entry path, plus a high, steady demand across manufacturing sites. However, it can be repetitive or involve more shift work, depending on the facility. This field is best if you enjoy routines, auditing, structure, and operational oversight with manufacturing and lab operations!"
+			]
+		"Regulatory Affairs":
+			return [
+				"This is the door leading to the Regulatory Affairs Department.",
+				"Regulatory Affairs is the main connection between a Biotech company and government health agencies, like the FDA or EMA. Its primary focuses are working with legal compliances, negotiation with government scientists, strategizing for trials, and maintaining sight on post-market updates, such as usage of the product or acknowledgment of unexpected side effects.",
+				"This pathway is fast paced, high pressure, and communication heavy. You must be strategic, because daily life can be unpredictable! There is generally a clear, linear progression when going through stages of this department that steers away from more scientific approaches."
+			]
+		"Administration":
+			return [
+				"This is the door leading to the Administration Department.",
+				"The Administration Department includes sectors like HR, Finance, Legal, and Operations. It reflects more of a traditional corporate environment, with steady, well-defined hierarchical structure. This department also prioritizes stable, detail-oriented work."
+			]
+		"Marketing & Sales":
+			return [
+				"This is the door leading to the Marketing & Sales Department.",
+				"Marketing & Sales professionals target scientists, healthcare professionals, corporate partners and investors; use credibility to translate scientific concepts to the public."
 			]
 	return []
 
@@ -1118,13 +1290,7 @@ func _setup_audio() -> void:
 	talking_audio.name = "NpcTalkingAudio"
 	talking_audio.stream = load(TALKING_SOUND) as AudioStream
 	talking_audio.volume_db = -14.0
-	talking_audio.finished.connect(_on_talking_audio_finished)
 	add_child(talking_audio)
-
-
-func _on_talking_audio_finished() -> void:
-	if npc_dialogue_active and dialogue_open:
-		talking_audio.play()
 
 
 func _play_door_sound() -> void:
@@ -1236,6 +1402,7 @@ func _update_player_animation(is_moving: bool) -> void:
 func _toggle_menu() -> void:
 	menu_open = not menu_open
 	menu_layer.visible = menu_open
+	_update_demo_progress_bar()
 	_update_interaction_hint()
 
 

@@ -1,2 +1,3 @@
 res://Scenes/main_map.tscn
 res://Scripts/student_lab_guide.gd
+res://Scripts/main_map.gd
