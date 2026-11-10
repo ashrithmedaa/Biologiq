@@ -6,6 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://5rk1wvv0vlbi" path="res://Art Assets/door.png" id="4_door"]
 [ext_resource type="FontFile" uid="uid://duw5inie3ygj5" path="res://Art Assets/CascadiaMono.ttf" id="5_font"]
 [ext_resource type="Texture2D" uid="uid://c84afh6dkxpmp" path="res://Art Assets/map_floor_tiles_phase1.svg" id="6_floor1"]
+[ext_resource type="PackedScene" path="res://Scenes/Map Props/bookshelf.tscn" id="7_o0jjj"]
+[ext_resource type="PackedScene" path="res://Scenes/Map Props/status_board.tscn" id="8_a15nj"]
+[ext_resource type="PackedScene" path="res://Scenes/Map Props/lab_plant.tscn" id="9_4yy1u"]
 
 [sub_resource type="AtlasTexture" id="DoorClosed"]
 atlas = ExtResource("4_door")
@@ -1900,3 +1903,33 @@ polygon = PackedVector2Array(0, 0, 158, 0, 158, 30, 0, 30)
 position = Vector2(1710, 629)
 color = Color(0.09803922, 0.15294118, 0.5294118, 1)
 polygon = PackedVector2Array(0, 0, 182, 0, 182, 8, 0, 8)
+
+[node name="Bookcase" parent="." unique_id=375417151 instance=ExtResource("7_o0jjj")]
+position = Vector2(1414, 376)
+
+[node name="Bookcase2" parent="." unique_id=1508248714 instance=ExtResource("7_o0jjj")]
+position = Vector2(2172, 380)
+
+[node name="Status Board" parent="." unique_id=1107184332 instance=ExtResource("8_a15nj")]
+position = Vector2(2451, 254)
+
+[node name="Status Board2" parent="." unique_id=929830691 instance=ExtResource("8_a15nj")]
+position = Vector2(2789, 251)
+
+[node name="Status Board3" parent="." unique_id=1904764482 instance=ExtResource("8_a15nj")]
+position = Vector2(3128, 252)
+
+[node name="Status Board4" parent="." unique_id=1102673278 instance=ExtResource("8_a15nj")]
+position = Vector2(1146, 254)
+
+[node name="Status Board5" parent="." unique_id=867645255 instance=ExtResource("8_a15nj")]
+position = Vector2(808, 255)
+
+[node name="Status Board6" parent="." unique_id=1397993633 instance=ExtResource("8_a15nj")]
+position = Vector2(469, 255)
+
+[node name="Lab Plant" parent="." unique_id=979768933 instance=ExtResource("9_4yy1u")]
+position = Vector2(1457, 2121)
+
+[node name="Lab Plant2" parent="." unique_id=793491003 instance=ExtResource("9_4yy1u")]
+position = Vector2(2152, 2124)

@@ -24,6 +24,7 @@ const CARD_SIZE := Vector2(204, 80)
 const CARD_GAP := 24.0
 const CARD_START_X := 166.0
 const ADVANCE_BUTTON := Rect2(480, 536, 320, 58)
+const STUDENT_LAB_GUIDE := preload("res://Scripts/student_lab_guide.gd")
 
 var segment_textures: Array[Texture2D] = []
 var base_icons: Dictionary = {}
@@ -36,6 +37,7 @@ var dragging_base := ""
 var drag_position := Vector2.ZERO
 var round_complete := false
 var feedback := ""
+var student_guide: Control
 
 
 func _ready() -> void:
@@ -53,10 +55,16 @@ func _ready() -> void:
 		atlas.region = Rect2(40, 40, 22, 3)
 		base_icons[base] = atlas
 	_load_segment(sequence_start)
+	student_guide = STUDENT_LAB_GUIDE.new() as Control
+	student_guide.call("configure", "DNA Base Pairing", "Drag each A, T, C, or G base onto its open rung. Match the complementary pairs A–T and C–G to complete the strand. Finish both DNA segments to complete the round.")
+	add_child(student_guide)
 	queue_redraw()
 
 
 func _gui_input(event: InputEvent) -> void:
+	if student_guide != null and bool(student_guide.call("blocks_minigame_input")):
+		accept_event()
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			if round_complete:

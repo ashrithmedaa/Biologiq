@@ -17,6 +17,7 @@ const CARD_START_X := 165.0
 const CARD_START_Y := 340.0
 const CONTINUE_BUTTON := Rect2(500, 542, 280, 58)
 const PATTERN_TIME_LIMIT := 3.0
+const STUDENT_LAB_GUIDE := preload("res://Scripts/student_lab_guide.gd")
 
 var option_patterns: Array[String] = []
 var target_pattern := ""
@@ -29,6 +30,7 @@ var game_over := false
 var feedback := ""
 var wrong_option_index := -1
 var wrong_feedback_timer := 0.0
+var student_guide: Control
 
 
 func _ready() -> void:
@@ -37,11 +39,14 @@ func _ready() -> void:
 	var save_manager := get_node_or_null("/root/SaveManager")
 	second_sequence_mode = save_manager != null and save_manager.get_intern_quarters_round() >= 2
 	_load_next_pattern()
+	student_guide = STUDENT_LAB_GUIDE.new() as Control
+	student_guide.call("configure", "Data Verification", "Study the four-color order at the top, then click the record with the matching sequence before time runs out. Each correct match earns a point. Later rounds also add a short timer for each pattern.")
+	add_child(student_guide)
 	queue_redraw()
 
 
 func _process(delta: float) -> void:
-	if game_over:
+	if game_over or (student_guide != null and bool(student_guide.call("blocks_minigame_input"))):
 		return
 	if wrong_feedback_timer > 0.0:
 		wrong_feedback_timer = maxf(0.0, wrong_feedback_timer - delta)
@@ -68,6 +73,9 @@ func _process(delta: float) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if student_guide != null and bool(student_guide.call("blocks_minigame_input")):
+		accept_event()
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		if game_over:
 			if CONTINUE_BUTTON.has_point(event.position):

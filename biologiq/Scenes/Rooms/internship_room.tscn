@@ -1,4 +1,784 @@
-[gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://Scripts/intern_quarters_workstation.gd" id="1"]
-[node name="InternQuartersWorkstation" type="Control"]
+[gd_scene format=3 uid="uid://byu2e7foju1r"]
+
+[ext_resource type="Script" uid="uid://bsg3k1jtt1vx2" path="res://Scripts/intern_quarters_workstation.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dm2yrikr5va5x" path="res://Art Assets/Map Props/checklist.png" id="2_1ol83"]
+[ext_resource type="Texture2D" uid="uid://darv8w47puqoi" path="res://Art Assets/Map Props/sample_rack.png" id="3_dv25o"]
+[ext_resource type="Texture2D" uid="uid://dxqrwiglwl0se" path="res://Art Assets/Map Props/flask_indigo.png" id="4_basol"]
+[ext_resource type="Texture2D" uid="uid://u4ckcdn41nij" path="res://Art Assets/Map Props/sample_vial_amber.png" id="5_8tebi"]
+
+[node name="InternQuartersWorkstation" type="Control" unique_id=802019931]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1")
+
+[node name="MapArt" type="Control" parent="." unique_id=936184127]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="MapArt" unique_id=598044253]
+layout_mode = 0
+mouse_filter = 2
+color = Color(0.090196, 0.12549, 0.309804, 1)
+
+[node name="OuterWall" type="ColorRect" parent="MapArt" unique_id=1200446618]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 24.0
+offset_right = 1244.0
+offset_bottom = 696.0
+mouse_filter = 2
+color = Color(0.866667, 0.85098, 0.792157, 1)
+
+[node name="Floor" type="ColorRect" parent="MapArt" unique_id=2074486383]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 1232.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.913725, 0.894118, 0.831373, 1)
+
+[node name="TopWallTrim" type="ColorRect" parent="MapArt" unique_id=496224125]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 1232.0
+offset_bottom = 46.0
+mouse_filter = 2
+color = Color(0.32549, 0.431373, 0.345098, 1)
+
+[node name="FloorTiles" type="Control" parent="MapArt" unique_id=560999418]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Vertical_01" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1986777614]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 46.0
+offset_right = 50.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_02" type="ColorRect" parent="MapArt/FloorTiles" unique_id=553577521]
+layout_mode = 0
+offset_left = 154.0
+offset_top = 46.0
+offset_right = 156.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_03" type="ColorRect" parent="MapArt/FloorTiles" unique_id=254972665]
+layout_mode = 0
+offset_left = 260.0
+offset_top = 46.0
+offset_right = 262.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_04" type="ColorRect" parent="MapArt/FloorTiles" unique_id=2108127798]
+layout_mode = 0
+offset_left = 366.0
+offset_top = 46.0
+offset_right = 368.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_05" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1846610574]
+layout_mode = 0
+offset_left = 472.0
+offset_top = 46.0
+offset_right = 474.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_06" type="ColorRect" parent="MapArt/FloorTiles" unique_id=989741434]
+layout_mode = 0
+offset_left = 578.0
+offset_top = 46.0
+offset_right = 580.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_07" type="ColorRect" parent="MapArt/FloorTiles" unique_id=456582021]
+layout_mode = 0
+offset_left = 684.0
+offset_top = 46.0
+offset_right = 686.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_08" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1009097525]
+layout_mode = 0
+offset_left = 790.0
+offset_top = 46.0
+offset_right = 792.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_09" type="ColorRect" parent="MapArt/FloorTiles" unique_id=588493527]
+layout_mode = 0
+offset_left = 896.0
+offset_top = 46.0
+offset_right = 898.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_10" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1768987982]
+layout_mode = 0
+offset_left = 1002.0
+offset_top = 46.0
+offset_right = 1004.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_11" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1899739401]
+layout_mode = 0
+offset_left = 1108.0
+offset_top = 46.0
+offset_right = 1110.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Vertical_12" type="ColorRect" parent="MapArt/FloorTiles" unique_id=660873751]
+layout_mode = 0
+offset_left = 1214.0
+offset_top = 46.0
+offset_right = 1216.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_01" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1489532554]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 46.0
+offset_right = 1232.0
+offset_bottom = 48.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_02" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1969105390]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 104.0
+offset_right = 1232.0
+offset_bottom = 106.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_03" type="ColorRect" parent="MapArt/FloorTiles" unique_id=2071419919]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 162.0
+offset_right = 1232.0
+offset_bottom = 164.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_04" type="ColorRect" parent="MapArt/FloorTiles" unique_id=648247058]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 220.0
+offset_right = 1232.0
+offset_bottom = 222.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_05" type="ColorRect" parent="MapArt/FloorTiles" unique_id=581336613]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 278.0
+offset_right = 1232.0
+offset_bottom = 280.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_06" type="ColorRect" parent="MapArt/FloorTiles" unique_id=666925741]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 336.0
+offset_right = 1232.0
+offset_bottom = 338.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_07" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1066096409]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 394.0
+offset_right = 1232.0
+offset_bottom = 396.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_08" type="ColorRect" parent="MapArt/FloorTiles" unique_id=1290124099]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 452.0
+offset_right = 1232.0
+offset_bottom = 454.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_09" type="ColorRect" parent="MapArt/FloorTiles" unique_id=840208483]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 510.0
+offset_right = 1232.0
+offset_bottom = 512.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_10" type="ColorRect" parent="MapArt/FloorTiles" unique_id=958748857]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 568.0
+offset_right = 1232.0
+offset_bottom = 570.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Horizontal_11" type="ColorRect" parent="MapArt/FloorTiles" unique_id=2072823847]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 626.0
+offset_right = 1232.0
+offset_bottom = 628.0
+mouse_filter = 2
+color = Color(0.85098, 0.831373, 0.768627, 1)
+
+[node name="Furnishings" type="Control" parent="MapArt" unique_id=1771209290]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TableShadow" type="ColorRect" parent="MapArt/Furnishings" unique_id=1333910841]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 260.0
+offset_right = 880.0
+offset_bottom = 390.0
+mouse_filter = 2
+color = Color(0.188235, 0.223529, 0.407843, 1)
+
+[node name="TableWood" type="ColorRect" parent="MapArt/Furnishings" unique_id=1425802899]
+layout_mode = 0
+offset_left = 412.0
+offset_top = 254.0
+offset_right = 868.0
+offset_bottom = 372.0
+mouse_filter = 2
+color = Color(0.721569, 0.47451, 0.329412, 1)
+
+[node name="TableSurface" type="ColorRect" parent="MapArt/Furnishings" unique_id=1410586533]
+layout_mode = 0
+offset_left = 422.0
+offset_top = 261.0
+offset_right = 858.0
+offset_bottom = 361.0
+mouse_filter = 2
+color = Color(0.933333, 0.905882, 0.835294, 1)
+
+[node name="LeftTableLeg" type="ColorRect" parent="MapArt/Furnishings" unique_id=276532134]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 367.0
+offset_right = 448.0
+offset_bottom = 403.0
+mouse_filter = 2
+color = Color(0.329412, 0.368627, 0.466667, 1)
+
+[node name="RightTableLeg" type="ColorRect" parent="MapArt/Furnishings" unique_id=2016054164]
+layout_mode = 0
+offset_left = 834.0
+offset_top = 367.0
+offset_right = 852.0
+offset_bottom = 403.0
+mouse_filter = 2
+color = Color(0.329412, 0.368627, 0.466667, 1)
+
+[node name="Exit" type="Control" parent="MapArt" unique_id=1322602578]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="DoorLintel" type="ColorRect" parent="MapArt/Exit" unique_id=1612552730]
+layout_mode = 0
+offset_left = 1070.0
+offset_top = 35.0
+offset_right = 1170.0
+offset_bottom = 47.0
+mouse_filter = 2
+color = Color(0.2, 0.223529, 0.407843, 1)
+
+[node name="DoorFrame" type="ColorRect" parent="MapArt/Exit" unique_id=1506950685]
+layout_mode = 0
+offset_left = 1080.0
+offset_top = 43.0
+offset_right = 1160.0
+offset_bottom = 145.0
+mouse_filter = 2
+color = Color(0.160784, 0.2, 0.435294, 1)
+
+[node name="DoorPanel" type="ColorRect" parent="MapArt/Exit" unique_id=1975577759]
+layout_mode = 0
+offset_left = 1087.0
+offset_top = 50.0
+offset_right = 1153.0
+offset_bottom = 138.0
+mouse_filter = 2
+color = Color(0.34902, 0.388235, 0.541176, 1)
+
+[node name="DoorHandle" type="Polygon2D" parent="MapArt/Exit" unique_id=451803435]
+position = Vector2(1140, 96)
+color = Color(0.945098, 0.87451, 0.611765, 1)
+polygon = PackedVector2Array(4, 0, 3.46, 2, 2, 3.46, 0, 4, -2, 3.46, -3.46, 2, -4, 0, -3.46, -2, -2, -3.46, 0, -4, 2, -3.46, 3.46, -2)
+
+[node name="ExitLabel" type="Label" parent="MapArt/Exit" unique_id=989671123]
+layout_mode = 0
+offset_left = 1060.0
+offset_top = 148.0
+offset_right = 1180.0
+offset_bottom = 172.0
+theme_override_colors/font_color = Color(0.203922, 0.231373, 0.384314, 1)
+theme_override_font_sizes/font_size = 13
+text = "EXIT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ExitAccessPoint" type="Marker2D" parent="MapArt" unique_id=81799447]
+position = Vector2(1120, 174)
+
+[node name="Stations" type="Control" parent="MapArt" unique_id=724622401]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="PipetteStation" type="Control" parent="MapArt/Stations" unique_id=2090905894]
+anchors_preset = 0
+offset_left = 480.0
+offset_top = 338.0
+offset_right = 480.0
+offset_bottom = 338.0
+mouse_filter = 2
+
+[node name="CardSurface" type="ColorRect" parent="MapArt/Stations/PipetteStation" unique_id=1258588803]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.964706, 0.941176, 0.886275, 1)
+
+[node name="CardBorderTop" type="ColorRect" parent="MapArt/Stations/PipetteStation" unique_id=1263954298]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = -32.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderBottom" type="ColorRect" parent="MapArt/Stations/PipetteStation" unique_id=905070239]
+layout_mode = 0
+offset_left = -53.0
+offset_top = 32.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderLeft" type="ColorRect" parent="MapArt/Stations/PipetteStation" unique_id=881498372]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = -51.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderRight" type="ColorRect" parent="MapArt/Stations/PipetteStation" unique_id=1315094523]
+layout_mode = 0
+offset_left = 51.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardAccent" type="Polygon2D" parent="MapArt/Stations/PipetteStation" unique_id=1796834924]
+position = Vector2(0, -5)
+color = Color(0.85098, 0.466667, 0.262745, 1)
+polygon = PackedVector2Array(12, 0, 11.09, 4.59, 8.49, 8.49, 4.59, 11.09, 0, 12, -4.59, 11.09, -8.49, 8.49, -11.09, 4.59, -12, 0, -11.09, -4.59, -8.49, -8.49, -4.59, -11.09, 0, -12, 4.59, -11.09, 8.49, -8.49, 11.09, -4.59)
+
+[node name="SymbolLabel" type="Label" parent="MapArt/Stations/PipetteStation" unique_id=377581435]
+layout_mode = 0
+offset_left = -48.0
+offset_top = 8.0
+offset_right = 48.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "PIPETTE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActivityMarker" type="Polygon2D" parent="MapArt/Stations/PipetteStation" unique_id=650649610]
+position = Vector2(0, -32)
+color = Color(0.85098, 0.466667, 0.262745, 1)
+polygon = PackedVector2Array(5, 0, 4.33, 2.5, 2.5, 4.33, 0, 5, -2.5, 4.33, -4.33, 2.5, -5, 0, -4.33, -2.5, -2.5, -4.33, 0, -5, 2.5, -4.33, 4.33, -2.5)
+
+[node name="StationName" type="Label" parent="MapArt/Stations/PipetteStation" unique_id=1039561033]
+layout_mode = 0
+offset_left = -58.0
+offset_top = 38.0
+offset_right = 58.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "Pipette Practice"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CurrentLabel" type="Label" parent="MapArt/Stations/PipetteStation" unique_id=1990968326]
+visible = false
+layout_mode = 0
+offset_left = -52.0
+offset_top = 54.0
+offset_right = 52.0
+offset_bottom = 68.0
+theme_override_colors/font_color = Color(0.85098, 0.466667, 0.262745, 1)
+theme_override_font_sizes/font_size = 9
+text = "CURRENT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DnaStation" type="Control" parent="MapArt/Stations" unique_id=1535595417]
+anchors_preset = 0
+offset_left = 640.0
+offset_top = 338.0
+offset_right = 640.0
+offset_bottom = 338.0
+mouse_filter = 2
+
+[node name="CardSurface" type="ColorRect" parent="MapArt/Stations/DnaStation" unique_id=1986733891]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.964706, 0.941176, 0.886275, 1)
+
+[node name="CardBorderTop" type="ColorRect" parent="MapArt/Stations/DnaStation" unique_id=1207446535]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = -32.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderBottom" type="ColorRect" parent="MapArt/Stations/DnaStation" unique_id=1936191234]
+layout_mode = 0
+offset_left = -53.0
+offset_top = 32.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderLeft" type="ColorRect" parent="MapArt/Stations/DnaStation" unique_id=329193670]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = -51.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderRight" type="ColorRect" parent="MapArt/Stations/DnaStation" unique_id=328357191]
+layout_mode = 0
+offset_left = 51.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardAccent" type="Polygon2D" parent="MapArt/Stations/DnaStation" unique_id=205906946]
+position = Vector2(0, -5)
+color = Color(0.360784, 0.552941, 0.458824, 1)
+polygon = PackedVector2Array(12, 0, 11.09, 4.59, 8.49, 8.49, 4.59, 11.09, 0, 12, -4.59, 11.09, -8.49, 8.49, -11.09, 4.59, -12, 0, -11.09, -4.59, -8.49, -8.49, -4.59, -11.09, 0, -12, 4.59, -11.09, 8.49, -8.49, 11.09, -4.59)
+
+[node name="SymbolLabel" type="Label" parent="MapArt/Stations/DnaStation" unique_id=384376365]
+layout_mode = 0
+offset_left = -48.0
+offset_top = 8.0
+offset_right = 48.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "DNA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActivityMarker" type="Polygon2D" parent="MapArt/Stations/DnaStation" unique_id=306291040]
+position = Vector2(0, -32)
+color = Color(0.360784, 0.552941, 0.458824, 1)
+polygon = PackedVector2Array(5, 0, 4.33, 2.5, 2.5, 4.33, 0, 5, -2.5, 4.33, -4.33, 2.5, -5, 0, -4.33, -2.5, -2.5, -4.33, 0, -5, 2.5, -4.33, 4.33, -2.5)
+
+[node name="StationName" type="Label" parent="MapArt/Stations/DnaStation" unique_id=824984682]
+layout_mode = 0
+offset_left = -58.0
+offset_top = 38.0
+offset_right = 58.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "DNA Base Pairing"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CurrentLabel" type="Label" parent="MapArt/Stations/DnaStation" unique_id=1409215442]
+visible = false
+layout_mode = 0
+offset_left = -52.0
+offset_top = 54.0
+offset_right = 52.0
+offset_bottom = 68.0
+theme_override_colors/font_color = Color(0.360784, 0.552941, 0.458824, 1)
+theme_override_font_sizes/font_size = 9
+text = "CURRENT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DataStation" type="Control" parent="MapArt/Stations" unique_id=1417402431]
+anchors_preset = 0
+offset_left = 800.0
+offset_top = 338.0
+offset_right = 800.0
+offset_bottom = 338.0
+mouse_filter = 2
+
+[node name="CardSurface" type="ColorRect" parent="MapArt/Stations/DataStation" unique_id=1972014361]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.964706, 0.941176, 0.886275, 1)
+
+[node name="CardBorderTop" type="ColorRect" parent="MapArt/Stations/DataStation" unique_id=2014142975]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = -32.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderBottom" type="ColorRect" parent="MapArt/Stations/DataStation" unique_id=459057171]
+layout_mode = 0
+offset_left = -53.0
+offset_top = 32.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderLeft" type="ColorRect" parent="MapArt/Stations/DataStation" unique_id=2035999800]
+layout_mode = 0
+offset_left = -53.0
+offset_top = -34.0
+offset_right = -51.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardBorderRight" type="ColorRect" parent="MapArt/Stations/DataStation" unique_id=949431896]
+layout_mode = 0
+offset_left = 51.0
+offset_top = -34.0
+offset_right = 53.0
+offset_bottom = 34.0
+mouse_filter = 2
+color = Color(0.498039, 0.529412, 0.572549, 1)
+
+[node name="CardAccent" type="Polygon2D" parent="MapArt/Stations/DataStation" unique_id=1882354300]
+position = Vector2(0, -5)
+color = Color(0.298039, 0.470588, 0.627451, 1)
+polygon = PackedVector2Array(12, 0, 11.09, 4.59, 8.49, 8.49, 4.59, 11.09, 0, 12, -4.59, 11.09, -8.49, 8.49, -11.09, 4.59, -12, 0, -11.09, -4.59, -8.49, -8.49, -4.59, -11.09, 0, -12, 4.59, -11.09, 8.49, -8.49, 11.09, -4.59)
+
+[node name="SymbolLabel" type="Label" parent="MapArt/Stations/DataStation" unique_id=1940027498]
+layout_mode = 0
+offset_left = -48.0
+offset_top = 8.0
+offset_right = 48.0
+offset_bottom = 26.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "DATA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ActivityMarker" type="Polygon2D" parent="MapArt/Stations/DataStation" unique_id=490481920]
+position = Vector2(0, -32)
+color = Color(0.298039, 0.470588, 0.627451, 1)
+polygon = PackedVector2Array(5, 0, 4.33, 2.5, 2.5, 4.33, 0, 5, -2.5, 4.33, -4.33, 2.5, -5, 0, -4.33, -2.5, -2.5, -4.33, 0, -5, 2.5, -4.33, 4.33, -2.5)
+
+[node name="StationName" type="Label" parent="MapArt/Stations/DataStation" unique_id=769293218]
+layout_mode = 0
+offset_left = -58.0
+offset_top = 38.0
+offset_right = 58.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(0.188235, 0.219608, 0.337255, 1)
+theme_override_font_sizes/font_size = 11
+text = "Data Verification"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CurrentLabel" type="Label" parent="MapArt/Stations/DataStation" unique_id=502354548]
+visible = false
+layout_mode = 0
+offset_left = -52.0
+offset_top = 54.0
+offset_right = 52.0
+offset_bottom = 68.0
+theme_override_colors/font_color = Color(0.298039, 0.470588, 0.627451, 1)
+theme_override_font_sizes/font_size = 9
+text = "CURRENT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UI" type="Control" parent="." unique_id=526850044]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Header" type="Control" parent="UI" unique_id=1218814179]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderBar" type="ColorRect" parent="UI/Header" unique_id=1321817379]
+layout_mode = 0
+offset_bottom = 36.0
+mouse_filter = 2
+color = Color(0.090196, 0.12549, 0.309804, 1)
+
+[node name="RoomTitle" type="Label" parent="UI/Header" unique_id=461807932]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 6.0
+offset_right = 274.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.956863, 0.937255, 0.87451, 1)
+theme_override_font_sizes/font_size = 15
+text = "INTERN QUARTERS"
+vertical_alignment = 1
+
+[node name="TaskLabel" type="Label" parent="UI/Header" unique_id=190855975]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 6.0
+offset_right = 1030.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.85098, 0.87451, 0.780392, 1)
+theme_override_font_sizes/font_size = 14
+text = "CURRENT TASK: PIPETTE PRACTICE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Footer" type="Control" parent="UI" unique_id=2079428746]
+anchors_preset = 0
+offset_top = 666.0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+
+[node name="FooterBar" type="ColorRect" parent="UI/Footer" unique_id=970809938]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 54.0
+mouse_filter = 2
+color = Color(0.090196, 0.12549, 0.309804, 1)
+
+[node name="Prompt" type="Label" parent="UI/Footer" unique_id=1495002858]
+layout_mode = 0
+offset_top = 12.0
+offset_right = 1280.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.956863, 0.937255, 0.87451, 1)
+theme_override_font_sizes/font_size = 15
+text = "WASD / arrows  Move     E  Use workstation     ESC  Exit"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Checklist" type="Sprite2D" parent="." unique_id=1815655459]
+position = Vector2(725.00006, 335.00006)
+rotation = 0.37350047
+texture = ExtResource("2_1ol83")
+
+[node name="SampleRack" type="Sprite2D" parent="." unique_id=625036666]
+position = Vector2(825, 281)
+scale = Vector2(1.65, 1.65)
+texture = ExtResource("3_dv25o")
+
+[node name="FlaskIndigo" type="Sprite2D" parent="." unique_id=84032370]
+position = Vector2(789, 283.00003)
+scale = Vector2(1.25, 1.25)
+texture = ExtResource("4_basol")
+
+[node name="SampleVialAmber" type="Sprite2D" parent="." unique_id=1024051231]
+position = Vector2(543, 347)
+texture = ExtResource("5_8tebi")

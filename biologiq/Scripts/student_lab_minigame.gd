@@ -12,6 +12,7 @@ const TARGET_AREA := Rect2(770, 360, 225, 210)
 const PIPETTE_SIZE := Vector2(128, 128)
 const CONTINUE_BUTTON := Rect2(430, 548, 200, 54)
 const REPLAY_BUTTON := Rect2(650, 548, 200, 54)
+const STUDENT_LAB_GUIDE := preload("res://Scripts/student_lab_guide.gd")
 
 var pipette_texture: Texture2D
 var pipette_position := PIPETTE_HOME
@@ -25,6 +26,7 @@ var target_volume := FIRST_ROUND_TARGET
 var minimum_drops := FIRST_ROUND_MINIMUM_DROPS
 var earned_stars := 5
 var completed := false
+var student_guide: Control
 
 
 func _ready() -> void:
@@ -39,10 +41,16 @@ func _ready() -> void:
 	micropipette.atlas = pipette_sheet
 	micropipette.region = Rect2(0, 0, 570, 665)
 	pipette_texture = micropipette
+	student_guide = STUDENT_LAB_GUIDE.new() as Control
+	student_guide.call("configure", "Pipette Practice", "Choose a volume with keys 1–5, drag the micropipette to the source well and right-click to load it, then drag to the sample tube and right-click to dispense. Reach exactly %d μL with as few drops as possible." % target_volume)
+	add_child(student_guide)
 	queue_redraw()
 
 
 func _gui_input(event: InputEvent) -> void:
+	if student_guide != null and bool(student_guide.call("blocks_minigame_input")):
+		accept_event()
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not completed:
 		if SOURCE_AREA.has_point(event.position) and SOURCE_AREA.has_point(pipette_position) and not loaded:
 			loaded = true

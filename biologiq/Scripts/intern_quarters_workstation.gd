@@ -1,16 +1,19 @@
 extends Control
 
 const PLAYER_SHEET := "res://Art Assets/Player - Walking Animations (Clean).png"
+const STUDENT_LAB_GUIDE := preload("res://Scripts/student_lab_guide.gd")
 const PIPETTE_SCENE := "res://Scenes/Rooms/student_lab_room.tscn"
 const DNA_SCENE := "res://Scenes/Rooms/student_lab_dna_room.tscn"
 const DATA_SCENE := "res://Scenes/Rooms/student_lab_data_room.tscn"
 const WALK_SPEED := 210.0
 const PLAYER_RADIUS := 13.0
 const PLAYER_SCALE := 0.19
-const EXIT_INTERACT_POSITION := Vector2(1120, 174)
+const SAM_SCALE := 0.22
+const SAM_POSITION := Vector2(110, 220)
 
 var player: CharacterBody2D
 var player_sprite: AnimatedSprite2D
+var student_guide: Control
 var active_station := -1
 var interact_hint := ""
 var exit_warning := ""
@@ -24,10 +27,20 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build_room()
 	_build_player()
-	queue_redraw()
+	_build_sam()
+	_style_room_labels()
+	_update_nearest_station()
+	_refresh_room_ui()
+	student_guide = STUDENT_LAB_GUIDE.new() as Control
+	student_guide.call("configure", "Intern Quarters", "", false, true)
+	add_child(student_guide)
 
 
 func _physics_process(_delta: float) -> void:
+	if student_guide != null and bool(student_guide.call("blocks_minigame_input")):
+		player.velocity = Vector2.ZERO
+		player_sprite.stop()
+		return
 	if exit_warning_timer > 0.0:
 		exit_warning_timer = maxf(0.0, exit_warning_timer - _delta)
 		if exit_warning_timer == 0.0:
@@ -46,31 +59,41 @@ func _physics_process(_delta: float) -> void:
 	if not _is_walkable(player.position):
 		player.position = previous_position
 		player.velocity = Vector2.ZERO
+	player.z_index = 1 if player.position.y > SAM_POSITION.y else 0
 	_update_nearest_station()
-	queue_redraw()
+	_refresh_room_ui()
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event is InputEventKey or not event.pressed or event.echo:
+		return
+	if student_guide != null and bool(student_guide.call("blocks_minigame_input")):
 		return
 	if event.keycode == KEY_ESCAPE:
 		_try_exit_room()
 	elif event.keycode == KEY_E:
 		if _is_near_exit():
 			_try_exit_room()
+		elif _is_near_sam():
+			student_guide.call("open_dialogue")
 		elif active_station >= 0 and _station_is_current(active_station):
 			get_tree().change_scene_to_file(str(station_data[active_station].scene))
 
 
 func _build_room() -> void:
-	# All activities sit together on one central work table.
+	# Station interaction positions come from the editable scene nodes.
+	var pipette_station := get_node("MapArt/Stations/PipetteStation") as Control
+	var dna_station := get_node("MapArt/Stations/DnaStation") as Control
+	var data_station := get_node("MapArt/Stations/DataStation") as Control
 	station_data = [
-		{"name": "Pipette Practice", "position": Vector2(480, 338), "scene": PIPETTE_SCENE, "accent": Color("#d97743"), "symbol": "PIPETTE"},
-		{"name": "DNA Base Pairing", "position": Vector2(640, 338), "scene": DNA_SCENE, "accent": Color("#5c8d75"), "symbol": "DNA"},
-		{"name": "Data Verification", "position": Vector2(800, 338), "scene": DATA_SCENE, "accent": Color("#4c78a0"), "symbol": "DATA"},
+		{"name": "Pipette Practice", "position": pipette_station.position, "scene": PIPETTE_SCENE, "accent": Color("#d97743"), "symbol": "PIPETTE", "node": pipette_station},
+		{"name": "DNA Base Pairing", "position": dna_station.position, "scene": DNA_SCENE, "accent": Color("#5c8d75"), "symbol": "DNA", "node": dna_station},
+		{"name": "Data Verification", "position": data_station.position, "scene": DATA_SCENE, "accent": Color("#4c78a0"), "symbol": "DATA", "node": data_station},
 	]
+	var table_bounds := get_node("MapArt/Furnishings/TableShadow") as ColorRect
 	room_objects = [
-		{"rect": Rect2(400, 260, 480, 130), "kind": "table"},
+		{"rect": Rect2(table_bounds.position, table_bounds.size), "kind": "table"},
+		{"rect": Rect2(Vector2(SAM_POSITION.x - 28, 168), Vector2(56, SAM_POSITION.y - 168)), "kind": "Sam"},
 	]
 
 
@@ -78,6 +101,7 @@ func _build_player() -> void:
 	player = CharacterBody2D.new()
 	player.name = "Intern"
 	player.position = Vector2(670, 594)
+	player.z_index = 1 if player.position.y > SAM_POSITION.y else 0
 	add_child(player)
 	var shadow := Polygon2D.new()
 	shadow.color = Color(0.12, 0.15, 0.20, 0.28)
@@ -95,6 +119,20 @@ func _build_player() -> void:
 	collision.shape = shape
 	collision.position = Vector2(0, -7)
 	player.add_child(collision)
+
+
+func _build_sam() -> void:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = load("res://Art Assets/Sam - Front walking spritesheet transparent.png") as Texture2D
+	atlas.region = Rect2(430, 285, 350, 700)
+	var sam := Sprite2D.new()
+	sam.name = "Sam"
+	sam.texture = atlas
+	sam.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sam.scale = Vector2(SAM_SCALE, SAM_SCALE)
+	sam.position = SAM_POSITION - Vector2(0, 350 * SAM_SCALE)
+	sam.z_index = 0
+	add_child(sam)
 
 
 func _player_frames() -> SpriteFrames:
@@ -131,6 +169,8 @@ func _update_nearest_station() -> void:
 			active_station = index
 	if _is_near_exit():
 		interact_hint = "E  Exit to hallway"
+	elif _is_near_sam():
+		interact_hint = "E  Talk to Sam"
 	elif active_station < 0:
 		interact_hint = "WASD / arrows  Move     E  Use workstation     ESC  Exit"
 	elif _all_tasks_complete():
@@ -173,11 +213,16 @@ func _try_exit_room() -> void:
 	else:
 		exit_warning = "Please complete all tasks before exiting"
 		exit_warning_timer = 2.5
-		queue_redraw()
+		_refresh_room_ui()
 
 
 func _is_near_exit() -> bool:
-	return player.position.distance_to(EXIT_INTERACT_POSITION) < 82.0
+	var exit_point := get_node("MapArt/ExitAccessPoint") as Marker2D
+	return player.position.distance_to(exit_point.position) < 82.0
+
+
+func _is_near_sam() -> bool:
+	return player.position.distance_to(SAM_POSITION) < 96.0
 
 
 func _is_walkable(at: Vector2) -> bool:
@@ -190,71 +235,23 @@ func _is_walkable(at: Vector2) -> bool:
 	return true
 
 
-func _draw() -> void:
-	# Keep the room simple so the table and exit are immediately readable.
-	draw_rect(Rect2(0, 0, 1280, 720), Color("#17204f"))
-	draw_rect(Rect2(36, 24, 1208, 672), Color("#ddd9ca"))
-	draw_rect(Rect2(48, 36, 1184, 640), Color("#e9e4d4"))
-	draw_rect(Rect2(48, 36, 1184, 10), Color("#536e58"))
-	_draw_floor_tiles()
-	_draw_table()
-	_draw_exit_door()
-	_draw_activity_markers()
-	_draw_hud()
-
-
-func _draw_floor_tiles() -> void:
-	var tile_color := Color("#d9d4c4")
-	for x in range(48, 1232, 106):
-		draw_line(Vector2(x, 46), Vector2(x, 676), tile_color, 2.0)
-	for y in range(46, 676, 58):
-		draw_line(Vector2(48, y), Vector2(1232, y), tile_color, 2.0)
-
-
-
-func _draw_table() -> void:
-	draw_rect(Rect2(400, 264, 480, 132), Color("#303968"))
-	draw_rect(Rect2(412, 254, 456, 118), Color("#b87954"))
-	draw_rect(Rect2(422, 261, 436, 100), Color("#eee7d5"))
-	draw_rect(Rect2(430, 367, 18, 36), Color("#545e77"))
-	draw_rect(Rect2(834, 367, 18, 36), Color("#545e77"))
-	draw_string(GameFont.FONT, Vector2(0, 230), "WORKSTATION", HORIZONTAL_ALIGNMENT_CENTER, 1280, 16, Color("#414969"))
+func _refresh_room_ui() -> void:
+	var task_label := get_node("UI/Header/TaskLabel") as Label
+	var footer_label := get_node("UI/Footer/Prompt") as Label
+	task_label.text = "TASK: Exit the intern quarters" if _all_tasks_complete() else "CURRENT TASK: %s" % _current_station_name().to_upper()
+	footer_label.text = exit_warning if exit_warning != "" else interact_hint
+	footer_label.add_theme_color_override("font_color", Color("#f4b6a9") if exit_warning != "" else Color("#f4efdf"))
 	for index in station_data.size():
 		var station: Dictionary = station_data[index]
-		var position: Vector2 = station.position
-		var accent: Color = station.accent
-		draw_rect(Rect2(position - Vector2(53, 34), Vector2(106, 68)), Color("#f6f0e2"))
-		draw_rect(Rect2(position - Vector2(53, 34), Vector2(106, 68)), Color("#7f8792"), false, 2.0)
-		draw_circle(position + Vector2(0, -5), 12, accent)
-		draw_string(GameFont.FONT, position + Vector2(-48, 26), str(station.symbol), HORIZONTAL_ALIGNMENT_CENTER, 96, 11, Color("#303856"))
-
-
-func _draw_exit_door() -> void:
-	draw_rect(Rect2(1070, 35, 100, 12), Color("#333968"))
-	draw_rect(Rect2(1080, 43, 80, 102), Color("#29336f"))
-	draw_rect(Rect2(1087, 50, 66, 88), Color("#59638a"))
-	draw_circle(Vector2(1140, 96), 4, Color("#f1df9c"))
-	draw_string(GameFont.FONT, Vector2(1060, 164), "EXIT", HORIZONTAL_ALIGNMENT_CENTER, 120, 13, Color("#343b62"))
-
-
-func _draw_activity_markers() -> void:
-	for index in station_data.size():
-		var station: Dictionary = station_data[index]
+		var station_node := station.node as Control
 		var selected := _station_is_current(index)
-		var position: Vector2 = station.position
-		var accent: Color = station.accent
-		var marker_color := accent if selected else Color("#a7a69e")
-		draw_circle(position + Vector2(0, -32), 5, marker_color)
-		draw_string(GameFont.FONT, position + Vector2(-58, 48), str(station.name), HORIZONTAL_ALIGNMENT_CENTER, 116, 11, Color("#303856") if selected else Color("#777971"))
-		if selected:
-			draw_string(GameFont.FONT, position + Vector2(-52, 64), "CURRENT", HORIZONTAL_ALIGNMENT_CENTER, 104, 9, accent)
+		var marker := station_node.get_node("ActivityMarker") as Polygon2D
+		marker.color = station.accent if selected else Color("#a7a69e")
+		var station_label := station_node.get_node("StationName") as Label
+		station_label.add_theme_color_override("font_color", Color("#303856") if selected else Color("#777971"))
+		(station_node.get_node("CurrentLabel") as Label).visible = selected
 
 
-func _draw_hud() -> void:
-	draw_rect(Rect2(0, 0, 1280, 36), Color("#17204f"))
-	draw_string(GameFont.FONT, Vector2(24, 25), "INTERN QUARTERS", HORIZONTAL_ALIGNMENT_LEFT, 250, 15, Color("#f4efdf"))
-	var task_label := "TASK: Exit the intern quarters" if _all_tasks_complete() else "CURRENT TASK: %s" % _current_station_name().to_upper()
-	draw_string(GameFont.FONT, Vector2(250, 25), task_label, HORIZONTAL_ALIGNMENT_CENTER, 780, 14, Color("#d9dfc7"))
-	draw_rect(Rect2(0, 666, 1280, 54), Color(0.09, 0.12, 0.28, 0.92))
-	var footer_text := exit_warning if exit_warning != "" else interact_hint
-	draw_string(GameFont.FONT, Vector2(0, 699), footer_text, HORIZONTAL_ALIGNMENT_CENTER, 1280, 15, Color("#f4b6a9") if exit_warning != "" else Color("#f4efdf"))
+func _style_room_labels() -> void:
+	for label in find_children("*", "Label", true, false):
+		(label as Label).add_theme_font_override("font", GameFont.FONT)
