@@ -112,10 +112,10 @@ func _draw() -> void:
 	draw_string(GameFont.FONT, Vector2(64, 82), "INTERN QUARTERS  /  PIPETTE PRACTICE", HORIZONTAL_ALIGNMENT_LEFT, -1, 27, Color("#192787"))
 	draw_string(GameFont.FONT, Vector2(64, 116), "Dial the pipette volume with number keys. Reach exactly %d μL using as few drops as possible." % target_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#42636a"))
 
-	_draw_station(SOURCE_AREA, "SOURCE WELL", "Position pipette here, then right-click to collect", Color("#D77A45"))
-	_draw_station(TARGET_AREA, "SAMPLE TUBE", "Position loaded pipette here, then right-click to dispense", Color("#5D9374"))
-	_draw_well(Vector2(397, 472), Color("#D77A45"), 0.82)
-	_draw_beaker(Vector2(882, 425), current_volume / float(target_volume))
+	_draw_station(SOURCE_AREA, "SOURCE WELL", "Drag pipette here.\nRight-click to collect.", Color("#D77A45"))
+	_draw_station(TARGET_AREA, "SAMPLE TUBE", "Drag pipette here.\nRight-click to dispense.", Color("#5D9374"))
+	_draw_well(Vector2(397, 492), Color("#D77A45"), 0.82)
+	_draw_beaker(Vector2(882, 448), current_volume / float(target_volume))
 
 	draw_rect(Rect2(514, 276, 252, 54), Color("#E6E0D2"))
 	draw_rect(Rect2(514, 276, 252 * clampf(current_volume / float(target_volume), 0.0, 1.0), 54), Color("#5D9374"))
@@ -134,9 +134,9 @@ func _draw() -> void:
 		if loaded:
 			draw_circle(pipette_position + Vector2(44, 42), 11, Color("#D77A45"))
 			draw_string(GameFont.FONT, pipette_position + Vector2(-24, -72), "%d μL" % loaded_volume, HORIZONTAL_ALIGNMENT_CENTER, 72, 14, Color("#192787"))
-		draw_string(GameFont.FONT, Vector2(0, 612), "VOLUME DIAL:  1 = 5 μL     2 = 10 μL     3 = 25 μL     4 = 50 μL     5 = 75 μL", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#192787"))
-		draw_string(GameFont.FONT, Vector2(0, 638), "Selected: %d μL. LEFT-DRAG pipette; RIGHT-CLICK source to draw, then sample tube to dispense." % selected_transfer_volume, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
-		draw_string(GameFont.FONT, Vector2(0, 660), "Minimum %d drops = 5 stars; each extra drop costs a star. Overfilling costs one more. ESC returns to workstation." % minimum_drops, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
+		draw_string(GameFont.FONT, Vector2(0, 620), "VOLUME DIAL:  1 = 5 μL     2 = 10 μL     3 = 25 μL     4 = 50 μL     5 = 75 μL", HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 15, Color("#192787"))
+		draw_string(GameFont.FONT, Vector2(0, 645), "Selected: %d μL. LEFT-DRAG pipette; RIGHT-CLICK source to draw, then sample tube to dispense." % selected_transfer_volume, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
+		draw_string(GameFont.FONT, Vector2(0, 670), "Minimum %d drops = 5 stars; each extra drop costs a star. Overfilling costs one more. ESC returns to workstation." % minimum_drops, HORIZONTAL_ALIGNMENT_CENTER, int(size.x), 13, Color("#42636a"))
 	else:
 		_draw_completion()
 
@@ -145,7 +145,9 @@ func _draw_station(area: Rect2, heading: String, instruction: String, accent: Co
 	draw_rect(area, Color("#F3EEDC"))
 	draw_rect(area, accent, false, 4.0)
 	draw_string(GameFont.FONT, area.position + Vector2(18, 32), heading, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("#192787"))
-	draw_string(GameFont.FONT, area.position + Vector2(18, 58), instruction, HORIZONTAL_ALIGNMENT_LEFT, area.size.x - 32, 12, Color("#42636a"))
+	var instruction_lines := instruction.split("\n")
+	for line_index in instruction_lines.size():
+		draw_string(GameFont.FONT, area.position + Vector2(18, 58 + line_index * 16), instruction_lines[line_index], HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#42636a"))
 
 
 func _draw_well(center: Vector2, liquid_color: Color, fill_ratio: float) -> void:
@@ -167,8 +169,8 @@ func _draw_beaker(center: Vector2, fill_ratio: float) -> void:
 	for mark in 1:
 		var y := center.y + 122.0 - mark * 102.0
 		draw_line(Vector2(center.x + 21, y), Vector2(center.x + 42, y), Color("#192787"), 2.0)
-	draw_string(GameFont.FONT, center + Vector2(-38, 158), "%d μL" % current_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("#192787"))
-	draw_string(GameFont.FONT, center + Vector2(-38, 181), "TARGET %d μL" % target_volume, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("#5D9374"))
+	draw_string(GameFont.FONT, center + Vector2(-100, 150), "NOW %d μL" % current_volume, HORIZONTAL_ALIGNMENT_CENTER, 92, 12, Color("#192787"))
+	draw_string(GameFont.FONT, center + Vector2(4, 150), "TARGET %d μL" % target_volume, HORIZONTAL_ALIGNMENT_CENTER, 108, 12, Color("#5D9374"))
 
 
 func _draw_completion() -> void:

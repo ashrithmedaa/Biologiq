@@ -1,22 +1,39 @@
-res://Scenes/main.tscn::cd57cf344f0a699be45ae34dae540e8f::1793046040::res://.godot/exported/133200997/export-2ddd04d543d5858e7f20c9299a8b5096-main.scn
-res://Scenes/save_select_screen.tscn::fa3aa2b1f0d7c7d412b1a918fd4f0366::1793046040::res://.godot/exported/133200997/export-09ffb12f30699043cf800d9df1a11c11-save_select_screen.scn
-res://Scenes/select_screen.tscn::f753bdc10024f553ac1753287ebd8563::1793046040::res://.godot/exported/133200997/export-96c6f2e2c394e573238e8792d68067db-select_screen.scn
-res://Scenes/Rooms/advanced_research_room.tscn::c108c7558e2bbc28f4f2177ad8ae45e7::1793046040::res://.godot/exported/133200997/export-169cb7a6628909dc3c7087f6a513fb6e-advanced_research_room.scn
-res://Scenes/Rooms/bachelors_room.tscn::9a800d55b2a4c1e0f0a586d3d3923bee::1793046040::res://.godot/exported/133200997/export-df33342bf1613b4b7adac57b4d22311f-bachelors_room.scn
-res://Scenes/Rooms/biochemistry_room.tscn::4c33b8e6888ff24864bc6b986ea9d865::1793046040::res://.godot/exported/133200997/export-feef3b8add2a8032de037a03eb12f861-biochemistry_room.scn
-res://Scenes/Rooms/college_lab_room.tscn::08827edbd83a0d202f3f08e841b52d1f::1793046040::res://.godot/exported/133200997/export-23ce94e92d059b0fd816360e9192fb83-college_lab_room.scn
-res://Scenes/Rooms/graduate_suite_room.tscn::86f4315020dda6e109ec8c1e0129f679::1793046040::res://.godot/exported/133200997/export-493a4053bff244f6486c1202e8720585-graduate_suite_room.scn
-res://Scenes/Rooms/internship_room.tscn::b2c16224de505046242ed50c8446d462::1793046040::res://.godot/exported/133200997/export-d9a6c64fe1a5f18703bdd6383c2bacf7-internship_room.scn
-res://Scenes/Rooms/job_quarters_room.tscn::b7841eeda52caa7d40f264d6717d6f8f::1793046040::res://.godot/exported/133200997/export-6040afe6fe2c48776fe46124a257eb01-job_quarters_room.scn
-res://Scenes/Rooms/low_college_room.tscn::5b7a1241d6deb2d078e469c6aa5c3e5f::1793046040::res://.godot/exported/133200997/export-1dba4709d1866811cdcff2aad233ffac-low_college_room.scn
-res://Scenes/Rooms/masters_suite_room.tscn::530a0c42f3bbc6503fb7fd95e04cf2b3::1793046040::res://.godot/exported/133200997/export-d957adb36fb8f1d5dde7cd4fd307b3f8-masters_suite_room.scn
-res://Scenes/Rooms/molecular_biology_room.tscn::53af766aaa66b6ea50b4b8b203130b74::1793046040::res://.godot/exported/133200997/export-bd66e01abee104d5c2c56ca81da988dc-molecular_biology_room.scn
-res://Scenes/Rooms/reception_room.tscn::43183e86944f3b005f5639e3c64989ff::1793046040::res://.godot/exported/133200997/export-f0f3a2ac39bc84362dfb2b5663b41c9d-reception_room.scn
-res://Scenes/Rooms/student_lab_data_room.tscn::d50c5db29a7db1b81445c0c03c9a70d8::1793046040::res://.godot/exported/133200997/export-6b0aa7d3e9cd95f947e23c513440fda8-student_lab_data_room.scn
-res://Scenes/Rooms/student_lab_dna_room.tscn::a12698456d0ca7072b6df0415016f916::1793046040::res://.godot/exported/133200997/export-6275ab1927dd7b5d8a28d61a95f62ad6-student_lab_dna_room.scn
-res://Scenes/Rooms/student_lab_room.tscn::07d4add8ec6ffd6b22e9b16e78033df3::1793046040::res://.godot/exported/133200997/export-ab52a76d7dcce09eaf486f5190e3f2b7-student_lab_room.scn
-res://Scenes/character_selection.tscn::849240b743f9dc8f2cdce51ea01a0a19::1793046040::res://.godot/exported/133200997/export-77575da6443310440851bd06750937c9-character_selection.scn
-res://Scenes/employee_orientation.tscn::5937636caaf2d934d45f840c1c95f837::1793046040::res://.godot/exported/133200997/export-a8a06f5b9b2593fdf36fa6a24c28c316-employee_orientation.scn
-res://Scenes/main_map.tscn::66c7597d22f6d8545ac62e6942a10074::1793046040::res://.godot/exported/133200997/export-98dbb8b9c1347be742b80b25bc3a0390-main_map.scn
-res://chararter_selection_fr.tscn::34b83179ad5e53356f7c5d999da91f5a::1793046040::res://.godot/exported/133200997/export-30f6bb76e389a5939c8647796f93d054-chararter_selection_fr.scn
-res://walking.tscn::b52e7970e41e4ba0b9bdf3bfa5d3682d::1793046040::res://.godot/exported/133200997/export-79f8cf97c7a22b329cb0cd5b806c0e77-walking.scn
+res://Scenes/main.tscn::cd57cf344f0a699be45ae34dae540e8f::1794153228::res://.godot/exported/133200997/export-2ddd04d543d5858e7f20c9299a8b5096-main.scn
+res://Scenes/save_select_screen.tscn::fa3aa2b1f0d7c7d412b1a918fd4f0366::1794153228::res://.godot/exported/133200997/export-09ffb12f30699043cf800d9df1a11c11-save_select_screen.scn
+res://Scenes/select_screen.tscn::f753bdc10024f553ac1753287ebd8563::1794153228::res://.godot/exported/133200997/export-96c6f2e2c394e573238e8792d68067db-select_screen.scn
+res://Scenes/Rooms/advanced_research_room.tscn::c108c7558e2bbc28f4f2177ad8ae45e7::1794153228::res://.godot/exported/133200997/export-169cb7a6628909dc3c7087f6a513fb6e-advanced_research_room.scn
+res://Scenes/Rooms/bachelors_room.tscn::9a800d55b2a4c1e0f0a586d3d3923bee::1794153228::res://.godot/exported/133200997/export-df33342bf1613b4b7adac57b4d22311f-bachelors_room.scn
+res://Scenes/Rooms/biochemistry_room.tscn::4c33b8e6888ff24864bc6b986ea9d865::1794153228::res://.godot/exported/133200997/export-feef3b8add2a8032de037a03eb12f861-biochemistry_room.scn
+res://Scenes/Rooms/college_lab_room.tscn::08827edbd83a0d202f3f08e841b52d1f::1794153228::res://.godot/exported/133200997/export-23ce94e92d059b0fd816360e9192fb83-college_lab_room.scn
+res://Scenes/Rooms/graduate_suite_room.tscn::86f4315020dda6e109ec8c1e0129f679::1794153228::res://.godot/exported/133200997/export-493a4053bff244f6486c1202e8720585-graduate_suite_room.scn
+res://Scenes/Rooms/internship_room.tscn::75b51fb79b27627a445c962b13833498::1794271251::res://.godot/exported/133200997/export-d9a6c64fe1a5f18703bdd6383c2bacf7-internship_room.scn
+res://Scenes/Rooms/job_quarters_room.tscn::b7841eeda52caa7d40f264d6717d6f8f::1794153228::res://.godot/exported/133200997/export-6040afe6fe2c48776fe46124a257eb01-job_quarters_room.scn
+res://Scenes/Rooms/low_college_room.tscn::5b7a1241d6deb2d078e469c6aa5c3e5f::1794153228::res://.godot/exported/133200997/export-1dba4709d1866811cdcff2aad233ffac-low_college_room.scn
+res://Scenes/Rooms/masters_suite_room.tscn::530a0c42f3bbc6503fb7fd95e04cf2b3::1794153228::res://.godot/exported/133200997/export-d957adb36fb8f1d5dde7cd4fd307b3f8-masters_suite_room.scn
+res://Scenes/Rooms/molecular_biology_room.tscn::53af766aaa66b6ea50b4b8b203130b74::1794153228::res://.godot/exported/133200997/export-bd66e01abee104d5c2c56ca81da988dc-molecular_biology_room.scn
+res://Scenes/Rooms/reception_room.tscn::43183e86944f3b005f5639e3c64989ff::1794153228::res://.godot/exported/133200997/export-f0f3a2ac39bc84362dfb2b5663b41c9d-reception_room.scn
+res://Scenes/Rooms/student_lab_data_room.tscn::d50c5db29a7db1b81445c0c03c9a70d8::1794153228::res://.godot/exported/133200997/export-6b0aa7d3e9cd95f947e23c513440fda8-student_lab_data_room.scn
+res://Scenes/Rooms/student_lab_dna_room.tscn::a12698456d0ca7072b6df0415016f916::1794153228::res://.godot/exported/133200997/export-6275ab1927dd7b5d8a28d61a95f62ad6-student_lab_dna_room.scn
+res://Scenes/Rooms/student_lab_room.tscn::07d4add8ec6ffd6b22e9b16e78033df3::1794153228::res://.godot/exported/133200997/export-ab52a76d7dcce09eaf486f5190e3f2b7-student_lab_room.scn
+res://Scenes/character_selection.tscn::849240b743f9dc8f2cdce51ea01a0a19::1794153228::res://.godot/exported/133200997/export-77575da6443310440851bd06750937c9-character_selection.scn
+res://Scenes/employee_orientation.tscn::5937636caaf2d934d45f840c1c95f837::1794153228::res://.godot/exported/133200997/export-a8a06f5b9b2593fdf36fa6a24c28c316-employee_orientation.scn
+res://Scenes/main_map.tscn::4fba2a86683b7b86a5e064ae396c2537::1794269551::res://.godot/exported/133200997/export-98dbb8b9c1347be742b80b25bc3a0390-main_map.scn
+res://chararter_selection_fr.tscn::34b83179ad5e53356f7c5d999da91f5a::1794153228::res://.godot/exported/133200997/export-30f6bb76e389a5939c8647796f93d054-chararter_selection_fr.scn
+res://walking.tscn::57e1d0d421fb9e32e7d9df214848d99e::1794153228::res://.godot/exported/133200997/export-79f8cf97c7a22b329cb0cd5b806c0e77-walking.scn
+res://Scenes/Map Props/bookshelf.tscn::3e5c3a2fb2bc00c195977d91ce5c72e7::1794269279::res://.godot/exported/133200997/export-6b5f645956af13d49144e99d52b3de01-bookshelf.scn
+res://Scenes/Map Props/checklist.tscn::212513b330f4d40a36547cbec30abb0e::1794269279::res://.godot/exported/133200997/export-b5b51d9dbf35c045e46ad2b30c345a90-checklist.scn
+res://Scenes/Map Props/equipment_panel.tscn::deac0c154b8ffc1716a6586127543487::1794269279::res://.godot/exported/133200997/export-65c3e085861fe50be58b54392407b400-equipment_panel.scn
+res://Scenes/Map Props/flask_blue.tscn::4a7ffd9978e9a5dc5f479106fe926911::1794269279::res://.godot/exported/133200997/export-74d39cc74081ebf48127babd8525e19b-flask_blue.scn
+res://Scenes/Map Props/flask_empty.tscn::fef6f15a523605cdea5487487ca96234::1794269279::res://.godot/exported/133200997/export-6c82aa058556427c2a6a0b418e55821d-flask_empty.scn
+res://Scenes/Map Props/flask_indigo.tscn::f3ced8ca1a09c4ea64db24ef95c590d9::1794269279::res://.godot/exported/133200997/export-ca7d097b721f6ed3fb796a0d09359f19-flask_indigo.scn
+res://Scenes/Map Props/hazard_emblem.tscn::0f0c44bd932dda72cab6043c24067fef::1794269279::res://.godot/exported/133200997/export-acc20224e12d8b94a836d4f81fb67711-hazard_emblem.scn
+res://Scenes/Map Props/lab_plant.tscn::17da4fd7e716847f6a6592d0e8357e09::1794269279::res://.godot/exported/133200997/export-2a1859bc5657ad575bec688fe05226f9-lab_plant.scn
+res://Scenes/Map Props/lab_report.tscn::ea24fe246cf67319d3c6cd7684969087::1794269279::res://.godot/exported/133200997/export-4699e21a760bfb36a7bbd9b80c429c1d-lab_report.scn
+res://Scenes/Map Props/sample_rack.tscn::a8a81ed7f3024e4c91b026ebc0025926::1794269279::res://.godot/exported/133200997/export-932a9d50acad8a6aebff5023e3ec8537-sample_rack.scn
+res://Scenes/Map Props/sample_tube_blue.tscn::bbc5e381e0678093e73d0185bec88e40::1794269279::res://.godot/exported/133200997/export-9961af086add037bc31c10f5d5889bb7-sample_tube_blue.scn
+res://Scenes/Map Props/sample_tube_green.tscn::f5492a02bad8b21920ced4a29e434191::1794269279::res://.godot/exported/133200997/export-070a0b59789fd117a120efcb00fb3dbb-sample_tube_green.scn
+res://Scenes/Map Props/sample_tube_yellow.tscn::0cf43ade0b1ce772fe12abc0a0b5527a::1794269279::res://.godot/exported/133200997/export-a08de42909824e363114aa609d7290d5-sample_tube_yellow.scn
+res://Scenes/Map Props/sample_vial_amber.tscn::550be54dbec7fb6b79b47a599a8ea4c6::1794269279::res://.godot/exported/133200997/export-f6524678281161281d4019d1f5213bc2-sample_vial_amber.scn
+res://Scenes/Map Props/status_board.tscn::4fcbae03463cd7bfbd5edf6154c001bb::1794269279::res://.godot/exported/133200997/export-fb0e4d6d02adab5c2e67906813afa10c-status_board.scn
+res://Scenes/thank_you.tscn::47f5d3cad3aaae307935a4476a7a8f79::1794153228::res://.godot/exported/133200997/export-eaf2bdca63cbfb6b80ab41f1b901565e-thank_you.scn
+res://Themes/pixel_theme.tres::b1ec3218a57e561ff02aba69cfdb4ac6::1794153228::res://.godot/exported/133200997/export-9f7b21a58b8b455d9c31131a71b50c8d-pixel_theme.res
