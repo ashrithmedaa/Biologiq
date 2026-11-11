@@ -779,7 +779,11 @@ func _interact() -> void:
 		await get_tree().create_timer(0.2).timeout
 		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
 		return
+	var nearby_door := _nearest_door()
 	var enterable_door := _nearest_enterable_door()
+	if not nearby_door.is_empty() and str(nearby_door.name) == "Talent Acquisition" and enterable_door.is_empty():
+		_start_dialogue(_room_dialogue_for("Talent Acquisition"))
+		return
 	if not enterable_door.is_empty():
 		open_door_name = str(enterable_door.name)
 		_refresh_map_door_art()
@@ -790,7 +794,6 @@ func _interact() -> void:
 			save_manager.remember_room_entry_position(enterable_door.position + Vector2(0, 80))
 		get_tree().change_scene_to_file("res://Scenes/Rooms/internship_room.tscn")
 		return
-	var nearby_door := _nearest_door()
 	if not nearby_door.is_empty():
 		var room_lines := _room_dialogue_for(str(nearby_door.name))
 		if room_lines.is_empty():
@@ -1039,13 +1042,14 @@ func _room_dialogue_for(room_name: String) -> Array[String]:
 	match room_name:
 		"Community Connections Center":
 			return [
-				"Explore real postsecondary and career options in your community, learn from real professionals, and see what you can do in your future!",
+				"The Community Connections Center is a place where students of all ages can visit to find real-world job opportunities, information, and experiences! It allows players to explore real, postsecondary and career options in your community, learn from real professionals, and see what you can do in your future! Explore educational requirements and find your unique pathway to success.",
 				"Currently locked for the demo."
 			]
 		"Talent Acquisition":
 			return [
-				"Currently locked.",
-				"Shadow a lab technician, perform scientific procedures, and analyze data like a professional."
+				"This is the door leading to the Interns’ Quarters.",
+				"Shadow a lab technician, perform scientific procedures, and analyze data like a professional.",
+				"The Interns’ Quarters allows players to get a feel for different procedures and roles they may play while shadowing a lab technician, or other related professionals in the field of experimental sciences!"
 			]
 		"Intern Quarters":
 			return [
@@ -1053,7 +1057,11 @@ func _room_dialogue_for(room_name: String) -> Array[String]:
 				"Shadow a lab technician, perform scientific procedures, and analyze data like a professional."
 			]
 		"College Lab":
-			return ["Unauthorized access: player is not at collegiate level."]
+			return [
+				"This is the door leading to the Collegiate Lab Space.",
+				"The Collegiate Lab Space is where college-level interns can experience more in-depth procedures that require more advanced levels of precision and knowledge. Collegiate interns use this space to complete their daily tasks, or prepare for higher-level job opportunities within the facility.",
+				"Unauthorized access: player is not at collegiate level."
+			]
 		"Industrial":
 			return [
 				"This is the door leading to the Industrial Department.",
@@ -1111,12 +1119,14 @@ func _room_dialogue_for(room_name: String) -> Array[String]:
 		"Administration":
 			return [
 				"This is the door leading to the Administration Department.",
-				"The Administration Department includes sectors like HR, Finance, Legal, and Operations. It reflects more of a traditional corporate environment, with steady, well-defined hierarchical structure. This department also prioritizes stable, detail-oriented work."
+				"The Administration Department includes sectors like HR, Finance, Legal, and Operations. It reflects more of a traditional corporate environment, with steady, well-defined hierarchical structure. This department also prioritizes stable, detail-oriented operations, like managing budgets and patents, or recruiting specialized personnel.",
+				"Administrative jobs generally surround corporate operations, contract managements, budgeting, and collaborations with other departments. It typically involves a straightforward corporate career ladder that applies across several industries, though Intellectual Property (IP) lawyers or life-science recruiters may need specific knowledge in their domains."
 			]
 		"Marketing & Sales":
 			return [
 				"This is the door leading to the Marketing & Sales Department.",
-				"Marketing & Sales professionals target scientists, healthcare professionals, corporate partners and investors; use credibility to translate scientific concepts to the public."
+				"Marketing & Sales professionals target scientists, healthcare professionals, corporate partners and investors. Every claim we make follows the strict guidelines set by federal agencies.",
+				"We use credibility to translate scientific concepts to the public. It can take months to get products to the market, and purchasing decisions require Administration and Regulatory Affairs. Our goal is to prove the science behind our work, build partnerships, and increase market size."
 			]
 	return []
 

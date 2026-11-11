@@ -17,7 +17,7 @@ res://Scenes/Rooms/student_lab_dna_room.tscn::a12698456d0ca7072b6df0415016f916::
 res://Scenes/Rooms/student_lab_room.tscn::07d4add8ec6ffd6b22e9b16e78033df3::1794153228::res://.godot/exported/133200997/export-ab52a76d7dcce09eaf486f5190e3f2b7-student_lab_room.scn
 res://Scenes/character_selection.tscn::849240b743f9dc8f2cdce51ea01a0a19::1794153228::res://.godot/exported/133200997/export-77575da6443310440851bd06750937c9-character_selection.scn
 res://Scenes/employee_orientation.tscn::5937636caaf2d934d45f840c1c95f837::1794153228::res://.godot/exported/133200997/export-a8a06f5b9b2593fdf36fa6a24c28c316-employee_orientation.scn
-res://Scenes/main_map.tscn::4fba2a86683b7b86a5e064ae396c2537::1794269551::res://.godot/exported/133200997/export-98dbb8b9c1347be742b80b25bc3a0390-main_map.scn
+res://Scenes/main_map.tscn::d1012023870c72b6b210bbde653eab16::1794356557::res://.godot/exported/133200997/export-98dbb8b9c1347be742b80b25bc3a0390-main_map.scn
 res://chararter_selection_fr.tscn::34b83179ad5e53356f7c5d999da91f5a::1794153228::res://.godot/exported/133200997/export-30f6bb76e389a5939c8647796f93d054-chararter_selection_fr.scn
 res://walking.tscn::57e1d0d421fb9e32e7d9df214848d99e::1794153228::res://.godot/exported/133200997/export-79f8cf97c7a22b329cb0cd5b806c0e77-walking.scn
 res://Scenes/Map Props/bookshelf.tscn::3e5c3a2fb2bc00c195977d91ce5c72e7::1794269279::res://.godot/exported/133200997/export-6b5f645956af13d49144e99d52b3de01-bookshelf.scn
