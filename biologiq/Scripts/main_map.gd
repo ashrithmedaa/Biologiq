@@ -1021,7 +1021,7 @@ func _tour_lines_for_phase(phase: int) -> Array[String]:
 			return [
 				"Sam: In biotechnology, scientific discoveries can’t fund themselves! We need commercial and regulatory jobs to turn breakthroughs into real products.",
 				"Sam: (Those federal agencies would be real upset if we couldn’t meet their standards)",
-				"Sam: This is the East Wing, featuring non-scientific business & operational roles that maintain proper structure within a biotechnology company. Fundamental teams include Quality Assurance (QA), Regulatory Affairs (RA), Administration, and Marketing & Sales. These are important to the operations of these companies because they allow for the legal, financial, and safety compliances required to proceed with experimentation and production."
+				"Sam: This is the East wing, featuring non-scientific business & operational roles that maintain proper structure within a biotechnology company. Fundamental teams include Regulatory Affairs (RA), Administration, and Marketing & Sales. These are important to the operations of these companies because they allow for the legal, financial, and safety compliances required to proceed with experimentation and production."
 			]
 		4:
 			return [
@@ -1103,12 +1103,6 @@ func _room_dialogue_for(room_name: String) -> Array[String]:
 				"Our goal is to create products and technologies to prevent, diagnose, and treat human diseases.",
 				"Research includes: medicines derived from plants, animals, and fungi, vaccine and gene therapy, and medicines from genetically engineered cells.",
 				"Currently locked for the demo."
-			]
-		"Quality Control":
-			return [
-				"This is the door leading to the Quality Assurance Department.",
-				"Quality Assurance is involved in regulating the final quality of a product. Focusing on the more internal systems of a company, this accounts for research required, clinical trial safety, and processes and system designs needed when producing a product",
-				"Quality Assurance generally offers a clear entry path, plus a high, steady demand across manufacturing sites. However, it can be repetitive or involve more shift work, depending on the facility. This field is best if you enjoy routines, auditing, structure, and operational oversight with manufacturing and lab operations!"
 			]
 		"Regulatory Affairs":
 			return [

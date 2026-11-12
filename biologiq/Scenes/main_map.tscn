@@ -523,7 +523,7 @@ horizontal_alignment = 1
 
 [node name="QualityControl" type="Node2D" parent="MapArt/Rooms" unique_id=1578547969]
 position = Vector2(2300, 210)
-metadata/room_name = "Quality Control"
+metadata/room_name = "Regulatory Affairs"
 metadata/room_size = Vector2(300, 240)
 metadata/door_local = Vector2(150, 240)
 metadata/door_side = "bottom"
