@@ -1,0 +1,633 @@
+[gd_scene format=3 uid="uid://bhr2wu263unyf"]
+
+[ext_resource type="Script" uid="uid://d06nhav5rwrmy" path="res://Scripts/community_connections_room.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://bgingxakcbvl6" path="res://Art Assets/Sam - Front walking spritesheet transparent.png" id="2_sam"]
+
+[sub_resource type="RectangleShape2D" id="SamCollisionShape"]
+size = Vector2(46, 82)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sam_portrait"]
+atlas = ExtResource("2_sam")
+region = Rect2(430, 285, 350, 700)
+
+[node name="CommunityConnectionsRoom" type="Control" unique_id=72442352]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_script")
+
+[node name="MapArt" type="Control" parent="." unique_id=1901491594]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="MapArt" unique_id=531508781]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+color = Color(0.09, 0.125, 0.31, 1)
+
+[node name="OuterWall" type="ColorRect" parent="MapArt" unique_id=371747439]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 24.0
+offset_right = 1244.0
+offset_bottom = 696.0
+mouse_filter = 2
+color = Color(0.867, 0.851, 0.792, 1)
+
+[node name="Floor" type="ColorRect" parent="MapArt" unique_id=1401004649]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 1232.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.914, 0.894, 0.831, 1)
+
+[node name="FloorLines" type="Control" parent="MapArt" unique_id=1429506993]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TileV1" type="ColorRect" parent="MapArt/FloorLines" unique_id=1638471655]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 50.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileV2" type="ColorRect" parent="MapArt/FloorLines" unique_id=1338858945]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 36.0
+offset_right = 248.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileV3" type="ColorRect" parent="MapArt/FloorLines" unique_id=1763313342]
+layout_mode = 0
+offset_left = 444.0
+offset_top = 36.0
+offset_right = 446.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileV4" type="ColorRect" parent="MapArt/FloorLines" unique_id=1428504475]
+layout_mode = 0
+offset_left = 642.0
+offset_top = 36.0
+offset_right = 644.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileV5" type="ColorRect" parent="MapArt/FloorLines" unique_id=936508410]
+layout_mode = 0
+offset_left = 840.0
+offset_top = 36.0
+offset_right = 842.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileV6" type="ColorRect" parent="MapArt/FloorLines" unique_id=80993943]
+layout_mode = 0
+offset_left = 1038.0
+offset_top = 36.0
+offset_right = 1040.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileH1" type="ColorRect" parent="MapArt/FloorLines" unique_id=917424852]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 168.0
+offset_right = 1232.0
+offset_bottom = 170.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileH2" type="ColorRect" parent="MapArt/FloorLines" unique_id=1466625365]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 300.0
+offset_right = 1232.0
+offset_bottom = 302.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileH3" type="ColorRect" parent="MapArt/FloorLines" unique_id=1703613875]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 432.0
+offset_right = 1232.0
+offset_bottom = 434.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TileH4" type="ColorRect" parent="MapArt/FloorLines" unique_id=1912927103]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 564.0
+offset_right = 1232.0
+offset_bottom = 566.0
+mouse_filter = 2
+color = Color(0.851, 0.831, 0.769, 1)
+
+[node name="TopWallTrimLeft" type="ColorRect" parent="MapArt" unique_id=1576909344]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 36.0
+offset_right = 988.0
+offset_bottom = 46.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="TopWallTrimRight" type="ColorRect" parent="MapArt" unique_id=1915941438]
+layout_mode = 0
+offset_left = 1150.0
+offset_top = 36.0
+offset_right = 1232.0
+offset_bottom = 46.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="LeftWallTrim" type="ColorRect" parent="MapArt" unique_id=2036097156]
+layout_mode = 0
+offset_left = 36.0
+offset_top = 36.0
+offset_right = 48.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="RightWallTrim" type="ColorRect" parent="MapArt" unique_id=690920600]
+layout_mode = 0
+offset_left = 1232.0
+offset_top = 36.0
+offset_right = 1244.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="BottomWallTrim" type="ColorRect" parent="MapArt" unique_id=1941832360]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 666.0
+offset_right = 1232.0
+offset_bottom = 676.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="ExitFrame" type="ColorRect" parent="MapArt" unique_id=251314038]
+layout_mode = 0
+offset_left = 1010.0
+offset_top = 22.0
+offset_right = 1138.0
+offset_bottom = 140.0
+mouse_filter = 2
+color = Color(0.325, 0.431, 0.345, 1)
+
+[node name="ExitDoor" type="ColorRect" parent="MapArt" unique_id=2134123021]
+layout_mode = 0
+offset_left = 1018.0
+offset_top = 30.0
+offset_right = 1130.0
+offset_bottom = 140.0
+mouse_filter = 2
+color = Color(0.098, 0.153, 0.529, 1)
+
+[node name="ExitDoorInset" type="ColorRect" parent="MapArt" unique_id=261676909]
+layout_mode = 0
+offset_left = 1027.0
+offset_top = 40.0
+offset_right = 1121.0
+offset_bottom = 132.0
+mouse_filter = 2
+color = Color(0.18, 0.36, 0.64, 1)
+
+[node name="ExitWindow" type="ColorRect" parent="MapArt" unique_id=1584640952]
+layout_mode = 0
+offset_left = 1044.0
+offset_top = 52.0
+offset_right = 1086.0
+offset_bottom = 94.0
+mouse_filter = 2
+color = Color(0.65, 0.82, 0.88, 1)
+
+[node name="ExitLabel" type="Label" parent="MapArt" unique_id=1518562462]
+layout_mode = 0
+offset_left = 1000.0
+offset_top = 142.0
+offset_right = 1150.0
+offset_bottom = 164.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 13
+text = "HALLWAY EXIT"
+horizontal_alignment = 1
+
+[node name="CarpetShadow" type="ColorRect" parent="MapArt" unique_id=1500133419]
+layout_mode = 0
+offset_left = 355.0
+offset_top = 236.0
+offset_right = 895.0
+offset_bottom = 496.0
+mouse_filter = 2
+color = Color(0.75, 0.75, 0.67, 1)
+
+[node name="Carpet" type="ColorRect" parent="MapArt" unique_id=14816306]
+layout_mode = 0
+offset_left = 365.0
+offset_top = 242.0
+offset_right = 893.0
+offset_bottom = 490.0
+mouse_filter = 2
+color = Color(0.84, 0.85, 0.78, 1)
+
+[node name="CollegeTableShadow" type="ColorRect" parent="MapArt" unique_id=1206961970]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 190.0
+offset_right = 352.0
+offset_bottom = 612.0
+mouse_filter = 2
+color = Color(0.43, 0.31, 0.23, 1)
+
+[node name="CollegeTable" type="ColorRect" parent="MapArt" unique_id=1412129940]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 184.0
+offset_right = 346.0
+offset_bottom = 606.0
+mouse_filter = 2
+color = Color(0.63, 0.45, 0.31, 1)
+
+[node name="CollegeTableTop" type="ColorRect" parent="MapArt" unique_id=1333611392]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 196.0
+offset_right = 334.0
+offset_bottom = 594.0
+mouse_filter = 2
+color = Color(0.77, 0.61, 0.45, 1)
+
+[node name="CollegeTableLabel" type="Label" parent="MapArt" unique_id=613874362]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 202.0
+offset_right = 330.0
+offset_bottom = 228.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 15
+text = "COLLEGE OPPORTUNITIES"
+horizontal_alignment = 1
+
+[node name="Flyer_CommunityColleges" type="ColorRect" parent="MapArt" unique_id=258213283]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 248.0
+offset_right = 318.0
+offset_bottom = 340.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_CommunityColleges" type="ColorRect" parent="MapArt" unique_id=1260110541]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 248.0
+offset_right = 104.0
+offset_bottom = 340.0
+mouse_filter = 2
+color = Color(0.36, 0.58, 0.45, 1)
+
+[node name="FlyerLabel_CommunityColleges" type="Label" parent="MapArt" unique_id=2033888580]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 270.0
+offset_right = 304.0
+offset_bottom = 320.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 16
+text = "PROGRAMS & INTERNSHIPS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Flyer_ResearchUniversities" type="ColorRect" parent="MapArt" unique_id=1955801630]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 358.0
+offset_right = 318.0
+offset_bottom = 450.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_ResearchUniversities" type="ColorRect" parent="MapArt" unique_id=2038854125]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 358.0
+offset_right = 104.0
+offset_bottom = 450.0
+mouse_filter = 2
+color = Color(0.3, 0.47, 0.63, 1)
+
+[node name="FlyerLabel_ResearchUniversities" type="Label" parent="MapArt" unique_id=1164058587]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 380.0
+offset_right = 304.0
+offset_bottom = 430.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 15
+text = "COMMUNITY COLLEGES"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Flyer_Internships" type="ColorRect" parent="MapArt" unique_id=1916138650]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 468.0
+offset_right = 318.0
+offset_bottom = 560.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_Internships" type="ColorRect" parent="MapArt" unique_id=873722639]
+layout_mode = 0
+offset_left = 92.0
+offset_top = 468.0
+offset_right = 104.0
+offset_bottom = 560.0
+mouse_filter = 2
+color = Color(0.84, 0.48, 0.27, 1)
+
+[node name="FlyerLabel_Internships" type="Label" parent="MapArt" unique_id=1785938703]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 490.0
+offset_right = 304.0
+offset_bottom = 540.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 16
+text = "RESEARCH UNIVERSITIES"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResourcesTableShadow" type="ColorRect" parent="MapArt" unique_id=986407370]
+layout_mode = 0
+offset_left = 754.0
+offset_top = 438.0
+offset_right = 1212.0
+offset_bottom = 616.0
+mouse_filter = 2
+color = Color(0.43, 0.31, 0.23, 1)
+
+[node name="ResourcesTable" type="ColorRect" parent="MapArt" unique_id=1964715087]
+layout_mode = 0
+offset_left = 748.0
+offset_top = 432.0
+offset_right = 1206.0
+offset_bottom = 610.0
+mouse_filter = 2
+color = Color(0.63, 0.45, 0.31, 1)
+
+[node name="ResourcesTableTop" type="ColorRect" parent="MapArt" unique_id=408941341]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 444.0
+offset_right = 1194.0
+offset_bottom = 598.0
+mouse_filter = 2
+color = Color(0.77, 0.61, 0.45, 1)
+
+[node name="ResourcesTableLabel" type="Label" parent="MapArt" unique_id=962327932]
+layout_mode = 0
+offset_left = 770.0
+offset_top = 444.0
+offset_right = 1186.0
+offset_bottom = 466.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 15
+text = "RESOURCES TABLE"
+horizontal_alignment = 1
+
+[node name="Flyer_BioNJ" type="ColorRect" parent="MapArt" unique_id=513411401]
+layout_mode = 0
+offset_left = 770.0
+offset_top = 478.0
+offset_right = 894.0
+offset_bottom = 582.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_BioNJ" type="ColorRect" parent="MapArt" unique_id=1965571357]
+layout_mode = 0
+offset_left = 770.0
+offset_top = 478.0
+offset_right = 894.0
+offset_bottom = 488.0
+mouse_filter = 2
+color = Color(0.36, 0.58, 0.45, 1)
+
+[node name="FlyerLabel_BioNJ" type="Label" parent="MapArt" unique_id=1469905275]
+layout_mode = 0
+offset_left = 776.0
+offset_top = 504.0
+offset_right = 888.0
+offset_bottom = 556.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 17
+text = "BioNJ"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Flyer_ResearchNJ" type="ColorRect" parent="MapArt" unique_id=327655217]
+layout_mode = 0
+offset_left = 916.0
+offset_top = 478.0
+offset_right = 1040.0
+offset_bottom = 582.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_ResearchNJ" type="ColorRect" parent="MapArt" unique_id=307860315]
+layout_mode = 0
+offset_left = 916.0
+offset_top = 478.0
+offset_right = 1040.0
+offset_bottom = 488.0
+mouse_filter = 2
+color = Color(0.3, 0.47, 0.63, 1)
+
+[node name="FlyerLabel_ResearchNJ" type="Label" parent="MapArt" unique_id=1543256975]
+layout_mode = 0
+offset_left = 922.0
+offset_top = 496.0
+offset_right = 1034.0
+offset_bottom = 566.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 14
+text = "RESEARCH WITH
+ NEW JERSEY"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Flyer_CareerResources" type="ColorRect" parent="MapArt" unique_id=1497027056]
+layout_mode = 0
+offset_left = 1062.0
+offset_top = 478.0
+offset_right = 1186.0
+offset_bottom = 582.0
+mouse_filter = 2
+color = Color(0.97, 0.95, 0.86, 1)
+
+[node name="FlyerAccent_CareerResources" type="ColorRect" parent="MapArt" unique_id=106128120]
+layout_mode = 0
+offset_left = 1062.0
+offset_top = 478.0
+offset_right = 1186.0
+offset_bottom = 488.0
+mouse_filter = 2
+color = Color(0.84, 0.48, 0.27, 1)
+
+[node name="FlyerLabel_CareerResources" type="Label" parent="MapArt" unique_id=1668483731]
+layout_mode = 0
+offset_left = 1068.0
+offset_top = 496.0
+offset_right = 1180.0
+offset_bottom = 566.0
+theme_override_colors/font_color = Color(0.098, 0.153, 0.529, 1)
+theme_override_font_sizes/font_size = 13
+text = "MORE RESOURCES"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CollegeTableAccessPoint" type="Marker2D" parent="." unique_id=665963146]
+position = Vector2(390, 400)
+
+[node name="CollegeProgramsAccessPoint" type="Marker2D" parent="." unique_id=1781182201]
+position = Vector2(360, 294)
+
+[node name="CollegeCommunityCollegesAccessPoint" type="Marker2D" parent="." unique_id=709235276]
+position = Vector2(360, 404)
+
+[node name="CollegeResearchUniversitiesAccessPoint" type="Marker2D" parent="." unique_id=1509826509]
+position = Vector2(360, 514)
+
+[node name="ResourcesTableAccessPoint" type="Marker2D" parent="." unique_id=17355720]
+position = Vector2(978, 414)
+
+[node name="ResourcesBioNJAccessPoint" type="Marker2D" parent="." unique_id=1309476679]
+position = Vector2(832, 625)
+
+[node name="ResourcesResearchNJAccessPoint" type="Marker2D" parent="." unique_id=1047316180]
+position = Vector2(978, 625)
+
+[node name="ResourcesMoreAccessPoint" type="Marker2D" parent="." unique_id=1839767213]
+position = Vector2(1124, 625)
+
+[node name="ExitAccessPoint" type="Marker2D" parent="." unique_id=1769435326]
+position = Vector2(1075, 154)
+
+[node name="Sam" type="StaticBody2D" parent="." unique_id=556715331]
+position = Vector2(950, 212)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sam" unique_id=1085942950]
+position = Vector2(0, -42)
+shape = SubResource("SamCollisionShape")
+
+[node name="Sprite" type="Sprite2D" parent="Sam" unique_id=1964931907]
+texture_filter = 1
+position = Vector2(0, -77)
+scale = Vector2(0.22, 0.22)
+texture = SubResource("AtlasTexture_sam_portrait")
+
+[node name="UI" type="Control" parent="." unique_id=2062657642]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Header" type="Control" parent="UI" unique_id=862278628]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeaderBar" type="ColorRect" parent="UI/Header" unique_id=718751786]
+layout_mode = 0
+offset_bottom = 36.0
+mouse_filter = 2
+color = Color(0.09, 0.125, 0.31, 1)
+
+[node name="RoomTitle" type="Label" parent="UI/Header" unique_id=306697607]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 6.0
+offset_right = 500.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.957, 0.937, 0.875, 1)
+theme_override_font_sizes/font_size = 15
+text = "COMMUNITY CONNECTIONS CENTER"
+vertical_alignment = 1
+
+[node name="TaskLabel" type="Label" parent="UI/Header" unique_id=1141425444]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 6.0
+offset_right = 1260.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.851, 0.875, 0.78, 1)
+theme_override_font_sizes/font_size = 14
+text = "EXPLORE COLLEGE AND CAREER RESOURCES"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Footer" type="Control" parent="UI" unique_id=2143861292]
+anchors_preset = 0
+offset_top = 666.0
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+
+[node name="FooterBar" type="ColorRect" parent="UI/Footer" unique_id=619753526]
+layout_mode = 0
+offset_right = 1280.0
+offset_bottom = 54.0
+mouse_filter = 2
+color = Color(0.09, 0.125, 0.31, 1)
+
+[node name="Prompt" type="Label" parent="UI/Footer" unique_id=1815005385]
+layout_mode = 0
+offset_top = 12.0
+offset_right = 1280.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.957, 0.937, 0.875, 1)
+theme_override_font_sizes/font_size = 15
+text = "WASD / arrows  Move     E  Use a table     E near exit  Leave     ESC  Leave room"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -780,6 +780,16 @@ func _interact() -> void:
 		get_tree().change_scene_to_file("res://Scenes/thank_you.tscn")
 		return
 	var nearby_door := _nearest_door()
+	if not nearby_door.is_empty() and str(nearby_door.name) == "Community Connections Center":
+		open_door_name = str(nearby_door.name)
+		_refresh_map_door_art()
+		_play_door_sound()
+		var save_manager := get_node_or_null("/root/SaveManager")
+		if save_manager != null:
+			save_manager.remember_room_entry_position(nearby_door.position + Vector2(0, 80))
+		await get_tree().create_timer(0.2).timeout
+		get_tree().change_scene_to_file("res://Scenes/Rooms/community_connections_room.tscn")
+		return
 	var enterable_door := _nearest_enterable_door()
 	if not nearby_door.is_empty() and str(nearby_door.name) == "Talent Acquisition" and enterable_door.is_empty():
 		_start_dialogue(_room_dialogue_for("Talent Acquisition"))
@@ -1042,8 +1052,7 @@ func _room_dialogue_for(room_name: String) -> Array[String]:
 	match room_name:
 		"Community Connections Center":
 			return [
-				"The Community Connections Center is a place where students of all ages can visit to find real-world job opportunities, information, and experiences! It allows players to explore real, postsecondary and career options in your community, learn from real professionals, and see what you can do in your future! Explore educational requirements and find your unique pathway to success.",
-				"Currently locked for the demo."
+				"The Community Connections Center is a place where students of all ages can visit to find real-world job opportunities, information, and experiences! It allows players to explore real, postsecondary and career options in your community, learn from real professionals, and see what you can do in your future! Explore educational requirements and find your unique pathway to success."
 			]
 		"Talent Acquisition":
 			return [
@@ -1375,7 +1384,11 @@ func _update_interaction_hint() -> void:
 	if not enterable_door.is_empty():
 		interaction_hint.text = "E  Enter Talent Acquisition"
 		return
-	if not _nearest_door().is_empty():
+	var nearby_door := _nearest_door()
+	if not nearby_door.is_empty() and str(nearby_door.name) == "Community Connections Center":
+		interaction_hint.text = "E  Enter Community Connections Center"
+		return
+	if not nearby_door.is_empty():
 		interaction_hint.text = "E  Check room availability"
 		return
 	var target := _nearest_interactable()

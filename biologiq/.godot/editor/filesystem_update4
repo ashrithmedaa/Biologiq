@@ -1,1 +1,3 @@
 res://Scripts/main_map.gd
+res://Scenes/Rooms/community_connections_room.tscn
+res://Scripts/community_connections_room.gd
