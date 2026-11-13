@@ -1,12 +1,12 @@
 78098b89c88a74ebe8c20117b8754620
-::res://::1794517769
+::res://::1794539212
 684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3::AudioStreamMP3::7389782028925386957::1794153228::1794257468::1::::<><><>0<>0<>74acad1f32ddac7fc3c1f90deb48f496<>res://.godot/imported/684538__pnmcarrierailfan__doors-wood-door-with-latch_1.mp3-3929422f16ceba23b99be4835b5254fd.mp3str::
 Biologiq.apple-touch-icon.png::CompressedTexture2D::6840880567051064731::1794272585::1794272668::1::::<><><>0<>0<>eb9eaf473f30d00c514e62ca89c02a1c<>res://.godot/imported/Biologiq.apple-touch-icon.png-2a8032ad6632838338f2bdba58adc8d8.ctex::
 Biologiq.icon.png::CompressedTexture2D::5501454562825976570::1794272585::1794272668::1::::<><><>0<>0<>d17e9cf52868543c46a901b441661a3a<>res://.godot/imported/Biologiq.icon.png-6d66608183ffd1754a1ed6794993a689.ctex::
 Biologiq.png::CompressedTexture2D::5994280042396561850::1794272585::1794272668::1::::<><><>0<>0<>b8b2df6aee36a58e38ce327215971ca8<>res://.godot/imported/Biologiq.png-c997675a7778a18d034b007156bf31e5.ctex::
 button.gd::GDScript::3298754275729814078::1794153228::0::1::::<>Button<><>0<>0<><>::
 chararter_selection_fr.tscn::PackedScene::3161268116910610674::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/character_selection.gd
-export_presets.cfg::TextFile::-1::1794356582::0::1::::<><><>0<>0<><>::
+export_presets.cfg::TextFile::-1::1794522845::0::1::::<><><>0<>0<><>::
 SAVE_SYSTEM_SETUP.md::TextFile::-1::1794153228::0::1::::<><><>0<>0<><>::
 tunetank.com_talking-gibberish-silly-character.wav::AudioStreamWAV::4881552231097711516::1794153228::1794257469::1::::<><><>0<>0<>e1cd6114a080d01a26b1920b1bd83a20<>res://.godot/imported/tunetank.com_talking-gibberish-silly-character.wav-f1c2be6a4f00479c7b4318c50083190d.sample::
 walking.tscn::PackedScene::225148834721085733::1794153228::0::1::::<><><>0<>0<><>::res://walking_screen.gd
@@ -234,7 +234,7 @@ status_board.png::CompressedTexture2D::1577161961577666686::1794265032::17942650
 character_selection.tscn::PackedScene::7682856018276769756::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/character_selection.gd
 employee_orientation.tscn::PackedScene::4883233758753234375::1794153228::0::1::::<><><>0<>0<><>::uid://byiu4pxfco80d::::res://Scripts/employee_orientation.gd
 main.tscn::PackedScene::4852200704718087825::1794153228::0::1::::<><><>0<>0<><>::uid://5nux8iroat8b::::res://Scripts/main.gd
-main_map.tscn::PackedScene::2609260930503460611::1794356557::0::1::::<><><>0<>0<><>::uid://bspd5oi70gh2x::::res://Scripts/main_map.gd<>uid://bg81lb154rtnt::::res://Art Assets/map_floor_tiles_phase0.svg<>uid://dmd0ahou6nrfn::::res://Art Assets/map_grass_detail.svg<>uid://5rk1wvv0vlbi::::res://Art Assets/door.png<>uid://duw5inie3ygj5::::res://Art Assets/CascadiaMono.ttf<>uid://c84afh6dkxpmp::::res://Art Assets/map_floor_tiles_phase1.svg<>res://Scenes/Map Props/bookshelf.tscn<>res://Scenes/Map Props/status_board.tscn<>res://Scenes/Map Props/lab_plant.tscn
+main_map.tscn::PackedScene::2609260930503460611::1794518015::0::1::::<><><>0<>0<><>::uid://bspd5oi70gh2x::::res://Scripts/main_map.gd<>uid://bg81lb154rtnt::::res://Art Assets/map_floor_tiles_phase0.svg<>uid://dmd0ahou6nrfn::::res://Art Assets/map_grass_detail.svg<>uid://5rk1wvv0vlbi::::res://Art Assets/door.png<>uid://duw5inie3ygj5::::res://Art Assets/CascadiaMono.ttf<>uid://c84afh6dkxpmp::::res://Art Assets/map_floor_tiles_phase1.svg<>res://Scenes/Map Props/bookshelf.tscn<>res://Scenes/Map Props/status_board.tscn<>res://Scenes/Map Props/lab_plant.tscn
 save_select_screen.tscn::PackedScene::865738293471267613::1794153228::0::1::::<><><>0<>0<><>::uid://160fmjcestdn::::res://Scripts/save_select_screen.gd
 select_screen.tscn::PackedScene::3832581093315241208::1794153228::0::1::::<><><>0<>0<><>::uid://sibp7tea2plp::::res://Scripts/select_screen.gd
 thank_you.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/thank_you_screen.gd
@@ -254,11 +254,12 @@ sample_tube_green.tscn::PackedScene::-1::1794269279::0::1::::<><><>0<>0<><>::res
 sample_tube_yellow.tscn::PackedScene::-1::1794269279::0::1::::<><><>0<>0<><>::res://Art Assets/Map Props/sample_tube_yellow.png
 sample_vial_amber.tscn::PackedScene::-1::1794269279::0::1::::<><><>0<>0<><>::res://Art Assets/Map Props/sample_vial_amber.png
 status_board.tscn::PackedScene::-1::1794269279::0::1::::<><><>0<>0<><>::res://Art Assets/Map Props/status_board.png
-::res://Scenes/Rooms/::1794271251
+::res://Scenes/Rooms/::1794522732
 advanced_research_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
 bachelors_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
 biochemistry_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
 college_lab_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
+community_connections_room.tscn::PackedScene::2914516750872385769::1794522732::0::1::::<><><>0<>0<><>::uid://d06nhav5rwrmy::::res://Scripts/community_connections_room.gd<>uid://bgingxakcbvl6::::res://Art Assets/Sam - Front walking spritesheet transparent.png
 graduate_suite_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
 internship_room.tscn::PackedScene::120996725799633949::1794271251::0::1::::<><><>0<>0<><>::uid://bsg3k1jtt1vx2::::res://Scripts/intern_quarters_workstation.gd<>uid://dm2yrikr5va5x::::res://Art Assets/Map Props/checklist.png<>uid://darv8w47puqoi::::res://Art Assets/Map Props/sample_rack.png<>uid://dxqrwiglwl0se::::res://Art Assets/Map Props/flask_indigo.png<>uid://u4ckcdn41nij::::res://Art Assets/Map Props/sample_vial_amber.png
 job_quarters_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/room_scene.gd
@@ -269,13 +270,14 @@ reception_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://
 student_lab_data_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_data_minigame.gd
 student_lab_dna_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_dna_minigame.gd
 student_lab_room.tscn::PackedScene::-1::1794153228::0::1::::<><><>0<>0<><>::res://Scripts/student_lab_minigame.gd
-::res://Scripts/::1794271483
+::res://Scripts/::1794519443
 character_selection.gd::GDScript::3927632141134071249::1794264592::0::1::::<>Control<><>0<>0<><>::
+community_connections_room.gd::GDScript::8978780707696822068::1794522588::0::1::::<>Control<><>0<>0<><>::
 employee_orientation.gd::GDScript::4088734904528120521::1794153228::0::1::::<>Node2D<><>0<>0<><>::
 game_font.gd::GDScript::7500686473244519134::1794153228::0::1::::<>Node<><>0<>0<><>::
 intern_quarters_workstation.gd::GDScript::3663925449838606493::1794271851::0::1::::<>Control<><>0<>0<><>::
 main.gd::GDScript::2133759379479014575::1794153228::0::1::::<>Control<><>0<>0<><>::
-main_map.gd::GDScript::3681022009456951049::1794356237::0::1::::<>Node2D<><>0<>0<><>::
+main_map.gd::GDScript::3681022009456951049::1794519288::0::1::::<>Node2D<><>0<>0<><>::
 room_scene.gd::GDScript::2899309924611777210::1794153228::0::1::::<>Node2D<><>0<>0<><>::
 save_manager.gd::GDScript::8832076846113268833::1794153228::0::1::::<>Node<><>0<>0<><>::
 save_select_screen.gd::GDScript::1890433143033768335::1794153228::0::1::::<>Node2D<><>0<>0<><>::

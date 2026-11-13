@@ -350,6 +350,7 @@ func _room_art_node(room_name: String) -> Node2D:
 func _build_characters() -> void:
 	# The scene desk is centered at (1801, 613); place Sharon's seated typing art there.
 	sharon = _make_npc("Sharon", Vector2(1801, 613), _sharon_frames(), 3.4)
+	sharon.z_index = 2
 	var sharon_sprite := sharon.get_node("Sprite") as AnimatedSprite2D
 	sharon_sprite.position = Vector2(0, -56)
 	sharon_sprite.play("typing")
@@ -364,6 +365,8 @@ func _build_characters() -> void:
 	sharon_blocker.add_child(sharon_block_shape)
 	add_child(sharon_blocker)
 	sam = _make_npc("Sam", Vector2(2320, 690), _sam_frames(), 0.19)
+	# Keep Sam behind Sharon in every cutscene; Sharon still sorts around the player at the desk.
+	sam.z_index = 1
 	sam_sprite = sam.get_node("Sprite") as AnimatedSprite2D
 	_set_sam_walk_animation("walk_left")
 	sam_sprite.stop()
@@ -1001,16 +1004,42 @@ func _on_sam_farewell_arrived() -> void:
 
 
 func _begin_sam_farewell_exit() -> void:
-	var entrance_hall_position := Vector2(1800.0, sam.position.y)
+	const DESK_LEFT := 1706.0
+	const DESK_RIGHT := 1896.0
+	const DESK_TOP := 589.0
+	const DESK_BOTTOM := 637.0
+	const SAFE_RIGHT := 1930.0
+	const BELOW_DESK := 665.0
+	const ABOVE_DESK := 550.0
+	var exit_tween := create_tween()
+	var route_position := sam.position
+	# Go around the reception desk before crossing to the main entrance.
+	if sam.position.x < DESK_LEFT:
+		route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(route_position.x, BELOW_DESK), "walk_front")
+		route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(SAFE_RIGHT, BELOW_DESK), "walk_right")
+		route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(SAFE_RIGHT, ABOVE_DESK), "walk_back")
+	else:
+		if sam.position.x <= DESK_RIGHT and sam.position.y > DESK_TOP and sam.position.y < DESK_BOTTOM:
+			route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(route_position.x, BELOW_DESK), "walk_front")
+		var safe_lane_y := route_position.y if route_position.y < DESK_TOP or route_position.y > DESK_BOTTOM else BELOW_DESK
+		var side_animation := "walk_left" if route_position.x > SAFE_RIGHT else "walk_right"
+		route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(SAFE_RIGHT, safe_lane_y), side_animation)
+		route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(SAFE_RIGHT, ABOVE_DESK), "walk_back")
+	route_position = _queue_sam_exit_segment(exit_tween, route_position, Vector2(1800.0, ABOVE_DESK), "walk_left")
 	var inside_entry_position := Vector2(1800.0, 154.0)
 	var outside_position := Vector2(1800.0, 48.0)
-	_set_sam_walk_animation("walk_left")
-	var exit_tween := create_tween()
-	exit_tween.tween_property(sam, "position", entrance_hall_position, maxf(0.8, sam.position.distance_to(entrance_hall_position) / SAM_WALK_SPEED))
-	exit_tween.tween_callback(_set_sam_walk_animation.bind("walk_back"))
-	exit_tween.tween_property(sam, "position", inside_entry_position, maxf(0.8, absf(sam.position.y - inside_entry_position.y) / SAM_WALK_SPEED))
+	route_position = _queue_sam_exit_segment(exit_tween, route_position, inside_entry_position, "walk_back")
 	exit_tween.tween_property(sam, "position", outside_position, 0.7)
 	exit_tween.finished.connect(_on_sam_farewell_exit_finished)
+
+
+func _queue_sam_exit_segment(exit_tween: Tween, start_position: Vector2, destination: Vector2, animation_name: String) -> Vector2:
+	var segment_length := start_position.distance_to(destination)
+	if segment_length <= 0.1:
+		return destination
+	exit_tween.tween_callback(_set_sam_walk_animation.bind(animation_name))
+	exit_tween.tween_property(sam, "position", destination, maxf(0.15, segment_length / SAM_WALK_SPEED))
+	return destination
 
 
 func _on_sam_farewell_exit_finished() -> void:
